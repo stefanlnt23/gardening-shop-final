@@ -38,10 +38,10 @@ export default function AdminServicesForm() {
 
   // Fetch service data if editing
   const { data, isLoading: isLoadingService } = useQuery({
-    queryKey: ['/api/services', id],
+    queryKey: ['/api/admin/services', id],
     queryFn: async () => {
       if (!id) return null;
-      const response = await apiRequest("GET", `/api/services/${id}`);
+      const response = await apiRequest("GET", `/api/admin/services/${id}`);
       const data = await response.json();
       return data;
     },
@@ -78,14 +78,15 @@ export default function AdminServicesForm() {
   // Create mutation
   const createMutation = useMutation({
     mutationFn: async (values: FormValues) => {
-      return await apiRequest("POST", "/api/services", values);
+      return await apiRequest("POST", "/api/admin/services", values);
     },
     onSuccess: () => {
       toast({
         title: "Service Created",
         description: "The service has been successfully created",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/services'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/services'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/services'] }); // Also invalidate front-end query
       setLocation("/admin/services");
     },
     onError: (error: any) => {
@@ -100,15 +101,16 @@ export default function AdminServicesForm() {
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: async (values: FormValues) => {
-      return await apiRequest("PUT", `/api/services/${id}`, values);
+      return await apiRequest("PUT", `/api/admin/services/${id}`, values);
     },
     onSuccess: () => {
       toast({
         title: "Service Updated",
         description: "The service has been successfully updated",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/services'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/services', id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/services'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/services', id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/services'] }); // Also invalidate front-end query
       setLocation("/admin/services");
     },
     onError: (error: any) => {
