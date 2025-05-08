@@ -266,14 +266,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/services", authenticateAdmin, async (req, res) => {
     try {
+      console.log("Request body for service creation:", JSON.stringify(req.body));
+      
       const validated = insertServiceSchema.safeParse(req.body);
       
       if (!validated.success) {
+        console.log("Validation failed:", validated.error.format());
         return res.status(400).json({ 
           message: "Validation failed", 
           errors: validated.error.format()
         });
       }
+      
+      console.log("Validated data:", JSON.stringify(validated.data));
       
       const service = await storage.createService(validated.data);
       res.json({ success: true, service });
