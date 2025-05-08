@@ -36,16 +36,13 @@ export default function AdminLogin() {
   async function onSubmit(values: LoginFormValues) {
     setIsLoading(true);
     try {
-      const response = await apiRequest("/api/admin/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
+      const response = await apiRequest("POST", "/api/admin/login", values);
+      
+      // Parse the JSON response
+      const data = await response.json();
       
       // Check if login was successful
-      if (response.success) {
+      if (data.success) {
         toast({
           title: "Login Successful",
           description: "Welcome to the Green Garden admin dashboard",
@@ -56,7 +53,7 @@ export default function AdminLogin() {
       } else {
         toast({
           title: "Login Failed",
-          description: response.message || "Invalid username or password",
+          description: data.message || "Invalid username or password",
           variant: "destructive",
         });
       }

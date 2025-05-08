@@ -47,16 +47,10 @@ export default function Contact() {
     // Convert serviceId to number if present
     const serviceId = data.serviceId ? parseInt(data.serviceId, 10) : null;
     
-    apiRequest("/api/inquiries", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
+    apiRequest("POST", "/api/contact", {
         ...data,
         serviceId
       })
-    })
       .then(response => {
         setIsSubmitting(false);
         setFormSubmitted(true);

@@ -85,13 +85,7 @@ export default function Appointment() {
       };
       
       // Make API request
-      const response = await apiRequest("/api/appointments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(appointmentData),
-      });
+      const response = await apiRequest("POST", "/api/appointments", appointmentData);
       
       // Handle success
       setIsSuccess(true);
