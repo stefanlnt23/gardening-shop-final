@@ -130,7 +130,17 @@ export class MongoDBStorage implements IStorage {
 
   async createService(insertService: InsertService): Promise<any> {
     try {
-      const newService = new Service(insertService);
+      // Map the data correctly to match MongoDB schema
+      const serviceData = {
+        name: insertService.name,
+        description: insertService.description,
+        shortDesc: insertService.shortDesc,
+        price: insertService.price,
+        imageUrl: insertService.imageUrl,
+        isFeatured: insertService.featured
+      };
+      
+      const newService = new Service(serviceData);
       const savedService = await newService.save();
       return mapServiceToSchema(savedService);
     } catch (error) {
@@ -141,9 +151,21 @@ export class MongoDBStorage implements IStorage {
 
   async updateService(id: number, serviceData: Partial<InsertService>): Promise<any | undefined> {
     try {
+      // Map the data correctly to match MongoDB schema
+      const mappedData: any = {
+        updatedAt: new Date()
+      };
+      
+      if (serviceData.name) mappedData.name = serviceData.name;
+      if (serviceData.description) mappedData.description = serviceData.description;
+      if (serviceData.shortDesc !== undefined) mappedData.shortDesc = serviceData.shortDesc;
+      if (serviceData.price) mappedData.price = serviceData.price;
+      if (serviceData.imageUrl !== undefined) mappedData.imageUrl = serviceData.imageUrl;
+      if (serviceData.featured !== undefined) mappedData.isFeatured = serviceData.featured;
+      
       const updatedService = await Service.findByIdAndUpdate(
         id,
-        { ...serviceData, updatedAt: new Date() },
+        mappedData,
         { new: true }
       );
       return updatedService ? mapServiceToSchema(updatedService) : undefined;
