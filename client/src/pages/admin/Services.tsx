@@ -8,7 +8,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Service } from "@shared/schema";
+// Import Service but override id to support MongoDB string IDs
+import { Service as SchemaService } from "@shared/schema";
+type Service = Omit<SchemaService, 'id'> & { id: string | number };
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export default function AdminServices() {
@@ -16,6 +18,9 @@ export default function AdminServices() {
   const { toast } = useToast();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
+
+  // MongoDB uses string IDs - this type ensures compatibility
+  type MongoID = string | number;
 
   // Fetch services
   const { data, isLoading, error } = useQuery({
@@ -27,7 +32,7 @@ export default function AdminServices() {
 
   // Delete service mutation
   const deleteServiceMutation = useMutation({
-    mutationFn: async (serviceId: string) => {
+    mutationFn: async (serviceId: MongoID) => {
       return await apiRequest("DELETE", `/api/admin/services/${serviceId}`);
     },
     onSuccess: () => {
