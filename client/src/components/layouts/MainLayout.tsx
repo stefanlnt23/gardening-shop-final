@@ -18,10 +18,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   const navLinks = [
     { path: "/", label: "Home" },
-    { path: "/features", label: "Features" },
-    { path: "/docs", label: "Docs" },
+    { path: "/services", label: "Services" },
+    { path: "/portfolio", label: "Portfolio" },
     { path: "/blog", label: "Blog" },
     { path: "/contact", label: "Contact" },
+    { path: "/appointment", label: "Book Appointment" },
   ];
 
   return (
@@ -32,11 +33,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-md flex items-center justify-center">
-                  <i className="fas fa-bolt text-white text-lg"></i>
+                <div className="w-8 h-8 bg-gradient-to-r from-green-600 to-green-700 rounded-md flex items-center justify-center">
+                  <i className="fas fa-leaf text-white text-lg"></i>
                 </div>
-                <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-                  Remix
+                <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-700">
+                  Green Garden
                 </span>
               </Link>
             </div>
@@ -70,9 +71,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
             {/* Call to Action */}
             <div className="hidden md:block">
-              <Link href="/docs">
-                <Button className="bg-primary hover:bg-blue-700 text-white">
-                  Get Started
+              <Link href="/appointment">
+                <Button className="bg-green-600 hover:bg-green-700 text-white">
+                  Book Appointment
                 </Button>
               </Link>
             </div>
@@ -97,10 +98,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
                 </Link>
               ))}
               <Link
-                href="/docs"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white bg-primary hover:bg-blue-700"
+                href="/appointment"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white bg-green-600 hover:bg-green-700"
               >
-                Get Started
+                Book Appointment
               </Link>
             </div>
           </div>
