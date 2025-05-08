@@ -25,6 +25,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 
 // Extend the schema with validation
 const formSchema = insertServiceSchema.extend({
+  shortDesc: z.string().min(10, "Short description must be at least 10 characters"),
   // Add any additional validation here
 });
 

@@ -20,6 +20,7 @@ export const services = pgTable("services", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description").notNull(),
+  shortDesc: text("short_desc").notNull(),
   price: text("price").notNull(),
   imageUrl: text("image_url"),
   featured: boolean("featured").default(false),
@@ -93,6 +94,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export const insertServiceSchema = createInsertSchema(services).pick({
   name: true,
   description: true,
+  shortDesc: true,
   price: true,
   imageUrl: true,
   featured: true,
