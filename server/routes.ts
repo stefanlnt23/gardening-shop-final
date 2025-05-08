@@ -75,7 +75,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/portfolio/:id", async (req, res) => {
+  app.get("/api/portfolio/item/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const portfolioItem = await storage.getPortfolioItem(id);
