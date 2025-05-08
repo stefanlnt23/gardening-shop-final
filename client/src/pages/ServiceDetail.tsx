@@ -9,6 +9,8 @@ export default function ServiceDetail() {
   // With MongoDB we use the string ID directly, no need to parse as integer
   const serviceId = id;
 
+  console.log("Service Detail Page - serviceId:", serviceId);
+
   const { data: serviceData, isLoading: serviceLoading, error: serviceError } = useQuery({
     queryKey: ['/api/services', serviceId],
     enabled: !!serviceId,
@@ -20,6 +22,9 @@ export default function ServiceDetail() {
     enabled: !!serviceId,
     refetchOnWindowFocus: false
   });
+
+  console.log("Service Detail Page - serviceData:", serviceData);
+  console.log("Service Detail Page - error:", serviceError);
 
   const service = serviceData?.service;
   const portfolioItems = portfolioData?.portfolioItems || [];
