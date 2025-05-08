@@ -41,19 +41,22 @@ export default function AdminBlogPosts() {
 
   // Delete blog post mutation
   const deleteBlogPostMutation = useMutation({
-    mutationFn: async (postId: number) => {
-      return await apiRequest("DELETE", `/api/blog/${postId}`);
+    mutationFn: async (postId: string | number) => {
+      console.log(`Deleting blog post with ID: ${postId}`);
+      return await apiRequest("DELETE", `/api/admin/blog/${postId}`);
     },
     onSuccess: () => {
       toast({
         title: "Blog Post Deleted",
         description: "The blog post has been successfully deleted",
       });
-      // Invalidate blog query to refresh the list
+      // Invalidate blog queries to refresh the lists
       queryClient.invalidateQueries({ queryKey: ['/api/blog'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/blog'] });
       setDeleteDialogOpen(false);
     },
     onError: (error: any) => {
+      console.error("Error deleting blog post:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to delete the blog post",
