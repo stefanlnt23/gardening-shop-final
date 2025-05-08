@@ -123,7 +123,7 @@ export function mapServiceToSchema(service: any): any {
     shortDesc: service.shortDesc,
     price: service.price,
     imageUrl: service.imageUrl,
-    isFeatured: service.isFeatured
+    featured: service.isFeatured // Map isFeatured from MongoDB to featured for frontend
   };
 }
 

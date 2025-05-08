@@ -10,6 +10,8 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Blog from "@/pages/Blog";
 import Contact from "@/pages/Contact";
+import Services from "@/pages/Services";
+import ServiceDetail from "@/pages/ServiceDetail";
 
 // Admin Page imports
 import AdminLogin from "@/pages/admin/Login";
@@ -30,6 +32,8 @@ function Router() {
     <Switch>
       {/* Public Routes */}
       <Route path="/" component={Home} />
+      <Route path="/services" component={Services} />
+      <Route path="/services/:id" component={ServiceDetail} />
       <Route path="/blog" component={Blog} />
       <Route path="/contact" component={Contact} />
       

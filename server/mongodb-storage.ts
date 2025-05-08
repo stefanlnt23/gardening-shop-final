@@ -120,7 +120,9 @@ export class MongoDBStorage implements IStorage {
 
   async getFeaturedServices(): Promise<any[]> {
     try {
+      log(`Fetching featured services from MongoDB...`, 'mongodb');
       const services = await Service.find({ isFeatured: true });
+      log(`Found ${services.length} featured services`, 'mongodb');
       return services.map(mapServiceToSchema);
     } catch (error) {
       log(`Error fetching featured services: ${error}`, 'mongodb');
