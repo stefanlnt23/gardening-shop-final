@@ -10,7 +10,7 @@ export default function Blog() {
 
   // Get blog posts
   const { data: blogData, isLoading } = useQuery({
-    queryKey: ['/api/blog-posts'],
+    queryKey: ['/api/blog'],
     refetchOnWindowFocus: false,
   });
 
@@ -118,12 +118,14 @@ export default function Blog() {
                       <h2 className="text-2xl font-bold mb-3">{filteredPosts[0].title}</h2>
                       <p className="text-gray-600 mb-4">{filteredPosts[0].excerpt}</p>
                       <div>
+                        <Link href={`/blog/${filteredPosts[0].id}`}>
                         <Button 
                           variant="outline"
                           className="border-green-600 text-green-600 hover:bg-green-50"
                         >
                           Read Article
                         </Button>
+                      </Link>
                       </div>
                     </CardContent>
                   </div>
@@ -185,12 +187,14 @@ export default function Blog() {
                         <p className="text-gray-600 text-sm mb-4">{post.excerpt}</p>
                       </CardContent>
                       <CardFooter className="px-6 py-4 bg-gray-50">
-                        <Button 
-                          variant="outline"
-                          className="text-sm border-green-600 text-green-600 hover:bg-green-50"
-                        >
-                          Read More
-                        </Button>
+                        <Link href={`/blog/${post.id}`}>
+                          <Button 
+                            variant="outline"
+                            className="text-sm border-green-600 text-green-600 hover:bg-green-50"
+                          >
+                            Read More
+                          </Button>
+                        </Link>
                       </CardFooter>
                     </Card>
                   ))}
