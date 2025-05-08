@@ -45,11 +45,13 @@ export default function AdminBlogPostForm() {
 
   // Fetch blog post data if editing
   const { data, isLoading: isLoadingPost } = useQuery({
-    queryKey: ['/api/blog', id],
+    queryKey: ['/api/admin/blog', id],
     queryFn: async () => {
       if (!id) return null;
-      const response = await apiRequest("GET", `/api/blog/${id}`);
+      console.log(`Fetching blog post with ID: ${id}`);
+      const response = await apiRequest("GET", `/api/admin/blog/${id}`);
       const data = await response.json();
+      console.log("Retrieved blog post data:", data);
       return data;
     },
     enabled: isEditing,
@@ -94,17 +96,21 @@ export default function AdminBlogPostForm() {
   // Create mutation
   const createMutation = useMutation({
     mutationFn: async (values: FormValues) => {
-      return await apiRequest("POST", "/api/blog", values);
+      console.log("Creating new blog post:", values);
+      return await apiRequest("POST", "/api/admin/blog", values);
     },
     onSuccess: () => {
       toast({
         title: "Blog Post Created",
         description: "The blog post has been successfully created",
       });
+      // Invalidate both admin and public blog queries
       queryClient.invalidateQueries({ queryKey: ['/api/blog'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/blog'] });
       setLocation("/admin/blog");
     },
     onError: (error: any) => {
+      console.error("Error creating blog post:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to create the blog post",
@@ -116,18 +122,22 @@ export default function AdminBlogPostForm() {
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: async (values: FormValues) => {
-      return await apiRequest("PUT", `/api/blog/${id}`, values);
+      console.log(`Updating blog post with ID: ${id}`, values);
+      return await apiRequest("PUT", `/api/admin/blog/${id}`, values);
     },
     onSuccess: () => {
       toast({
         title: "Blog Post Updated",
         description: "The blog post has been successfully updated",
       });
+      // Invalidate both admin and public blog queries
       queryClient.invalidateQueries({ queryKey: ['/api/blog'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/blog'] });
       queryClient.invalidateQueries({ queryKey: ['/api/blog', id] });
       setLocation("/admin/blog");
     },
     onError: (error: any) => {
+      console.error("Error updating blog post:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to update the blog post",
