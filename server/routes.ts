@@ -310,7 +310,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/admin/services/:id", authenticateAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id; // MongoDB uses string IDs directly
+      console.log(`Admin deleting service with ID: ${id}`);
       const success = await storage.deleteService(id);
       
       if (!success) {

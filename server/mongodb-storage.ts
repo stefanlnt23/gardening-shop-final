@@ -153,9 +153,11 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
-  async deleteService(id: number): Promise<boolean> {
+  async deleteService(id: number | string): Promise<boolean> {
     try {
+      log(`Attempting to delete service with id ${id}`, 'mongodb');
       const result = await Service.findByIdAndDelete(id);
+      log(`Delete result: ${result ? 'Success' : 'Not found'}`, 'mongodb');
       return !!result;
     } catch (error) {
       log(`Error deleting service with id ${id}: ${error}`, 'mongodb');

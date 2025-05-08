@@ -19,7 +19,7 @@ export default function AdminServices() {
 
   // Fetch services
   const { data, isLoading, error } = useQuery({
-    queryKey: ['/api/services'],
+    queryKey: ['/api/admin/services'],
     refetchOnWindowFocus: false,
   });
 
@@ -27,8 +27,8 @@ export default function AdminServices() {
 
   // Delete service mutation
   const deleteServiceMutation = useMutation({
-    mutationFn: async (serviceId: number) => {
-      return await apiRequest("DELETE", `/api/services/${serviceId}`);
+    mutationFn: async (serviceId: string) => {
+      return await apiRequest("DELETE", `/api/admin/services/${serviceId}`);
     },
     onSuccess: () => {
       toast({
@@ -36,7 +36,7 @@ export default function AdminServices() {
         description: "The service has been successfully deleted",
       });
       // Invalidate services query to refresh the list
-      queryClient.invalidateQueries({ queryKey: ['/api/services'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/services'] });
       setDeleteDialogOpen(false);
     },
     onError: (error: any) => {
