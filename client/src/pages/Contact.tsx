@@ -5,12 +5,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Service } from "@shared/schema";
 
 // Form validation schema
 const contactFormSchema = z.object({
@@ -27,6 +29,14 @@ export default function Contact() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  
+  // Fetch services for the dropdown
+  const { data: servicesData, isLoading: isLoadingServices } = useQuery({
+    queryKey: ['/api/services'],
+    refetchOnWindowFocus: false,
+  });
+  
+  const services = servicesData?.services || [];
 
   // Form setup
   const form = useForm<ContactFormValues>({
@@ -49,9 +59,11 @@ export default function Contact() {
     
     apiRequest("POST", "/api/contact", {
         ...data,
-        serviceId
+        serviceId,
+        status: "new" // Set initial status of inquiry
       })
       .then(response => {
+        console.log("Inquiry submitted successfully:", response);
         setIsSubmitting(false);
         setFormSubmitted(true);
         toast({
@@ -61,13 +73,13 @@ export default function Contact() {
         form.reset();
       })
       .catch(error => {
+        console.error("Error submitting form:", error);
         setIsSubmitting(false);
         toast({
           title: "Something went wrong!",
           description: "Please try again later or contact us directly by phone.",
           variant: "destructive"
         });
-        console.error("Error submitting form:", error);
       });
   }
 
@@ -204,18 +216,24 @@ export default function Contact() {
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Service (Optional)</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingServices}>
                                     <FormControl>
                                       <SelectTrigger>
                                         <SelectValue placeholder="Select a service" />
                                       </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                      <SelectItem value="1">Garden Maintenance</SelectItem>
-                                      <SelectItem value="2">Landscape Design</SelectItem>
-                                      <SelectItem value="3">Tree & Shrub Care</SelectItem>
-                                      <SelectItem value="4">Lawn Care</SelectItem>
-                                      <SelectItem value="5">Irrigation Systems</SelectItem>
+                                      {isLoadingServices ? (
+                                        <SelectItem value="loading" disabled>Loading services...</SelectItem>
+                                      ) : services.length === 0 ? (
+                                        <SelectItem value="none" disabled>No services available</SelectItem>
+                                      ) : (
+                                        services.map((service) => (
+                                          <SelectItem key={service.id} value={service.id}>
+                                            {service.name}
+                                          </SelectItem>
+                                        ))
+                                      )}
                                     </SelectContent>
                                   </Select>
                                   <FormMessage />
