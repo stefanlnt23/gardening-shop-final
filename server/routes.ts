@@ -96,7 +96,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/portfolio/service/:serviceId", async (req, res) => {
     try {
-      const serviceId = parseInt(req.params.serviceId);
+      // With MongoDB we need to use the string ID directly instead of parsing to integer
+      const serviceId = req.params.serviceId;
+      console.log(`Fetching portfolio items for service with ID: ${serviceId}`);
+      
       const portfolioItems = await storage.getPortfolioItemsByService(serviceId);
       res.json({ portfolioItems });
     } catch (error) {

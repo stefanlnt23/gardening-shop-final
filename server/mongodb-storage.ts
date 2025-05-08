@@ -215,8 +215,9 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
-  async getPortfolioItemsByService(serviceId: number): Promise<any[]> {
+  async getPortfolioItemsByService(serviceId: string | number): Promise<any[]> {
     try {
+      log(`MongoDB: Fetching portfolio items for service ID ${serviceId}`, 'mongodb');
       const items = await PortfolioItem.find({ serviceId });
       return items.map(mapPortfolioItemToSchema);
     } catch (error) {

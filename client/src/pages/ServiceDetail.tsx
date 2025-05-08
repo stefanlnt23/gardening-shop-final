@@ -6,24 +6,25 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function ServiceDetail() {
   const { id } = useParams();
-  const serviceId = parseInt(id);
+  // With MongoDB we use the string ID directly, no need to parse as integer
+  const serviceId = id;
 
   const { data: serviceData, isLoading: serviceLoading, error: serviceError } = useQuery({
     queryKey: ['/api/services', serviceId],
-    enabled: !isNaN(serviceId),
+    enabled: !!serviceId,
     refetchOnWindowFocus: false
   });
 
   const { data: portfolioData, isLoading: portfolioLoading } = useQuery({
     queryKey: ['/api/portfolio/service', serviceId],
-    enabled: !isNaN(serviceId),
+    enabled: !!serviceId,
     refetchOnWindowFocus: false
   });
 
   const service = serviceData?.service;
   const portfolioItems = portfolioData?.portfolioItems || [];
 
-  if (isNaN(serviceId)) {
+  if (!serviceId) {
     return (
       <MainLayout>
         <div className="py-16 bg-red-50">
