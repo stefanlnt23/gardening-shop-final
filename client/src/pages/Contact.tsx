@@ -228,8 +228,8 @@ export default function Contact() {
                                       ) : services.length === 0 ? (
                                         <SelectItem value="none" disabled>No services available</SelectItem>
                                       ) : (
-                                        services.map((service) => (
-                                          <SelectItem key={service.id} value={service.id}>
+                                        services.map((service: Service) => (
+                                          <SelectItem key={service.id} value={String(service.id)}>
                                             {service.name}
                                           </SelectItem>
                                         ))
