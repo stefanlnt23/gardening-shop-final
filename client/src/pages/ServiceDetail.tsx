@@ -12,13 +12,13 @@ export default function ServiceDetail() {
   console.log("Service Detail Page - serviceId:", serviceId);
 
   const { data: serviceData, isLoading: serviceLoading, error: serviceError } = useQuery({
-    queryKey: ['/api/services', serviceId],
+    queryKey: [`/api/services/${serviceId}`],
     enabled: !!serviceId,
     refetchOnWindowFocus: false
   });
 
   const { data: portfolioData, isLoading: portfolioLoading } = useQuery({
-    queryKey: ['/api/portfolio/service', serviceId],
+    queryKey: [`/api/portfolio/service/${serviceId}`],
     enabled: !!serviceId,
     refetchOnWindowFocus: false
   });
