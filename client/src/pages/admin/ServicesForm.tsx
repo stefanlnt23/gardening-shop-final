@@ -56,6 +56,7 @@ export default function AdminServicesForm() {
     defaultValues: {
       name: "",
       description: "",
+      shortDesc: "", // Added shortDesc field
       price: "",
       imageUrl: "",
       featured: false
@@ -68,6 +69,7 @@ export default function AdminServicesForm() {
       form.reset({
         name: service.name,
         description: service.description,
+        shortDesc: service.shortDesc || "",
         price: service.price,
         imageUrl: service.imageUrl || "",
         featured: !!service.featured
@@ -167,6 +169,23 @@ export default function AdminServicesForm() {
                       </FormControl>
                       <FormDescription>
                         The name of the gardening service you provide
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="shortDesc"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Short Description</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Brief overview of the service" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        A short summary that will appear in service listings
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
