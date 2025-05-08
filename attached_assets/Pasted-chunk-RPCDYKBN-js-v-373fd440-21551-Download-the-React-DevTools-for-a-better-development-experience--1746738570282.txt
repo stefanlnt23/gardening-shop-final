@@ -1,0 +1,33 @@
+chunk-RPCDYKBN.js?v=373fd440:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+chunk-RPCDYKBN.js?v=373fd440:521 Warning: validateDOMNesting(...): <a> cannot appear as a descendant of <a>.
+    at a
+    at a
+    at https://0dc0d452-f617-4957-a490-2548b22612bd-00-31y2xg1dy829b.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=373fd440:352:18
+    at li
+    at ul
+    at nav
+    at aside
+    at div
+    at AdminLayout (https://0dc0d452-f617-4957-a490-2548b22612bd-00-31y2xg1dy829b.janeway.replit.dev/src/components/layouts/AdminLayout.tsx:19:39)
+    at AdminServicesForm (https://0dc0d452-f617-4957-a490-2548b22612bd-00-31y2xg1dy829b.janeway.replit.dev/src/pages/admin/ServicesForm.tsx:46:18)
+    at Suspense
+    at Route (https://0dc0d452-f617-4957-a490-2548b22612bd-00-31y2xg1dy829b.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=373fd440:338:16)
+    at Switch (https://0dc0d452-f617-4957-a490-2548b22612bd-00-31y2xg1dy829b.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=373fd440:394:17)
+    at Router
+    at Provider (https://0dc0d452-f617-4957-a490-2548b22612bd-00-31y2xg1dy829b.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-5SZQWSWC.js?v=373fd440:48:15)
+    at TooltipProvider (https://0dc0d452-f617-4957-a490-2548b22612bd-00-31y2xg1dy829b.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=373fd440:59:5)
+    at QueryClientProvider (https://0dc0d452-f617-4957-a490-2548b22612bd-00-31y2xg1dy829b.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=373fd440:2875:3)
+    at App
+printWarning @ chunk-RPCDYKBN.js?v=373fd440:521
+error @ chunk-RPCDYKBN.js?v=373fd440:505
+validateDOMNesting @ chunk-RPCDYKBN.js?v=373fd440:8256
+createInstance @ chunk-RPCDYKBN.js?v=373fd440:8328
+completeWork @ chunk-RPCDYKBN.js?v=373fd440:16290
+completeUnitOfWork @ chunk-RPCDYKBN.js?v=373fd440:19224
+performUnitOfWork @ chunk-RPCDYKBN.js?v=373fd440:19206
+workLoopConcurrent @ chunk-RPCDYKBN.js?v=373fd440:19189
+renderRootConcurrent @ chunk-RPCDYKBN.js?v=373fd440:19164
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=373fd440:18678
+workLoop @ chunk-RPCDYKBN.js?v=373fd440:197
+flushWork @ chunk-RPCDYKBN.js?v=373fd440:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=373fd440:384
