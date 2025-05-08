@@ -53,9 +53,8 @@ export class MongoDBStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<any> {
     try {
-      // Hash the password before storing
-      const salt = crypto.randomBytes(16).toString('hex');
-      const hashedPassword = crypto.scryptSync(insertUser.password, salt, 64).toString('hex') + '.' + salt;
+      // Use the password hashing utility
+      const hashedPassword = await import('./auth').then(auth => auth.hashPassword(insertUser.password));
       
       const newUser = new User({
         ...insertUser,
@@ -73,8 +72,7 @@ export class MongoDBStorage implements IStorage {
     try {
       // If password is being updated, hash it
       if (userData.password) {
-        const salt = crypto.randomBytes(16).toString('hex');
-        userData.password = crypto.scryptSync(userData.password, salt, 64).toString('hex') + '.' + salt;
+        userData.password = await import('./auth').then(auth => auth.hashPassword(userData.password));
       }
       
       const updatedUser = await User.findByIdAndUpdate(

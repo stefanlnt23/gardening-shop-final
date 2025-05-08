@@ -1,6 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { comparePasswords } from "./auth";
 import { z } from "zod";
 import { 
   insertServiceSchema,
@@ -228,7 +229,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const user = await storage.getUserByUsername(username);
       
-      if (!user || user.password !== password) {
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      const passwordsMatch = await comparePasswords(password, user.password);
+      if (!passwordsMatch) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
