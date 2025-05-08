@@ -5,21 +5,28 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 
-// Page imports
+// Public Page imports
 import Home from "@/pages/Home";
-import Features from "@/pages/Features";
-import Docs from "@/pages/Docs";
 import Blog from "@/pages/Blog";
 import Contact from "@/pages/Contact";
+
+// Admin Page imports
+import AdminLogin from "@/pages/admin/Login";
+import AdminDashboard from "@/pages/admin/Dashboard";
 
 function Router() {
   return (
     <Switch>
+      {/* Public Routes */}
       <Route path="/" component={Home} />
-      <Route path="/features" component={Features} />
-      <Route path="/docs" component={Docs} />
       <Route path="/blog" component={Blog} />
       <Route path="/contact" component={Contact} />
+      
+      {/* Admin Routes */}
+      <Route path="/admin" component={AdminLogin} />
+      <Route path="/admin/dashboard" component={AdminDashboard} />
+      
+      {/* 404 Route */}
       <Route component={NotFound} />
     </Switch>
   );
