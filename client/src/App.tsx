@@ -26,6 +26,7 @@ const AdminTestimonials = React.lazy(() => import("@/pages/admin/Testimonials"))
 const AdminTestimonialsForm = React.lazy(() => import("@/pages/admin/TestimonialsForm"));
 const AdminBlogPosts = React.lazy(() => import("@/pages/admin/BlogPosts"));
 const AdminBlogPostForm = React.lazy(() => import("@/pages/admin/BlogPostForm"));
+const AdminInquiries = React.lazy(() => import("@/pages/admin/Inquiries"));
 
 function Router() {
   return (
@@ -106,6 +107,13 @@ function Router() {
       <Route path="/admin/blog">
         <React.Suspense fallback={<div>Loading...</div>}>
           <AdminBlogPosts />
+        </React.Suspense>
+      </Route>
+      
+      {/* Admin Inquiries */}
+      <Route path="/admin/inquiries">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AdminInquiries />
         </React.Suspense>
       </Route>
       

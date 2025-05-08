@@ -31,7 +31,7 @@ export default function Contact() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   
   // Fetch services for the dropdown
-  const { data: servicesData, isLoading: isLoadingServices } = useQuery({
+  const { data: servicesData, isLoading: isLoadingServices } = useQuery<{ services: Service[] }>({
     queryKey: ['/api/services'],
     refetchOnWindowFocus: false,
   });
