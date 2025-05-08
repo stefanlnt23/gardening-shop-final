@@ -306,18 +306,18 @@ export default function Blog() {
               <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
               <ul className="space-y-3">
                 <li>
-                  <Link href="/">
-                    <a className="text-gray-400 hover:text-white transition-colors">Home</a>
+                  <Link href="/" className="text-gray-400 hover:text-white transition-colors">
+                    Home
                   </Link>
                 </li>
                 <li>
-                  <Link href="/blog">
-                    <a className="text-gray-400 hover:text-white transition-colors">Blog</a>
+                  <Link href="/blog" className="text-gray-400 hover:text-white transition-colors">
+                    Blog
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact">
-                    <a className="text-gray-400 hover:text-white transition-colors">Contact</a>
+                  <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
+                    Contact
                   </Link>
                 </li>
               </ul>
