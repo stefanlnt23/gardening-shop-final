@@ -74,7 +74,7 @@ export default function AdminBlogPostForm() {
       content: "",
       excerpt: "",
       imageUrl: "",
-      authorId: undefined,
+      authorId: users.length > 0 ? users[0].id : "000000000000000000000000", // Use first user or default
       publishedAt: new Date(),
     },
   });
@@ -246,7 +246,7 @@ export default function AdminBlogPostForm() {
                     <FormItem>
                       <FormLabel>Author</FormLabel>
                       <Select 
-                        onValueChange={(value) => field.onChange(parseInt(value))}
+                        onValueChange={(value) => field.onChange(value)} // Handle as string for MongoDB
                         value={field.value ? field.value.toString() : undefined}
                         disabled={isLoadingUsers}
                       >
@@ -259,7 +259,11 @@ export default function AdminBlogPostForm() {
                           {isLoadingUsers ? (
                             <SelectItem value="loading" disabled>Loading authors...</SelectItem>
                           ) : users.length === 0 ? (
-                            <SelectItem value="none" disabled>No authors available</SelectItem>
+                            // If no users are available, use a default ID as placeholder
+                            <>
+                              <SelectItem value="none" disabled>No authors available</SelectItem>
+                              <SelectItem value="000000000000000000000000">Use Default Author</SelectItem>
+                            </>
                           ) : (
                             users.map((user) => (
                               <SelectItem key={user.id} value={user.id.toString()}>

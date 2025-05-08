@@ -305,8 +305,25 @@ export class MongoDBStorage implements IStorage {
 
   async createBlogPost(insertBlogPost: InsertBlogPost): Promise<any> {
     try {
+      log(`Creating blog post with data: ${JSON.stringify(insertBlogPost)}`, 'mongodb');
+      
+      // Ensure authorId exists - if it's a placeholder, fetch the first admin user
+      if (!insertBlogPost.authorId || insertBlogPost.authorId === '000000000000000000000000') {
+        log(`AuthorId is missing or placeholder, trying to find default admin...`, 'mongodb');
+        const adminUser = await User.findOne({ role: 'admin' });
+        
+        if (adminUser) {
+          log(`Found admin user ${adminUser._id} to use as author`, 'mongodb');
+          insertBlogPost.authorId = adminUser._id;
+        } else {
+          log(`No admin user found for default author`, 'mongodb');
+          // We'll let it continue with the placeholder ID, which might fail
+        }
+      }
+      
       const newPost = new BlogPost(insertBlogPost);
       const savedPost = await newPost.save();
+      log(`Blog post created successfully with ID: ${savedPost._id}`, 'mongodb');
       return mapBlogPostToSchema(savedPost);
     } catch (error) {
       log(`Error creating blog post: ${error}`, 'mongodb');
@@ -316,13 +333,32 @@ export class MongoDBStorage implements IStorage {
 
   async updateBlogPost(id: number | string, blogPostData: Partial<InsertBlogPost>): Promise<any | undefined> {
     try {
-      log(`Updating blog post with ID: ${id}`, 'mongodb');
+      log(`Updating blog post with ID: ${id}, data: ${JSON.stringify(blogPostData)}`, 'mongodb');
+      
+      // Handle default authorId or placeholder the same as in create
+      if (!blogPostData.authorId || blogPostData.authorId === '000000000000000000000000') {
+        log(`AuthorId is missing or placeholder, trying to find default admin...`, 'mongodb');
+        const adminUser = await User.findOne({ role: 'admin' });
+        
+        if (adminUser) {
+          log(`Found admin user ${adminUser._id} to use as author`, 'mongodb');
+          blogPostData.authorId = adminUser._id;
+        }
+      }
+      
       const updatedPost = await BlogPost.findByIdAndUpdate(
         id,
         { ...blogPostData, updatedAt: new Date() },
         { new: true }
       );
-      return updatedPost ? mapBlogPostToSchema(updatedPost) : undefined;
+      
+      if (!updatedPost) {
+        log(`Blog post with ID ${id} not found for update`, 'mongodb');
+        return undefined;
+      }
+      
+      log(`Blog post updated successfully`, 'mongodb');
+      return mapBlogPostToSchema(updatedPost);
     } catch (error) {
       log(`Error updating blog post with id ${id}: ${error}`, 'mongodb');
       return undefined;

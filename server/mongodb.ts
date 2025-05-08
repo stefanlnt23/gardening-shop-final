@@ -8,10 +8,44 @@ export async function connectToMongoDB() {
   try {
     await mongoose.connect(DATABASE_URL);
     log('Connected to MongoDB', 'mongodb');
+    
+    // Check if we have any users, if not create a default admin user
+    await ensureAdminUser();
+    
     return mongoose.connection;
   } catch (error) {
     log(`Error connecting to MongoDB: ${error}`, 'mongodb');
     throw error;
+  }
+}
+
+// Helper function to ensure we have at least one admin user
+async function ensureAdminUser() {
+  try {
+    const userCount = await User.countDocuments();
+    if (userCount === 0) {
+      log("No users found, creating default admin user...", "mongodb");
+      
+      // Import auth for password hashing
+      const auth = await import('./auth');
+      const hashedPassword = await auth.hashPassword('password123');
+      
+      // Create admin user
+      const adminUser = new User({
+        name: 'Admin User',
+        email: 'admin@example.com',
+        username: 'admin',
+        password: hashedPassword,
+        role: 'admin',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      
+      await adminUser.save();
+      log("Default admin user created successfully", "mongodb");
+    }
+  } catch (error) {
+    log(`Error creating admin user: ${error}`, "mongodb");
   }
 }
 
