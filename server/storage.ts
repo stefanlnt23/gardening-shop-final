@@ -110,6 +110,117 @@ export class MemStorage implements IStorage {
       name: 'Admin User',
       role: 'admin' as const
     });
+    
+    // Seed more data
+    this.seedDemoData();
+  }
+  
+  private async seedDemoData() {
+    // Add services
+    const gardenMaintenanceId = this.serviceIdCounter;
+    await this.createService({
+      name: "Garden Maintenance",
+      description: "Regular maintenance to keep your garden looking its best year-round. Includes weeding, pruning, mulching, and seasonal clean-up. Our expert gardeners will ensure your plants thrive in every season.",
+      price: "From $120/month",
+      imageUrl: null,
+      featured: true
+    });
+    
+    await this.createService({
+      name: "Landscape Design",
+      description: "Transform your outdoor space with our professional landscape design services. We create beautiful, sustainable landscapes tailored to your preferences and local climate conditions.",
+      price: "From $500",
+      imageUrl: null,
+      featured: true
+    });
+    
+    await this.createService({
+      name: "Tree & Shrub Care",
+      description: "Comprehensive care for your trees and shrubs, including pruning, fertilization, pest management, and disease treatment to ensure healthy growth and longevity.",
+      price: "From $150",
+      imageUrl: null,
+      featured: true
+    });
+    
+    await this.createService({
+      name: "Lawn Care",
+      description: "Complete lawn maintenance services including mowing, fertilization, aeration, overseeding, and pest control to keep your lawn lush, green, and healthy.",
+      price: "From $80/visit",
+      imageUrl: null,
+      featured: false
+    });
+    
+    await this.createService({
+      name: "Irrigation Systems",
+      description: "Design, installation, and maintenance of efficient irrigation systems to ensure your garden gets the right amount of water while conserving this precious resource.",
+      price: "From $350",
+      imageUrl: null,
+      featured: false
+    });
+    
+    // Add portfolio items
+    await this.createPortfolioItem({
+      title: "Residential Garden Renovation",
+      description: "Complete transformation of a neglected backyard into a vibrant garden with native plants, a water feature, and sustainable irrigation.",
+      date: new Date("2023-04-15"),
+      imageUrl: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+      serviceId: gardenMaintenanceId
+    });
+    
+    await this.createPortfolioItem({
+      title: "Commercial Landscape Project",
+      description: "Designed and implemented landscaping for a corporate campus, featuring drought-resistant plants and efficient irrigation systems.",
+      date: new Date("2023-05-22"),
+      imageUrl: "https://images.unsplash.com/photo-1626807236036-8c9584a9f8a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+      serviceId: gardenMaintenanceId
+    });
+    
+    // Add blog posts
+    await this.createBlogPost({
+      title: "10 Tips for a Thriving Summer Garden",
+      excerpt: "Essential tips to help your garden flourish during the hot summer months, from watering techniques to pest management.",
+      content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. In hac habitasse platea dictumst. Vivamus adipiscing fermentum quam volutpat aliquam. Integer et elit eget elit facilisis tristique. Nam vel iaculis mauris. Sed ullamcorper tellus erat, ultrices sem tincidunt euismod.",
+      authorId: 1,
+      publishedAt: new Date("2023-06-01"),
+      imageUrl: "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    });
+    
+    await this.createBlogPost({
+      title: "Sustainable Gardening Practices",
+      excerpt: "Learn how to create an eco-friendly garden that conserves water, supports local wildlife, and reduces environmental impact.",
+      content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. In hac habitasse platea dictumst. Vivamus adipiscing fermentum quam volutpat aliquam. Integer et elit eget elit facilisis tristique. Nam vel iaculis mauris. Sed ullamcorper tellus erat, ultrices sem tincidunt euismod.",
+      authorId: 1,
+      publishedAt: new Date("2023-05-15"),
+      imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    });
+    
+    // Add testimonials
+    await this.createTestimonial({
+      name: "Sarah Johnson",
+      role: "Homeowner",
+      content: "Green Garden transformed my backyard into a beautiful oasis! Their team was professional, responsive, and truly cared about bringing my vision to life. I couldn't be happier with the results!",
+      imageUrl: null,
+      rating: 5,
+      displayOrder: 1
+    });
+    
+    await this.createTestimonial({
+      name: "Michael Chen",
+      role: "Business Owner",
+      content: "We hired Green Garden to maintain the landscaping at our office building, and they've exceeded our expectations. Their attention to detail and proactive approach has made our property look exceptional year-round.",
+      imageUrl: null,
+      rating: 5,
+      displayOrder: 2
+    });
+    
+    await this.createTestimonial({
+      name: "Emily Rodriguez",
+      role: "Homeowner",
+      content: "The landscape design service from Green Garden was excellent. They listened to our needs, worked within our budget, and created a sustainable garden that we love spending time in.",
+      imageUrl: null,
+      rating: 4,
+      displayOrder: 3
+    });
   }
 
   // User methods

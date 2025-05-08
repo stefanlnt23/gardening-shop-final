@@ -94,17 +94,17 @@ export default function Contact() {
             
             {/* Desktop Nav */}
             <nav className="hidden md:flex space-x-8">
-              <Link href="/">
-                <a className="text-gray-700 hover:text-green-600 transition-colors">Home</a>
+              <Link href="/" className="text-gray-700 hover:text-green-600 transition-colors">
+                Home
               </Link>
-              <Link href="/blog">
-                <a className="text-gray-700 hover:text-green-600 transition-colors">Blog</a>
+              <Link href="/blog" className="text-gray-700 hover:text-green-600 transition-colors">
+                Blog
               </Link>
-              <Link href="/contact">
-                <a className="text-green-700 font-medium">Contact</a>
+              <Link href="/contact" className="text-green-700 font-medium">
+                Contact
               </Link>
-              <Link href="/admin">
-                <a className="text-gray-700 hover:text-green-600 transition-colors">Admin</a>
+              <Link href="/admin" className="text-gray-700 hover:text-green-600 transition-colors">
+                Admin
               </Link>
             </nav>
             

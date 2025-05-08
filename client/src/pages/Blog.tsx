@@ -40,17 +40,17 @@ export default function Blog() {
             
             {/* Desktop Nav */}
             <nav className="hidden md:flex space-x-8">
-              <Link href="/">
-                <a className="text-gray-700 hover:text-green-600 transition-colors">Home</a>
+              <Link href="/" className="text-gray-700 hover:text-green-600 transition-colors">
+                Home
               </Link>
-              <Link href="/blog">
-                <a className="text-green-700 font-medium">Blog</a>
+              <Link href="/blog" className="text-green-700 font-medium">
+                Blog
               </Link>
-              <Link href="/contact">
-                <a className="text-gray-700 hover:text-green-600 transition-colors">Contact</a>
+              <Link href="/contact" className="text-gray-700 hover:text-green-600 transition-colors">
+                Contact
               </Link>
-              <Link href="/admin">
-                <a className="text-gray-700 hover:text-green-600 transition-colors">Admin</a>
+              <Link href="/admin" className="text-gray-700 hover:text-green-600 transition-colors">
+                Admin
               </Link>
             </nav>
             
