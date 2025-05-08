@@ -20,6 +20,10 @@ const AdminServices = React.lazy(() => import("@/pages/admin/Services"));
 const AdminServicesForm = React.lazy(() => import("@/pages/admin/ServicesForm"));
 const AdminPortfolio = React.lazy(() => import("@/pages/admin/Portfolio"));
 const AdminPortfolioForm = React.lazy(() => import("@/pages/admin/PortfolioForm"));
+const AdminTestimonials = React.lazy(() => import("@/pages/admin/Testimonials"));
+const AdminTestimonialsForm = React.lazy(() => import("@/pages/admin/TestimonialsForm"));
+const AdminBlogPosts = React.lazy(() => import("@/pages/admin/BlogPosts"));
+const AdminBlogPostForm = React.lazy(() => import("@/pages/admin/BlogPostForm"));
 
 function Router() {
   return (
@@ -64,6 +68,40 @@ function Router() {
       <Route path="/admin/portfolio">
         <React.Suspense fallback={<div>Loading...</div>}>
           <AdminPortfolio />
+        </React.Suspense>
+      </Route>
+      
+      {/* Admin Testimonials */}
+      <Route path="/admin/testimonials/new">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AdminTestimonialsForm />
+        </React.Suspense>
+      </Route>
+      <Route path="/admin/testimonials/:id">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AdminTestimonialsForm />
+        </React.Suspense>
+      </Route>
+      <Route path="/admin/testimonials">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AdminTestimonials />
+        </React.Suspense>
+      </Route>
+      
+      {/* Admin Blog Posts */}
+      <Route path="/admin/blog/new">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AdminBlogPostForm />
+        </React.Suspense>
+      </Route>
+      <Route path="/admin/blog/:id">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AdminBlogPostForm />
+        </React.Suspense>
+      </Route>
+      <Route path="/admin/blog">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AdminBlogPosts />
         </React.Suspense>
       </Route>
       
