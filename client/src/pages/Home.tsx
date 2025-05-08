@@ -176,7 +176,7 @@ export default function Home() {
           </div>
                 
           <div className="text-center mt-12">
-            <Link href="/blog">
+            <Link href="/services">
               <Button className="bg-green-600 hover:bg-green-700">
                 View All Services
               </Button>
