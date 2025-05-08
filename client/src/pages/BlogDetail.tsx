@@ -6,17 +6,17 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function BlogDetail() {
   const { id } = useParams();
-  const blogId = id ? parseInt(id) : undefined;
+  const blogId = id;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/blog', blogId],
-    enabled: blogId !== undefined && !isNaN(blogId as number),
+    enabled: !!blogId,
     refetchOnWindowFocus: false
   });
 
   const blogPost = data?.blogPost;
 
-  if (blogId === undefined || isNaN(blogId as number)) {
+  if (!blogId) {
     return (
       <MainLayout>
         <div className="py-16 bg-red-50">

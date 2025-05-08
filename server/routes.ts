@@ -121,13 +121,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/blog/:id", async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
+      console.log(`Fetching blog post with ID: ${id}`);
+      
       const blogPost = await storage.getBlogPost(id);
       
       if (!blogPost) {
+        console.log(`Blog post with ID ${id} not found`);
         return res.status(404).json({ message: "Blog post not found" });
       }
       
+      console.log(`Successfully found blog post: ${blogPost.title}`);
       res.json({ blogPost });
     } catch (error) {
       console.error("Error fetching blog post:", error);
@@ -439,10 +443,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/admin/blog/:id", authenticateAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
+      console.log(`Admin updating blog post with ID: ${id}`);
+      
       const validated = insertBlogPostSchema.partial().safeParse(req.body);
       
       if (!validated.success) {
+        console.log("Validation failed:", validated.error.format());
         return res.status(400).json({ 
           message: "Validation failed", 
           errors: validated.error.format()
@@ -452,9 +459,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const blogPost = await storage.updateBlogPost(id, validated.data);
       
       if (!blogPost) {
+        console.log(`Blog post with ID ${id} not found for update`);
         return res.status(404).json({ message: "Blog post not found" });
       }
       
+      console.log(`Successfully updated blog post: ${blogPost.title}`);
       res.json({ success: true, blogPost });
     } catch (error) {
       console.error("Error updating blog post:", error);
@@ -464,13 +473,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/admin/blog/:id", authenticateAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
+      console.log(`Admin deleting blog post with ID: ${id}`);
+      
       const success = await storage.deleteBlogPost(id);
       
       if (!success) {
+        console.log(`Blog post with ID ${id} not found for deletion`);
         return res.status(404).json({ message: "Blog post not found" });
       }
       
+      console.log(`Successfully deleted blog post with ID: ${id}`);
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting blog post:", error);

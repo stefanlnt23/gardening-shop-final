@@ -185,9 +185,25 @@ export class MongoDBStorage implements IStorage {
   async deleteService(id: number | string): Promise<boolean> {
     try {
       log(`Attempting to delete service with id ${id}`, 'mongodb');
-      const result = await Service.findByIdAndDelete(id);
+      
+      // Convert string numeric ID to number if needed (for compatibility)
+      let serviceId = id;
+      
+      log(`Looking for service with ID: ${serviceId}`, 'mongodb');
+      
+      const result = await Service.findByIdAndDelete(serviceId);
       log(`Delete result: ${result ? 'Success' : 'Not found'}`, 'mongodb');
-      return !!result;
+      
+      if (!result) {
+        log(`Service with ID ${serviceId} not found`, 'mongodb');
+        return false;
+      }
+      
+      // Also delete any related portfolio items
+      await PortfolioItem.deleteMany({ serviceId: serviceId });
+      log(`Deleted related portfolio items for service ${serviceId}`, 'mongodb');
+      
+      return true;
     } catch (error) {
       log(`Error deleting service with id ${id}: ${error}`, 'mongodb');
       return false;
@@ -262,10 +278,15 @@ export class MongoDBStorage implements IStorage {
   }
 
   // Blog operations
-  async getBlogPost(id: number): Promise<any | undefined> {
+  async getBlogPost(id: number | string): Promise<any | undefined> {
     try {
+      log(`Fetching blog post with ID: ${id}`, 'mongodb');
       const post = await BlogPost.findById(id);
-      return post ? mapBlogPostToSchema(post) : undefined;
+      if (!post) {
+        log(`Blog post with ID ${id} not found`, 'mongodb');
+        return undefined;
+      }
+      return mapBlogPostToSchema(post);
     } catch (error) {
       log(`Error fetching blog post with id ${id}: ${error}`, 'mongodb');
       return undefined;
@@ -293,8 +314,9 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
-  async updateBlogPost(id: number, blogPostData: Partial<InsertBlogPost>): Promise<any | undefined> {
+  async updateBlogPost(id: number | string, blogPostData: Partial<InsertBlogPost>): Promise<any | undefined> {
     try {
+      log(`Updating blog post with ID: ${id}`, 'mongodb');
       const updatedPost = await BlogPost.findByIdAndUpdate(
         id,
         { ...blogPostData, updatedAt: new Date() },
@@ -307,8 +329,9 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
-  async deleteBlogPost(id: number): Promise<boolean> {
+  async deleteBlogPost(id: number | string): Promise<boolean> {
     try {
+      log(`Deleting blog post with ID: ${id}`, 'mongodb');
       const result = await BlogPost.findByIdAndDelete(id);
       return !!result;
     } catch (error) {
