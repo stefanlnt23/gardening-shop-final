@@ -50,7 +50,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/services/:id", async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      // With MongoDB we need to use the string ID directly instead of parsing to integer
+      const id = req.params.id;
+      console.log(`Fetching service with ID: ${id}`);
+      
       const service = await storage.getService(id);
       
       if (!service) {

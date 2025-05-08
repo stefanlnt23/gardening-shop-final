@@ -98,10 +98,15 @@ export class MongoDBStorage implements IStorage {
   }
 
   // Service operations
-  async getService(id: number): Promise<any | undefined> {
+  async getService(id: number | string): Promise<any | undefined> {
     try {
+      log(`MongoDB: Fetching service with id ${id}`, 'mongodb');
       const service = await Service.findById(id);
-      return service ? mapServiceToSchema(service) : undefined;
+      if (!service) {
+        log(`MongoDB: Service with id ${id} not found`, 'mongodb');
+        return undefined;
+      }
+      return mapServiceToSchema(service);
     } catch (error) {
       log(`Error fetching service with id ${id}: ${error}`, 'mongodb');
       return undefined;
