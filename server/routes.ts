@@ -905,7 +905,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       const { title, description, icon, imageUrl } = req.body;
       
+      // Validate required fields
+      if (!title || !description || !icon || !imageUrl) {
+        return res.status(400).json({ message: 'All fields are required' });
+      }
+      
       // Update feature card implementation
+      await storage.updateFeatureCard(id, { title, description, icon, imageUrl });
       res.json({ success: true });
     } catch (error) {
       console.error(`Error updating feature card ${req.params.id}:`, error);
