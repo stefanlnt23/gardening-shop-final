@@ -1,10 +1,9 @@
-
 import React from "react";
 import { Link, useLocation } from "wouter";
 
 export default function AdminNavigation() {
   const [location] = useLocation();
-  
+
   // Admin navigation items
   const navItems = [
     { label: "Dashboard", path: "/admin/dashboard", icon: "fas fa-chart-line" },
@@ -14,6 +13,7 @@ export default function AdminNavigation() {
     { label: "Inquiries", path: "/admin/inquiries", icon: "fas fa-envelope" },
     { label: "Blog Posts", path: "/admin/blog", icon: "fas fa-blog" },
     { label: "Testimonials", path: "/admin/testimonials", icon: "fas fa-star" },
+    { label: "Front Page", path: "/admin/frontpage", icon: "fas fa-home" }, // Added Front Page Link
   ];
 
   return (

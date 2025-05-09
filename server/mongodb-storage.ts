@@ -8,6 +8,7 @@ import { InsertUser, InsertService, InsertPortfolioItem, InsertBlogPost, InsertI
 import mongoose from 'mongoose';
 import { log } from './vite';
 import * as crypto from 'crypto';
+import { Db, ObjectId } from 'mongodb';
 
 export class MongoDBStorage implements IStorage {
   // User operations
@@ -55,7 +56,7 @@ export class MongoDBStorage implements IStorage {
     try {
       // Use the password hashing utility
       const hashedPassword = await import('./auth').then(auth => auth.hashPassword(insertUser.password));
-      
+
       const newUser = new User({
         ...insertUser,
         password: hashedPassword
@@ -75,7 +76,7 @@ export class MongoDBStorage implements IStorage {
       if (updatedData.password) {
         updatedData.password = await import('./auth').then(auth => auth.hashPassword(updatedData.password as string));
       }
-      
+
       const updatedUser = await User.findByIdAndUpdate(
         id,
         { ...updatedData, updatedAt: new Date() },
@@ -147,7 +148,7 @@ export class MongoDBStorage implements IStorage {
         imageUrl: insertService.imageUrl,
         isFeatured: insertService.featured
       };
-      
+
       const newService = new Service(serviceData);
       const savedService = await newService.save();
       return mapServiceToSchema(savedService);
@@ -163,14 +164,14 @@ export class MongoDBStorage implements IStorage {
       const mappedData: any = {
         updatedAt: new Date()
       };
-      
+
       if (serviceData.name) mappedData.name = serviceData.name;
       if (serviceData.description) mappedData.description = serviceData.description;
       if (serviceData.shortDesc !== undefined) mappedData.shortDesc = serviceData.shortDesc;
       if (serviceData.price) mappedData.price = serviceData.price;
       if (serviceData.imageUrl !== undefined) mappedData.imageUrl = serviceData.imageUrl;
       if (serviceData.featured !== undefined) mappedData.isFeatured = serviceData.featured;
-      
+
       const updatedService = await Service.findByIdAndUpdate(
         id,
         mappedData,
@@ -186,24 +187,24 @@ export class MongoDBStorage implements IStorage {
   async deleteService(id: number | string): Promise<boolean> {
     try {
       log(`Attempting to delete service with id ${id}`, 'mongodb');
-      
+
       // Convert string numeric ID to number if needed (for compatibility)
       let serviceId = id;
-      
+
       log(`Looking for service with ID: ${serviceId}`, 'mongodb');
-      
+
       const result = await Service.findByIdAndDelete(serviceId);
       log(`Delete result: ${result ? 'Success' : 'Not found'}`, 'mongodb');
-      
+
       if (!result) {
         log(`Service with ID ${serviceId} not found`, 'mongodb');
         return false;
       }
-      
+
       // Also delete any related portfolio items
       await PortfolioItem.deleteMany({ serviceId: serviceId });
       log(`Deleted related portfolio items for service ${serviceId}`, 'mongodb');
-      
+
       return true;
     } catch (error) {
       log(`Error deleting service with id ${id}: ${error}`, 'mongodb');
@@ -252,7 +253,7 @@ export class MongoDBStorage implements IStorage {
         status: insertPortfolioItem.status || 'Draft',
         viewCount: insertPortfolioItem.viewCount || 0
       };
-      
+
       const newItem = new PortfolioItem(portfolioData);
       const savedItem = await newItem.save();
       return mapPortfolioItemToSchema(savedItem);
@@ -315,10 +316,10 @@ export class MongoDBStorage implements IStorage {
   async createBlogPost(insertBlogPost: InsertBlogPost): Promise<any> {
     try {
       log(`Creating blog post with data: ${JSON.stringify(insertBlogPost)}`, 'mongodb');
-      
+
       // Log the schema of the BlogPost model
       log(`BlogPost schema: ${JSON.stringify(BlogPost.schema.paths)}`, 'mongodb');
-      
+
       const now = new Date();
       const postData = {
         ...insertBlogPost,
@@ -326,12 +327,12 @@ export class MongoDBStorage implements IStorage {
         createdAt: insertBlogPost.createdAt || now,
         updatedAt: insertBlogPost.updatedAt || now
       };
-      
+
       log(`Processed blog post data for MongoDB: ${JSON.stringify(postData)}`, 'mongodb');
-      
+
       const newPost = new BlogPost(postData);
       log(`New blog post instance created: ${JSON.stringify(newPost)}`, 'mongodb');
-      
+
       const savedPost = await newPost.save();
       log(`Blog post created successfully with ID: ${savedPost._id}`, 'mongodb');
       return mapBlogPostToSchema(savedPost);
@@ -355,12 +356,12 @@ export class MongoDBStorage implements IStorage {
         updateData,
         { new: true }
       );
-      
+
       if (!updatedPost) {
         log(`Blog post with ID ${id} not found for update`, 'mongodb');
         return undefined;
       }
-      
+
       log(`Blog post updated successfully`, 'mongodb');
       return mapBlogPostToSchema(updatedPost);
     } catch (error) {
@@ -384,7 +385,7 @@ export class MongoDBStorage implements IStorage {
   async getInquiry(id: number | string): Promise<any | undefined> {
     try {
       log(`Fetching inquiry with ID: ${id}`, 'mongodb');
-      
+
       // Ensure we have a valid MongoDB ObjectId
       let objectId;
       try {
@@ -394,14 +395,14 @@ export class MongoDBStorage implements IStorage {
         log(`Failed to convert ID ${id} to ObjectId: ${error}`, 'mongodb');
         return undefined;
       }
-      
+
       const inquiry = await Inquiry.findById(objectId);
-      
+
       if (!inquiry) {
         log(`Inquiry with ID ${id} not found`, 'mongodb');
         return undefined;
       }
-      
+
       log(`Successfully found inquiry: ${inquiry._id}`, 'mongodb');
       return mapInquiryToSchema(inquiry);
     } catch (error) {
@@ -423,14 +424,14 @@ export class MongoDBStorage implements IStorage {
   async createInquiry(insertInquiry: InsertInquiry): Promise<any> {
     try {
       log(`Creating new inquiry with data: ${JSON.stringify(insertInquiry)}`, 'mongodb');
-      
+
       // Convert serviceId to ObjectId if it exists
       const inquiryData = {
         ...insertInquiry,
         serviceId: insertInquiry.serviceId ? new mongoose.Types.ObjectId(insertInquiry.serviceId.toString()) : null,
         status: insertInquiry.status || 'new'
       };
-      
+
       const newInquiry = new Inquiry(inquiryData);
       const savedInquiry = await newInquiry.save();
       log(`Successfully created inquiry with ID: ${savedInquiry._id}`, 'mongodb');
@@ -444,7 +445,7 @@ export class MongoDBStorage implements IStorage {
   async updateInquiry(id: number | string, inquiryData: Partial<InsertInquiry>): Promise<any | undefined> {
     try {
       log(`Updating inquiry with ID: ${id}, data: ${JSON.stringify(inquiryData)}`, 'mongodb');
-      
+
       // Ensure we have a valid MongoDB ObjectId
       let objectId;
       try {
@@ -454,26 +455,26 @@ export class MongoDBStorage implements IStorage {
         log(`Failed to convert ID ${id} to ObjectId: ${error}`, 'mongodb');
         return undefined;
       }
-      
+
       // Convert serviceId to ObjectId if it exists in the update data
       const updateData = {
         ...inquiryData,
         serviceId: inquiryData.serviceId ? new mongoose.Types.ObjectId(inquiryData.serviceId.toString()) : undefined,
         updatedAt: new Date()
       };
-      
+
       log(`Finding and updating inquiry with ObjectId: ${objectId}`, 'mongodb');
       const updatedInquiry = await Inquiry.findByIdAndUpdate(
         objectId,
         updateData,
         { new: true }
       );
-      
+
       if (!updatedInquiry) {
         log(`Inquiry with ID ${id} not found for update`, 'mongodb');
         return undefined;
       }
-      
+
       log(`Successfully updated inquiry: ${updatedInquiry._id}`, 'mongodb');
       return mapInquiryToSchema(updatedInquiry);
     } catch (error) {
@@ -485,7 +486,7 @@ export class MongoDBStorage implements IStorage {
   async deleteInquiry(id: number | string): Promise<boolean> {
     try {
       log(`Attempting to delete inquiry with ID: ${id}`, 'mongodb');
-      
+
       // Ensure we have a valid MongoDB ObjectId
       let objectId;
       try {
@@ -495,15 +496,15 @@ export class MongoDBStorage implements IStorage {
         log(`Failed to convert ID ${id} to ObjectId: ${error}`, 'mongodb');
         return false;
       }
-      
+
       log(`Finding and deleting inquiry with ObjectId: ${objectId}`, 'mongodb');
       const result = await Inquiry.findByIdAndDelete(objectId);
-      
+
       if (!result) {
         log(`Inquiry with ID ${id} not found for deletion`, 'mongodb');
         return false;
       }
-      
+
       log(`Successfully deleted inquiry with ID: ${id}`, 'mongodb');
       return true;
     } catch (error) {
@@ -536,7 +537,7 @@ export class MongoDBStorage implements IStorage {
   async createAppointment(insertAppointment: InsertAppointment): Promise<any> {
     try {
       log(`Creating new appointment with data: ${JSON.stringify(insertAppointment)}`, 'mongodb');
-      
+
       // Ensure serviceId is a valid ObjectId
       const appointmentData = {
         ...insertAppointment,
@@ -544,7 +545,7 @@ export class MongoDBStorage implements IStorage {
           ? new mongoose.Types.ObjectId(insertAppointment.serviceId.toString()) 
           : null
       };
-      
+
       const newAppointment = new Appointment(appointmentData);
       const savedAppointment = await newAppointment.save();
       log(`Successfully created appointment with ID: ${savedAppointment._id}`, 'mongodb');
@@ -558,28 +559,28 @@ export class MongoDBStorage implements IStorage {
   async updateAppointment(id: string | number, appointmentData: Partial<InsertAppointment>): Promise<any | undefined> {
     try {
       log(`Updating appointment with ID: ${id}, data: ${JSON.stringify(appointmentData)}`, 'mongodb');
-      
+
       // Process serviceId if it exists in the update data
       const updateData: any = {
         ...appointmentData,
         updatedAt: new Date()
       };
-      
+
       if (appointmentData.serviceId) {
         updateData.serviceId = new mongoose.Types.ObjectId(appointmentData.serviceId.toString());
       }
-      
+
       const updatedAppointment = await Appointment.findByIdAndUpdate(
         id,
         updateData,
         { new: true }
       );
-      
+
       if (!updatedAppointment) {
         log(`Appointment with ID ${id} not found for update`, 'mongodb');
         return undefined;
       }
-      
+
       log(`Successfully updated appointment: ${updatedAppointment._id}`, 'mongodb');
       return mapAppointmentToSchema(updatedAppointment);
     } catch (error) {
@@ -657,15 +658,137 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
+  // Carousel Images methods
+  async getCarouselImages(): Promise<any[]> {
+    try {
+      const images = await this.db.collection('carouselImages')
+        .find({})
+        .sort({ order: 1 })
+        .toArray();
+
+      return images.map(image => ({
+        id: image._id.toString(),
+        imageUrl: image.imageUrl,
+        alt: image.alt || '',
+        order: image.order,
+        createdAt: image.createdAt,
+        updatedAt: image.updatedAt
+      }));
+    } catch (error) {
+      console.error("Error fetching carousel images:", error);
+      throw error;
+    }
+  }
+
+  async addCarouselImage(image: { imageUrl: string; alt?: string }): Promise<any> {
+    try {
+      // Get highest order to place new image at the end
+      const highestOrderImage = await this.db.collection('carouselImages')
+        .find({})
+        .sort({ order: -1 })
+        .limit(1)
+        .toArray();
+
+      const nextOrder = highestOrderImage.length > 0 ? highestOrderImage[0].order + 1 : 0;
+
+      const timestamp = new Date();
+      const result = await this.db.collection('carouselImages').insertOne({
+        imageUrl: image.imageUrl,
+        alt: image.alt || 'Garden showcase',
+        order: nextOrder,
+        createdAt: timestamp,
+        updatedAt: timestamp
+      });
+
+      return {
+        id: result.insertedId.toString(),
+        imageUrl: image.imageUrl,
+        alt: image.alt || 'Garden showcase',
+        order: nextOrder,
+        createdAt: timestamp,
+        updatedAt: timestamp
+      };
+    } catch (error) {
+      console.error("Error adding carousel image:", error);
+      throw error;
+    }
+  }
+
+  async deleteCarouselImage(id: string): Promise<void> {
+    try {
+      // Find the image to get its order
+      const image = await this.db.collection('carouselImages').findOne({ 
+        _id: new ObjectId(id) 
+      });
+
+      if (!image) {
+        throw new Error('Carousel image not found');
+      }
+
+      // Delete the image
+      await this.db.collection('carouselImages').deleteOne({ 
+        _id: new ObjectId(id) 
+      });
+
+      // Update order of remaining images
+      await this.db.collection('carouselImages').updateMany(
+        { order: { $gt: image.order } },
+        { $inc: { order: -1 } }
+      );
+    } catch (error) {
+      console.error(`Error deleting carousel image ${id}:`, error);
+      throw error;
+    }
+  }
+
+  async reorderCarouselImage(id: string, direction: 'up' | 'down'): Promise<void> {
+    try {
+      // Find the image
+      const image = await this.db.collection('carouselImages').findOne({ 
+        _id: new ObjectId(id) 
+      });
+
+      if (!image) {
+        throw new Error('Carousel image not found');
+      }
+
+      // Find adjacent image
+      const adjacentOrder = direction === 'up' ? image.order - 1 : image.order + 1;
+
+      const adjacentImage = await this.db.collection('carouselImages').findOne({ 
+        order: adjacentOrder 
+      });
+
+      if (!adjacentImage) {
+        // No adjacent image, can't reorder
+        return;
+      }
+
+      // Swap orders
+      await this.db.collection('carouselImages').updateOne(
+        { _id: image._id },
+        { $set: { order: adjacentOrder, updatedAt: new Date() } }
+      );
+
+      await this.db.collection('carouselImages').updateOne(
+        { _id: adjacentImage._id },
+        { $set: { order: image.order, updatedAt: new Date() } }
+      );
+    } catch (error) {
+      console.error(`Error reordering carousel image ${id}:`, error);
+      throw error;
+    }
+  }
+
   // Initialize demo data 
   async seedDemoData(): Promise<void> {
     try {
       // Check if we already have data
       const userCount = await User.countDocuments();
-      
+
       if (userCount === 0) {
         log('Seeding demo data to MongoDB...', 'mongodb');
-        
+
         // Create admin user
         const adminUser = await this.createUser({
           name: 'Admin User',
@@ -674,7 +797,7 @@ export class MongoDBStorage implements IStorage {
           password: 'password123',
           role: 'admin'
         });
-        
+
         // Create services
         const service1 = await this.createService({
           name: 'Garden Maintenance',
@@ -684,7 +807,7 @@ export class MongoDBStorage implements IStorage {
           imageUrl: '/images/services/maintenance.jpg',
           featured: true
         });
-        
+
         const service2 = await this.createService({
           name: 'Landscape Design',
           description: 'Our landscape design service creates beautiful, functional outdoor spaces tailored to your preferences and site conditions.',
@@ -693,7 +816,7 @@ export class MongoDBStorage implements IStorage {
           imageUrl: '/images/services/design.jpg',
           featured: true
         });
-        
+
         const service3 = await this.createService({
           name: 'Planting Services',
           description: 'Our planting services include selection, placement, and installation of trees, shrubs, perennials, and seasonal flowers.',
@@ -702,7 +825,7 @@ export class MongoDBStorage implements IStorage {
           imageUrl: '/images/services/planting.jpg',
           featured: true
         });
-        
+
         // Create portfolio items
         await this.createPortfolioItem({
           title: 'Modern Backyard Transformation',
@@ -717,7 +840,7 @@ export class MongoDBStorage implements IStorage {
           projectDuration: '4 weeks',
           difficultyLevel: 'Moderate'
         });
-        
+
         await this.createPortfolioItem({
           title: 'Drought-Resistant Front Yard',
           description: 'Conversion of a water-hungry lawn into a beautiful, low-maintenance xeriscape with native plants.',
@@ -731,7 +854,7 @@ export class MongoDBStorage implements IStorage {
           projectDuration: '2 weeks',
           difficultyLevel: 'Easy'
         });
-        
+
         // Create testimonials
         await this.createTestimonial({
           name: 'Sarah Johnson',
@@ -741,7 +864,7 @@ export class MongoDBStorage implements IStorage {
           imageUrl: '/images/testimonials/person1.jpg',
           displayOrder: 1
         });
-        
+
         await this.createTestimonial({
           name: 'Michael Rodriguez',
           role: 'Business Owner',
@@ -750,7 +873,7 @@ export class MongoDBStorage implements IStorage {
           imageUrl: '/images/testimonials/person2.jpg',
           displayOrder: 2
         });
-        
+
         // Create blog posts
         const now = new Date();
         await this.createBlogPost({
@@ -763,7 +886,7 @@ export class MongoDBStorage implements IStorage {
           createdAt: now,
           updatedAt: now
         });
-        
+
         await this.createBlogPost({
           title: 'How to Create a Pollinator-Friendly Garden',
           content: 'Long-form content about attracting pollinators...',
@@ -774,7 +897,7 @@ export class MongoDBStorage implements IStorage {
           createdAt: now,
           updatedAt: now
         });
-        
+
         log('Demo data successfully seeded to MongoDB', 'mongodb');
       } else {
         log('Database already contains data, skipping seed operation', 'mongodb');

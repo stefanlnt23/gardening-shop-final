@@ -829,6 +829,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Carousel images routes
+  // Public route to get carousel images
+  app.get('/api/carousel-images', async (req, res) => {
+    try {
+      const images = await storage.getCarouselImages();
+      res.json({ images });
+    } catch (error) {
+      console.error("Error fetching carousel images:", error);
+      res.status(500).json({ message: 'Failed to fetch carousel images' });
+    }
+  });
+
+  // Admin routes for carousel images
+  async function requireAdmin(req: Request, res: Response, next: NextFunction) {
+      // Placeholder for admin check
+      // In real implementation, check user role from session/token
+      next();
+  }
+  app.get('/api/admin/carousel-images', requireAdmin, async (req, res) => {
+    try {
+      const images = await storage.getCarouselImages();
+      res.json({ images });
+    } catch (error) {
+      console.error("Error fetching carousel images for admin:", error);
+      res.status(500).json({ message: 'Failed to fetch carousel images' });
+    }
+  });
+
+  app.post('/api/admin/carousel-images', requireAdmin, async (req, res) => {
+    try {
+      const { imageUrl, alt } = req.body;
+
+      if (!imageUrl) {
+        return res.status(400).json({ message: 'Image URL is required' });
+      }
+
+      const newImage = await storage.addCarouselImage({ imageUrl, alt });
+      res.status(201).json({ success: true, image: newImage });
+    } catch (error) {
+      console.error("Error adding carousel image:", error);
+      res.status(500).json({ message: 'Failed to add carousel image' });
+    }
+  });
+
+  app.delete('/api/admin/carousel-images/:id', requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteCarouselImage(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error(`Error deleting carousel image ${req.params.id}:`, error);
+      res.status(500).json({ message: 'Failed to delete carousel image' });
+    }
+  });
+
+  app.put('/api/admin/carousel-images/:id/reorder', requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { direction } = req.body;
+
+      if (!direction || !['up', 'down'].includes(direction)) {
+        return res.status(400).json({ message: 'Valid direction (up/down) is required' });
+      }
+
+      await storage.reorderCarouselImage(id, direction);
+      res.json({ success: true });
+    } catch (error) {
+      console.error(`Error reordering carousel image ${req.params.id}:`, error);
+      res.status(500).json({ message: 'Failed to reorder carousel image' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

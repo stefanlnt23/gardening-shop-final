@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import MainLayout from "@/components/layouts/MainLayout";
+import { HomeCarousel } from "@/components/ui/home-carousel";
 
 export default function Home() {
   // State for the testimonial carousel
@@ -68,13 +69,7 @@ export default function Home() {
               </div>
             </div>
             <div className="md:w-1/2">
-              <div className="rounded-lg overflow-hidden shadow-xl bg-white p-2">
-                <div className="rounded-lg overflow-hidden bg-green-100 aspect-video flex items-center justify-center">
-                  <div className="text-green-600 text-6xl">
-                    <i className="fas fa-image"></i>
-                  </div>
-                </div>
-              </div>
+              <HomeCarousel />
             </div>
           </div>
         </div>

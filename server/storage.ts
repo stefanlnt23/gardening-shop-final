@@ -110,11 +110,11 @@ export class MemStorage implements IStorage {
       name: 'Admin User',
       role: 'admin' as const
     });
-    
+
     // Seed more data
     this.seedDemoData();
   }
-  
+
   private async seedDemoData() {
     // Add services
     const gardenMaintenanceId = this.serviceIdCounter;
@@ -126,7 +126,7 @@ export class MemStorage implements IStorage {
       imageUrl: null,
       featured: true
     });
-    
+
     await this.createService({
       name: "Landscape Design",
       description: "Transform your outdoor space with our professional landscape design services. We create beautiful, sustainable landscapes tailored to your preferences and local climate conditions.",
@@ -135,7 +135,7 @@ export class MemStorage implements IStorage {
       imageUrl: null,
       featured: true
     });
-    
+
     await this.createService({
       name: "Tree & Shrub Care",
       description: "Comprehensive care for your trees and shrubs, including pruning, fertilization, pest management, and disease treatment to ensure healthy growth and longevity.",
@@ -144,7 +144,7 @@ export class MemStorage implements IStorage {
       imageUrl: null,
       featured: true
     });
-    
+
     await this.createService({
       name: "Lawn Care",
       description: "Complete lawn maintenance services including mowing, fertilization, aeration, overseeding, and pest control to keep your lawn lush, green, and healthy.",
@@ -153,7 +153,7 @@ export class MemStorage implements IStorage {
       imageUrl: null,
       featured: false
     });
-    
+
     await this.createService({
       name: "Irrigation Systems",
       description: "Design, installation, and maintenance of efficient irrigation systems to ensure your garden gets the right amount of water while conserving this precious resource.",
@@ -162,7 +162,7 @@ export class MemStorage implements IStorage {
       imageUrl: null,
       featured: false
     });
-    
+
     // Add portfolio items
     await this.createPortfolioItem({
       title: "Residential Garden Renovation",
@@ -177,7 +177,7 @@ export class MemStorage implements IStorage {
       projectDuration: '3 weeks',
       difficultyLevel: 'Moderate'
     });
-    
+
     await this.createPortfolioItem({
       title: "Commercial Landscape Project",
       description: "Designed and implemented landscaping for a corporate campus, featuring drought-resistant plants and efficient irrigation systems.",
@@ -191,7 +191,7 @@ export class MemStorage implements IStorage {
       projectDuration: '6 weeks',
       difficultyLevel: 'Complex'
     });
-    
+
     // Add blog posts
     const now = new Date();
     await this.createBlogPost({
@@ -204,7 +204,7 @@ export class MemStorage implements IStorage {
       updatedAt: now,
       imageUrl: "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
     });
-    
+
     await this.createBlogPost({
       title: "Sustainable Gardening Practices",
       excerpt: "Learn how to create an eco-friendly garden that conserves water, supports local wildlife, and reduces environmental impact.",
@@ -215,7 +215,7 @@ export class MemStorage implements IStorage {
       updatedAt: now,
       imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
     });
-    
+
     // Add testimonials
     await this.createTestimonial({
       name: "Sarah Johnson",
@@ -225,7 +225,7 @@ export class MemStorage implements IStorage {
       rating: 5,
       displayOrder: 1
     });
-    
+
     await this.createTestimonial({
       name: "Michael Chen",
       role: "Business Owner",
@@ -234,7 +234,7 @@ export class MemStorage implements IStorage {
       rating: 5,
       displayOrder: 2
     });
-    
+
     await this.createTestimonial({
       name: "Emily Rodriguez",
       role: "Homeowner",
