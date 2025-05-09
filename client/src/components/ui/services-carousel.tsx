@@ -49,7 +49,6 @@ export function ServicesCarousel() {
         if (!autoPlay || !api) return;
         
         // Get the current scroll position
-        const scrollSnaps = api.scrollSnapList();
         const scrollProgress = api.scrollProgress();
         
         // Calculate a small increment for smooth scrolling
@@ -60,8 +59,8 @@ export function ServicesCarousel() {
         if (nextPosition >= 1) {
           api.scrollTo(0);
         } else {
-          // Otherwise continue smooth scrolling
-          api.scrollBy(0.0005, { duration: 16 });
+          // Otherwise continue smooth scrolling by using scrollTo with the calculated position
+          api.scrollTo(nextPosition);
         }
         
         animationRef.current = requestAnimationFrame(animate);
