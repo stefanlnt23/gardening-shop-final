@@ -236,12 +236,10 @@ export default function Home() {
           ) : testimonials.length > 0 ? (
             <div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                {/* Show 3 testimonials at a time, based on the active one */}
-                {[0, 1, 2].map((offset) => {
-                  const index = (activeTestimonial + offset) % testimonials.length;
-                  const testimonial = testimonials[index];
-                  
-                  return testimonial ? (
+                {/* Show testimonials with proper handling for fewer than 3 */}
+                {testimonials.length <= 3 ? (
+                  // If we have 3 or fewer testimonials, show them directly
+                  testimonials.map((testimonial) => (
                     <Card key={testimonial.id} className="shadow-lg transform transition-all duration-300 hover:scale-105">
                       <CardContent className="p-6">
                         <div className="flex flex-col items-center text-center space-y-4">
@@ -257,11 +255,11 @@ export default function Home() {
                             </div>
                           )}
                           <div className="flex items-center justify-center">
-                            {Array.from({ length: testimonial.rating }).map((_, i) => (
+                            {Array.from({ length: testimonial.rating || 5 }).map((_, i) => (
                               <i key={i} className="fas fa-star text-yellow-400 text-sm mr-0.5"></i>
                             ))}
                           </div>
-                          <blockquote className="text-lg italic text-gray-800">"{testimonial.comment}"</blockquote>
+                          <blockquote className="text-lg italic text-gray-800">"{testimonial.content}"</blockquote>
                           <div>
                             <p className="font-bold text-gray-900">{testimonial.name}</p>
                             {testimonial.company && (
@@ -271,8 +269,46 @@ export default function Home() {
                         </div>
                       </CardContent>
                     </Card>
-                  ) : null;
-                })}
+                  ))
+                ) : (
+                  // If we have more than 3 testimonials, show 3 at a time with pagination
+                  [0, 1, 2].map((offset) => {
+                    const index = (activeTestimonial + offset) % testimonials.length;
+                    const testimonial = testimonials[index];
+                    
+                    return testimonial ? (
+                      <Card key={`${testimonial.id}-${index}`} className="shadow-lg transform transition-all duration-300 hover:scale-105">
+                        <CardContent className="p-6">
+                          <div className="flex flex-col items-center text-center space-y-4">
+                            {testimonial.imageUrl ? (
+                              <img 
+                                src={testimonial.imageUrl} 
+                                alt={testimonial.name}
+                                className="w-16 h-16 object-cover rounded-full border-2 border-green-200"
+                              />
+                            ) : (
+                              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                                <i className="fas fa-user text-green-600 text-2xl"></i>
+                              </div>
+                            )}
+                            <div className="flex items-center justify-center">
+                              {Array.from({ length: testimonial.rating || 5 }).map((_, i) => (
+                                <i key={i} className="fas fa-star text-yellow-400 text-sm mr-0.5"></i>
+                              ))}
+                            </div>
+                            <blockquote className="text-lg italic text-gray-800">"{testimonial.content}"</blockquote>
+                            <div>
+                              <p className="font-bold text-gray-900">{testimonial.name}</p>
+                              {testimonial.company && (
+                                <p className="text-sm text-gray-600">{testimonial.company}</p>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ) : null;
+                  })
+                )}
               </div>
 
               {/* Pagination dots */}
