@@ -19,6 +19,7 @@ export function ServicesCarousel() {
   const [count, setCount] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
   const autoPlayIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const animationRef = useRef<number | null>(null);
 
   const { data: servicesData, isLoading } = useQuery({
     queryKey: ['/api/services'],
@@ -38,35 +39,79 @@ export function ServicesCarousel() {
     });
   }, [api]);
 
-  // Handle auto-play functionality
+  // Handle auto-play functionality with continuous smooth animation
   useEffect(() => {
+    if (!api || services.length <= 1) return;
+    
     const startAutoPlay = () => {
-      if (!autoPlay || !api || services.length <= 1) return;
-      
-      autoPlayIntervalRef.current = setInterval(() => {
-        if (current === count - 1) {
-          api.scrollTo(0);
-        } else {
-          api.scrollNext();
+      // Enable continuous smooth scrolling
+      api.scrollTo(0);
+      api.on('init', () => {
+        // Configure for continuous scrolling animation
+        if (autoPlay) {
+          api.setOptions({
+            loop: true,
+            dragFree: true,
+            watchDrag: false,
+            speed: 0.05, // Slower speed for smoother animation
+          });
+          
+          // Start continuous scrolling animation
+          const animate = () => {
+            if (!autoPlay || !api) return;
+            const scrollSnap = api.scrollSnapList();
+            const progress = api.scrollProgress();
+            
+            // Small incremental scroll for continuous animation
+            api.scrollTo(progress + 0.001, { duration: 16 });
+            animationRef.current = requestAnimationFrame(animate);
+          };
+          
+          animationRef.current = requestAnimationFrame(animate);
         }
-      }, 5000);
+      });
     };
 
     const stopAutoPlay = () => {
-      if (autoPlayIntervalRef.current) {
-        clearInterval(autoPlayIntervalRef.current);
-        autoPlayIntervalRef.current = null;
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
       }
     };
 
-    stopAutoPlay(); // Clear any existing interval
-    startAutoPlay(); // Start a new interval if autoPlay is true
+    // Setup animation frame reference
+    const animationRef = useRef<number | null>(null);
+
+    if (autoPlay) {
+      startAutoPlay();
+    } else {
+      stopAutoPlay();
+    }
 
     return () => stopAutoPlay();
-  }, [api, autoPlay, current, count, services.length]);
+  }, [api, autoPlay, services.length]);
 
-  const handleMouseEnter = () => setAutoPlay(false);
-  const handleMouseLeave = () => setAutoPlay(true);
+  const handleMouseEnter = () => {
+    setAutoPlay(false);
+    // Cancel any ongoing animation immediately
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+    // Stop the carousel movement completely
+    api?.setOptions({ speed: 1 });
+    api?.scrollTo(current);
+  };
+  
+  const handleMouseLeave = () => {
+    setAutoPlay(true);
+    // Set options back for smooth animation
+    api?.setOptions({ 
+      loop: true,
+      dragFree: true,
+      speed: 0.05
+    });
+  };
 
   if (isLoading) {
     return (
@@ -108,6 +153,9 @@ export function ServicesCarousel() {
         opts={{
           align: "start",
           loop: true,
+          skipSnaps: true,
+          dragFree: true,
+          inViewThreshold: 0.5,
         }}
         setApi={setApi}
         className="w-full"
