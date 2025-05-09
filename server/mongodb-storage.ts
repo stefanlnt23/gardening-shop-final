@@ -661,6 +661,10 @@ export class MongoDBStorage implements IStorage {
   // Carousel Images methods
   async getCarouselImages(): Promise<any[]> {
     try {
+      // Initialize the collection if it doesn't exist
+      if (!this.db.collection('carouselImages')) {
+        await this.db.db.createCollection('carouselImages');
+      }
       const images = await this.db.collection('carouselImages')
         .find({})
         .sort({ order: 1 })

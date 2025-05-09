@@ -33,6 +33,7 @@ const AdminBlogPostForm = React.lazy(() => import("@/pages/admin/BlogPostForm"))
 const AdminInquiries = React.lazy(() => import("@/pages/admin/Inquiries"));
 const AdminAppointments = React.lazy(() => import("@/pages/admin/Appointments"));
 const AdminAppointmentsForm = React.lazy(() => import("@/pages/admin/AppointmentsForm"));
+const AdminFrontPage = React.lazy(() => import("@/pages/admin/FrontPage"));
 
 function Router() {
   return (
@@ -141,6 +142,13 @@ function Router() {
       <Route path="/admin/appointments">
         <React.Suspense fallback={<div>Loading...</div>}>
           <AdminAppointments />
+        </React.Suspense>
+      </Route>
+
+      {/* Front Page Management */}
+      <Route path="/admin/frontpage">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AdminFrontPage />
         </React.Suspense>
       </Route>
 
