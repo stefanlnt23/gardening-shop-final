@@ -28,6 +28,7 @@ export default function MainNavigation() {
     { path: "/portfolio", label: "Portfolio" },
     { path: "/blog", label: "Blog" },
     { path: "/contact", label: "Contact" },
+    { path: "/admin", label: "Admin", className: "text-gray-500 hover:text-gray-700" },
   ];
 
   return (

@@ -39,44 +39,10 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [testimonials.length]);
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header/Navigation */}
-      <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-green-400 rounded-md flex items-center justify-center">
-                <i className="fas fa-leaf text-white text-lg"></i>
-              </div>
-              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">
-                Green Garden
-              </span>
-            </div>
-            
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/" className="text-green-700 font-medium">
-                Home
-              </Link>
-              <Link href="/blog" className="text-gray-700 hover:text-green-600 transition-colors">
-                Blog
-              </Link>
-              <Link href="/contact" className="text-gray-700 hover:text-green-600 transition-colors">
-                Contact
-              </Link>
-              <Link href="/admin" className="text-gray-700 hover:text-green-600 transition-colors">
-                Admin
-              </Link>
-            </nav>
-            
-            {/* Mobile menu button */}
-            <button className="md:hidden text-gray-700">
-              <i className="fas fa-bars text-xl"></i>
-            </button>
-          </div>
-        </div>
-      </header>
+  import MainLayout from "@/components/layouts/MainLayout";
+
+return (
+    <MainLayout>
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-green-50 to-green-100 py-20 md:py-32">
