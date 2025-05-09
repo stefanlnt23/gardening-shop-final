@@ -660,12 +660,20 @@ export default function AdminPortfolioForm() {
                             </div>
                           </div>
 
-                          <div>
+                          <div className="space-y-2">
                             <FormLabel>Caption</FormLabel>
                             <Input
-                              placeholder="Describe the transformation"
+                              placeholder="Short caption for the transformation"
                               value={pair.caption || ""}
                               onChange={(e) => updateImagePair(index, "caption", e.target.value, imagePairs, setImagePairs)}
+                            />
+                            
+                            <FormLabel>Detailed Description</FormLabel>
+                            <Textarea
+                              placeholder="Provide a detailed description of the transformation"
+                              className="min-h-[100px] mt-2"
+                              value={pair.richDescription || ""}
+                              onChange={(e) => updateImagePair(index, "richDescription", e.target.value, imagePairs, setImagePairs)}
                             />
                           </div>
                         </div>

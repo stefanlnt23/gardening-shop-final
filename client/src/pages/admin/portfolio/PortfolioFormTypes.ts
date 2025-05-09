@@ -15,6 +15,7 @@ export type ImagePair = {
   after: string;
   caption?: string;
   order: number;
+  richDescription?: string;
 };
 
 // Helper function to generate SEO tags from title and description
@@ -32,7 +33,7 @@ export const generateSeoTags = (
     });
     return;
   }
-  
+
   // Extract keywords from title and description
   const combinedText = `${title} ${description}`;
   const words = combinedText.toLowerCase().split(/\s+/);
@@ -40,28 +41,28 @@ export const generateSeoTags = (
   const filteredWords = words.filter(word => 
     word.length > 3 && !commonWords.includes(word)
   );
-  
+
   // Count word frequency
   const wordCount: Record<string, number> = {};
   filteredWords.forEach(word => {
     wordCount[word] = (wordCount[word] || 0) + 1;
   });
-  
+
   // Sort by frequency and get top 5
   const sortedWords = Object.entries(wordCount)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
     .map(entry => entry[0]);
-  
+
   // Add gardening-related keywords
   const gardeningKeywords = ["gardening", "landscaping", "plants", "garden", "outdoor"];
   const tags = Array.from(new Set([...sortedWords, ...gardeningKeywords])).slice(0, 8);
-  
+
   // Update form
   setValue("seo.tags", tags);
   setValue("seo.metaTitle", title);
   setValue("seo.metaDescription", description.substring(0, 160));
-  
+
   showToast({
     title: "SEO Tags Generated",
     description: "Tags have been generated based on your content",
@@ -140,7 +141,7 @@ export const moveImagePairDown = (
 
 export const updateImagePair = (
   index: number, 
-  field: keyof ImagePair, 
+  field: 'before' | 'after' | 'caption' | 'richDescription',
   value: string, 
   imagePairs: ImagePair[], 
   setImagePairs: React.Dispatch<React.SetStateAction<ImagePair[]>>

@@ -179,26 +179,10 @@ export default function PortfolioDetail() {
               </div>
             </div>
             
-            {/* Client Testimonial - if available */}
-            {portfolioItem.clientTestimonial?.clientName && portfolioItem.clientTestimonial?.displayPermission && (
-              <div className="mb-16">
-                <h2 className="text-2xl font-bold mb-6">Client Testimonial</h2>
-                <div className="bg-green-50 p-8 rounded-xl border border-green-100 relative">
-                  <div className="text-5xl text-green-500 opacity-20 absolute top-4 left-4">"</div>
-                  <blockquote className="text-xl italic text-gray-700 mb-6 relative z-10">
-                    {portfolioItem.clientTestimonial.comment}
-                  </blockquote>
-                  <div className="font-semibold text-right">
-                    — {portfolioItem.clientTestimonial.clientName}
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            {/* Before & After Transformations */}
+            {/* Before & After Transformations - Integrated into a continuous flow */}
             {portfolioItem.images && portfolioItem.images.length > 0 && (
               <div className="mb-16">
-                <h2 className="text-2xl font-bold mb-6">Project Transformations</h2>
+                <h2 className="text-2xl font-bold mb-6">Project Gallery</h2>
                 <div className="space-y-16">
                   {portfolioItem.images.map((image, index) => (
                     <div key={index} className="border border-green-100 rounded-xl overflow-hidden shadow-md">
@@ -207,37 +191,52 @@ export default function PortfolioDetail() {
                           {image.caption || `Transformation ${index + 1}`}
                         </h3>
                       </div>
-                      <div className="grid md:grid-cols-2 gap-0">
-                        <div className="p-6 border-r border-b md:border-b-0 border-green-100">
-                          <h4 className="text-lg font-medium mb-3 flex items-center">
-                            <span className="w-8 h-8 inline-flex items-center justify-center bg-gray-200 rounded-full mr-2 text-gray-600 text-sm">
-                              B
-                            </span>
-                            Before
-                          </h4>
-                          <div className="overflow-hidden rounded-lg border border-gray-200">
-                            <img 
-                              src={image.before} 
-                              alt={`Before ${image.caption || `Transformation ${index + 1}`}`} 
-                              className="w-full h-auto"
-                            />
+                      
+                      {/* Before-After comparison in a more integrated way */}
+                      <div className="p-6">
+                        <div className="grid md:grid-cols-2 gap-6 mb-6">
+                          <div>
+                            <h4 className="text-lg font-medium mb-3 flex items-center">
+                              <span className="w-8 h-8 inline-flex items-center justify-center bg-gray-200 rounded-full mr-2 text-gray-600 text-sm">
+                                B
+                              </span>
+                              Before
+                            </h4>
+                            <div className="overflow-hidden rounded-lg border border-gray-200">
+                              <img 
+                                src={image.before} 
+                                alt={`Before ${image.caption || `Transformation ${index + 1}`}`} 
+                                className="w-full h-auto"
+                              />
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h4 className="text-lg font-medium mb-3 flex items-center">
+                              <span className="w-8 h-8 inline-flex items-center justify-center bg-green-100 rounded-full mr-2 text-green-600 text-sm">
+                                A
+                              </span>
+                              After
+                            </h4>
+                            <div className="overflow-hidden rounded-lg border border-gray-200">
+                              <img 
+                                src={image.after} 
+                                alt={`After ${image.caption || `Transformation ${index + 1}`}`} 
+                                className="w-full h-auto"
+                              />
+                            </div>
                           </div>
                         </div>
-                        <div className="p-6">
-                          <h4 className="text-lg font-medium mb-3 flex items-center">
-                            <span className="w-8 h-8 inline-flex items-center justify-center bg-green-100 rounded-full mr-2 text-green-600 text-sm">
-                              A
-                            </span>
-                            After
-                          </h4>
-                          <div className="overflow-hidden rounded-lg border border-gray-200">
-                            <img 
-                              src={image.after} 
-                              alt={`After ${image.caption || `Transformation ${index + 1}`}`} 
-                              className="w-full h-auto"
-                            />
+                        
+                        {/* Rich text description */}
+                        {image.richDescription && (
+                          <div className="mt-4 bg-green-50 rounded-lg p-4 border border-green-100">
+                            <h4 className="text-lg font-medium mb-2">About This Transformation</h4>
+                            <div className="prose prose-sm prose-green max-w-none">
+                              <p className="whitespace-pre-line">{image.richDescription}</p>
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -246,7 +245,7 @@ export default function PortfolioDetail() {
             )}
             
             {/* Call to Action */}
-            <div className="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-xl border border-green-200 text-center shadow-md">
+            <div className="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-xl border border-green-200 text-center shadow-md mb-16">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Inspired by this project?</h2>
               <p className="text-lg text-gray-700 mb-6">
                 Let us transform your garden or outdoor space with our professional services.
@@ -267,12 +266,21 @@ export default function PortfolioDetail() {
               </div>
             </div>
             
-            {/* Related Projects - Placeholder for future implementation */}
-            {/* <div className="mt-16">
-              <h2 className="text-2xl font-bold mb-6">Related Projects</h2>
-              <div className="grid md:grid-cols-3 gap-6">
-                {/* Related projects would go here */}
-            {/* </div> */}
+            {/* Client Testimonial - Now at the bottom */}
+            {portfolioItem.clientTestimonial?.clientName && portfolioItem.clientTestimonial?.displayPermission && (
+              <div className="mb-16">
+                <h2 className="text-2xl font-bold mb-6">Client Feedback</h2>
+                <div className="bg-green-50 p-8 rounded-xl border border-green-100 relative">
+                  <div className="text-5xl text-green-500 opacity-20 absolute top-4 left-4">"</div>
+                  <blockquote className="text-xl italic text-gray-700 mb-6 relative z-10">
+                    {portfolioItem.clientTestimonial.comment}
+                  </blockquote>
+                  <div className="font-semibold text-right">
+                    — {portfolioItem.clientTestimonial.clientName}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
