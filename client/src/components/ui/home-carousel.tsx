@@ -37,11 +37,18 @@ export function HomeCarousel() {
     if (!autoPlay || images.length <= 1) return;
     
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+      const nextSlide = currentSlide === images.length - 1 ? 0 : currentSlide + 1;
+      setCurrentSlide(nextSlide);
+      
+      // Force carousel to scroll to the next slide
+      if (carouselImages?.images?.length > 0) {
+        const api = document.querySelector('.embla__viewport')?.__emblaApi__;
+        if (api) api.scrollTo(nextSlide);
+      }
     }, 5000);
     
     return () => clearInterval(interval);
-  }, [autoPlay, images.length]);
+  }, [autoPlay, images.length, currentSlide, carouselImages]);
 
   if (isLoading) {
     return (

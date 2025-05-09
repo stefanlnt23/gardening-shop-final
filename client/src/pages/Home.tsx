@@ -45,45 +45,75 @@ export default function Home() {
     <MainLayout>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-green-50 to-green-100 py-20 md:py-32">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-br from-green-50 to-green-100 py-20 md:py-32 relative overflow-hidden">
+        {/* Decorative Elements */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+          <div className="absolute -top-16 -left-16 w-64 h-64 rounded-full bg-green-300"></div>
+          <div className="absolute top-1/3 -right-24 w-96 h-96 rounded-full bg-green-200"></div>
+          <div className="absolute -bottom-20 left-1/4 w-72 h-72 rounded-full bg-green-400"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="md:w-1/2 mb-10 md:mb-0 md:pr-8">
+              <span className="inline-block px-4 py-1 rounded-full bg-green-100 text-green-600 text-sm font-medium mb-6">
+                Professional Garden Services
+              </span>
               <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight text-gray-900">
-                Transform Your Outdoor Space Into a <span className="text-green-600">Paradise</span>
+                Transform Your Outdoor Space Into a <span className="text-green-600 relative">
+                  Paradise
+                  <span className="absolute bottom-0 left-0 w-full h-2 bg-green-200 -z-10"></span>
+                </span>
               </h1>
               <p className="text-lg mb-8 text-gray-700 max-w-lg">
-                Professional gardening services to make your garden beautiful, sustainable, and thriving all year round.
+                Professional gardening services to make your garden beautiful, sustainable, and thriving all year round. Our expert team brings your garden dreams to life.
               </p>
-              <div className="flex space-x-4">
+              <div className="flex flex-wrap gap-4">
                 <Link href="/contact">
-                  <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3">
-                    Get a Quote
+                  <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all">
+                    Get a Free Quote
                   </Button>
                 </Link>
                 <Link href="/blog">
-                  <Button variant="outline" className="border-green-600 text-green-600 hover:bg-green-50 px-8 py-3">
+                  <Button variant="outline" className="border-green-600 text-green-600 hover:bg-green-50 px-8 py-3 rounded-full">
                     Learn More
                   </Button>
                 </Link>
               </div>
+              <div className="mt-8 flex items-center text-gray-600">
+                <span className="flex items-center mr-6">
+                  <i className="fas fa-check-circle text-green-500 mr-2"></i>
+                  Experienced Team
+                </span>
+                <span className="flex items-center">
+                  <i className="fas fa-check-circle text-green-500 mr-2"></i>
+                  Quality Guarantee
+                </span>
+              </div>
             </div>
             <div className="md:w-1/2">
-              <HomeCarousel />
+              <div className="shadow-2xl rounded-lg overflow-hidden border-8 border-white">
+                <HomeCarousel />
+              </div>
             </div>
           </div>
         </div>
       </section>
       
       {/* Services Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 bg-white relative">
+        <div className="absolute right-0 top-0 w-1/3 h-full bg-green-50 opacity-50 clip-path-slant"></div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold mb-4 text-gray-900">
+            <span className="inline-block px-4 py-1 rounded-full bg-green-100 text-green-600 text-sm font-medium mb-4">
+              Expert Services
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
               Our Services
             </h2>
-            <p className="text-gray-600">
-              We provide comprehensive gardening and landscaping services to keep your outdoor space beautiful and healthy.
+            <div className="w-24 h-1 bg-green-500 mx-auto mb-6"></div>
+            <p className="text-gray-600 text-lg">
+              We provide comprehensive gardening and landscaping services to keep your outdoor space beautiful and healthy throughout all seasons.
             </p>
           </div>
 
