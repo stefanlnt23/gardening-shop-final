@@ -9,15 +9,33 @@ import mongoose from 'mongoose';
 import { log } from './vite';
 import * as crypto from 'crypto';
 import { Db, ObjectId } from 'mongodb';
+import { Collection } from 'mongodb';
+
+export interface CarouselImage {
+  id: string;
+  imageUrl: string;
+  alt: string;
+  order: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface FeatureCard {
+  id: string;
+  imageUrl: string;
+  title: string;
+  description: string;
+  order: number;
+}
 
 export class MongoDBStorage implements IStorage {
   private db: any;
-  
+
   constructor() {
     // Initialize the database connection when the class is instantiated
     this.initDb();
   }
-  
+
   private async initDb() {
     try {
       // Get the database connection from mongoose
@@ -37,7 +55,7 @@ export class MongoDBStorage implements IStorage {
       log(`Error initializing database connection: ${error}`, 'mongodb');
     }
   }
-  
+
   // User operations
   async getUser(id: string | number): Promise<any | undefined> {
     try {
@@ -696,14 +714,14 @@ export class MongoDBStorage implements IStorage {
           return [];
         }
       }
-      
+
       // Check if collection exists and create it if not
       const collections = await this.db.listCollections({name: 'carouselImages'}).toArray();
       if (collections.length === 0) {
         await this.db.createCollection('carouselImages');
         log('Created carouselImages collection', 'mongodb');
       }
-      
+
       const images = await this.db.collection('carouselImages')
         .find({})
         .sort({ order: 1 })
@@ -733,14 +751,14 @@ export class MongoDBStorage implements IStorage {
           throw new Error('Database connection not initialized');
         }
       }
-      
+
       // Check if collection exists and create it if not
       const collections = await this.db.listCollections({name: 'carouselImages'}).toArray();
       if (collections.length === 0) {
         await this.db.createCollection('carouselImages');
         log('Created carouselImages collection', 'mongodb');
       }
-      
+
       // Get highest order to place new image at the end
       const highestOrderImage = await this.db.collection('carouselImages')
         .find({})
@@ -783,7 +801,7 @@ export class MongoDBStorage implements IStorage {
           throw new Error('Database connection not initialized');
         }
       }
-      
+
       // Find the image to get its order
       const image = await this.db.collection('carouselImages').findOne({ 
         _id: new ObjectId(id) 
@@ -819,7 +837,7 @@ export class MongoDBStorage implements IStorage {
           throw new Error('Database connection not initialized');
         }
       }
-      
+
       // Find the image
       const image = await this.db.collection('carouselImages').findOne({ 
         _id: new ObjectId(id) 
@@ -856,6 +874,174 @@ export class MongoDBStorage implements IStorage {
       throw error;
     }
   }
+
+    // Feature Cards methods
+    async getFeatureCards(): Promise<any[]> {
+        try {
+          if (!this.db) {
+            log('Database connection not initialized yet, initializing now...', 'mongodb');
+            await this.initDb();
+            if (!this.db) {
+              log('Could not initialize database connection', 'mongodb');
+              return [];
+            }
+          }
+    
+          // Check if collection exists and create it if not
+          const collections = await this.db.listCollections({name: 'featureCards'}).toArray();
+          if (collections.length === 0) {
+            await this.db.createCollection('featureCards');
+            log('Created featureCards collection', 'mongodb');
+          }
+    
+          const cards = await this.db.collection('featureCards')
+            .find({})
+            .sort({ order: 1 })
+            .toArray();
+    
+          return cards.map(card => ({
+            id: card._id.toString(),
+            imageUrl: card.imageUrl,
+            title: card.title,
+            description: card.description,
+            order: card.order,
+          }));
+        } catch (error) {
+          console.error("Error fetching feature cards:", error);
+          throw error;
+        }
+      }
+    
+      async addFeatureCard(card: { imageUrl: string; title: string; description: string }): Promise<any> {
+        try {
+          if (!this.db) {
+            log('Database connection not initialized yet, initializing now...', 'mongodb');
+            await this.initDb();
+            if (!this.db) {
+              log('Could not initialize database connection', 'mongodb');
+              throw new Error('Database connection not initialized');
+            }
+          }
+    
+          // Check if collection exists and create it if not
+          const collections = await this.db.listCollections({name: 'featureCards'}).toArray();
+          if (collections.length === 0) {
+            await this.db.createCollection('featureCards');
+            log('Created featureCards collection', 'mongodb');
+          }
+    
+          // Get highest order to place new card at the end
+          const highestOrderCard = await this.db.collection('featureCards')
+            .find({})
+            .sort({ order: -1 })
+            .limit(1)
+            .toArray();
+    
+          const nextOrder = highestOrderCard.length > 0 ? highestOrderCard[0].order + 1 : 0;
+    
+          const result = await this.db.collection('featureCards').insertOne({
+            imageUrl: card.imageUrl,
+            title: card.title,
+            description: card.description,
+            order: nextOrder,
+          });
+    
+          return {
+            id: result.insertedId.toString(),
+            imageUrl: card.imageUrl,
+            title: card.title,
+            description: card.description,
+            order: nextOrder,
+          };
+        } catch (error) {
+          console.error("Error adding feature card:", error);
+          throw error;
+        }
+      }
+    
+      async deleteFeatureCard(id: string): Promise<void> {
+        try {
+          if (!this.db) {
+            log('Database connection not initialized yet, initializing now...', 'mongodb');
+            await this.initDb();
+            if (!this.db) {
+              log('Database connection not initialized', 'mongodb');
+              throw new Error('Database connection not initialized');
+            }
+          }
+    
+          // Find the card to get its order
+          const card = await this.db.collection('featureCards').findOne({ 
+            _id: new ObjectId(id) 
+          });
+    
+          if (!card) {
+            throw new Error('Feature card not found');
+          }
+    
+          // Delete the card
+          await this.db.collection('featureCards').deleteOne({ 
+            _id: new ObjectId(id) 
+          });
+    
+          // Update order of remaining cards
+          await this.db.collection('featureCards').updateMany(
+            { order: { $gt: card.order } },
+            { $inc: { order: -1 } }
+          );
+        } catch (error) {
+          console.error(`Error deleting feature card ${id}:`, error);
+          throw error;
+        }
+      }
+    
+      async reorderFeatureCard(id: string, direction: 'up' | 'down'): Promise<void> {
+        try {
+          if (!this.db) {
+            log('Database connection not initialized yet, initializing now...', 'mongodb');
+            await this.initDb();
+            if (!this.db) {
+              log('Could not initialize database connection', 'mongodb');
+              throw new Error('Database connection not initialized');
+            }
+          }
+    
+          // Find the card
+          const card = await this.db.collection('featureCards').findOne({ 
+            _id: new ObjectId(id) 
+          });
+    
+          if (!card) {
+            throw new Error('Feature card not found');
+          }
+    
+          // Find adjacent card
+          const adjacentOrder = direction === 'up' ? card.order - 1 : card.order + 1;
+    
+          const adjacentCard = await this.db.collection('featureCards').findOne({ 
+            order: adjacentOrder 
+          });
+    
+          if (!adjacentCard) {
+            // No adjacent card, can't reorder
+            return;
+          }
+    
+          // Swap orders
+          await this.db.collection('featureCards').updateOne(
+            { _id: card._id },
+            { $set: { order: adjacentOrder } }
+          );
+    
+          await this.db.collection('featureCards').updateOne(
+            { _id: adjacentCard._id },
+            { $set: { order: card.order } }
+          );
+        } catch (error) {
+          console.error(`Error reordering feature card ${id}:`, error);
+          throw error;
+        }
+      }
 
   // Initialize demo data 
   async seedDemoData(): Promise<void> {
@@ -974,6 +1160,31 @@ export class MongoDBStorage implements IStorage {
           createdAt: now,
           updatedAt: now
         });
+
+            // Create feature cards
+            await this.addFeatureCard({
+                imageUrl: '/images/feature-cards/card1.jpg',
+                title: 'Expert Landscaping',
+                description: 'Transform your outdoor space with our expert landscaping services.'
+            });
+
+            await this.addFeatureCard({
+                imageUrl: '/images/feature-cards/card2.jpg',
+                title: 'Garden Design',
+                description: 'Create the garden of your dreams with our professional design services.'
+            });
+
+            await this.addFeatureCard({
+                imageUrl: '/images/feature-cards/card3.jpg',
+                title: 'Lawn Care',
+                description: 'Keep your lawn green and healthy with our comprehensive lawn care programs.'
+            });
+
+            await this.addFeatureCard({
+                imageUrl: '/images/feature-cards/card4.jpg',
+                title: 'Maintenance Services',
+                description: 'Enjoy a beautiful garden year-round with our maintenance services.'
+            });
 
         log('Demo data successfully seeded to MongoDB', 'mongodb');
       } else {

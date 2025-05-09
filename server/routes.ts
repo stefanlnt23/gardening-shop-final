@@ -583,20 +583,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch testimonials" });
     }
   });
-  
+
   // Get a specific testimonial by ID
   app.get("/api/admin/testimonials/:id", authenticateAdmin, async (req, res) => {
     try {
       const id = req.params.id;
       console.log(`Fetching testimonial with ID: ${id}`);
-      
+
       const testimonial = await storage.getTestimonial(id);
-      
+
       if (!testimonial) {
         console.log(`Testimonial with ID ${id} not found`);
         return res.status(404).json({ message: "Testimonial not found" });
       }
-      
+
       console.log(`Successfully found testimonial: ${testimonial.name}`);
       res.json({ testimonial });
     } catch (error) {
@@ -859,6 +859,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching carousel images:", error);
       res.status(500).json({ message: 'Failed to fetch carousel images' });
+    }
+  });
+
+  // Feature Cards endpoints
+  app.get('/api/feature-cards', async (req, res) => {
+    try {
+      const cards = await storage.getFeatureCards();
+      res.json({ cards });
+    ```text
+    } catch (error) {
+      console.error('Error fetching feature cards:', error);
+      res.status(500).json({ message: 'Failed to retrieve feature cards' });
     }
   });
 

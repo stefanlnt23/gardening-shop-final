@@ -5,7 +5,9 @@ import {
   type BlogPost, type InsertBlogPost,
   type Inquiry, type InsertInquiry,
   type Appointment, type InsertAppointment, 
-  type Testimonial, type InsertTestimonial
+  type Testimonial, type InsertTestimonial,
+  type CarouselImage,
+  type FeatureCard
 } from "@shared/schema";
 
 // Storage interface for all CRUD operations
@@ -32,8 +34,8 @@ export interface IStorage {
   getPortfolioItems(): Promise<PortfolioItem[]>;
   getPortfolioItemsByService(serviceId: number | string): Promise<PortfolioItem[]>;
   createPortfolioItem(portfolioItem: InsertPortfolioItem): Promise<PortfolioItem>;
-  updatePortfolioItem(id: number | string, portfolioItemData: Partial<InsertPortfolioItem>): Promise<PortfolioItem | undefined>;
-  deletePortfolioItem(id: number | string): Promise<boolean>;
+  updatePortfolioItem(id: string | number, portfolioItemData: Partial<InsertPortfolioItem>): Promise<PortfolioItem | undefined>;
+  deletePortfolioItem(id: string | number): Promise<boolean>;
 
   // Blog operations
   getBlogPost(id: string | number): Promise<BlogPost | undefined>;
@@ -62,6 +64,22 @@ export interface IStorage {
   createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial>;
   updateTestimonial(id: number | string, testimonialData: Partial<InsertTestimonial>): Promise<Testimonial | undefined>;
   deleteTestimonial(id: number | string): Promise<boolean>;
+
+  // Carousel Images
+  getCarouselImages(): Promise<CarouselImage[]>;
+  getCarouselImageById(id: string): Promise<CarouselImage | null>;
+  createCarouselImage(imageData: Omit<CarouselImage, 'id'>): Promise<CarouselImage>;
+  updateCarouselImage(id: string, imageData: Partial<CarouselImage>): Promise<boolean>;
+  deleteCarouselImage(id: string): Promise<boolean>;
+  reorderCarouselImage(id: string, direction: 'up' | 'down'): Promise<boolean>;
+
+  // Feature Cards
+  getFeatureCards(): Promise<FeatureCard[]>;
+  getFeatureCardById(id: string): Promise<FeatureCard | null>;
+  createFeatureCard(cardData: Omit<FeatureCard, 'id'>): Promise<FeatureCard>;
+  updateFeatureCard(id: string, cardData: Partial<FeatureCard>): Promise<boolean>;
+  deleteFeatureCard(id: string): Promise<boolean>;
+  reorderFeatureCard(id: string, direction: 'up' | 'down'): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -73,6 +91,8 @@ export class MemStorage implements IStorage {
   private inquiries: Map<string | number, Inquiry>;
   private appointments: Map<string | number, Appointment>;
   private testimonials: Map<string | number, Testimonial>;
+  private carouselImages: Map<string, CarouselImage>;
+  private featureCards: Map<string, FeatureCard>;
 
   // ID counters
   private userIdCounter: number;
@@ -82,6 +102,8 @@ export class MemStorage implements IStorage {
   private inquiryIdCounter: number;
   private appointmentIdCounter: number;
   private testimonialIdCounter: number;
+  private carouselImageIdCounter: number;
+  private featureCardIdCounter: number;
 
   constructor() {
     // Initialize maps
@@ -92,6 +114,8 @@ export class MemStorage implements IStorage {
     this.inquiries = new Map();
     this.appointments = new Map();
     this.testimonials = new Map();
+    this.carouselImages = new Map();
+    this.featureCards = new Map();
 
     // Initialize ID counters
     this.userIdCounter = 1;
@@ -101,6 +125,8 @@ export class MemStorage implements IStorage {
     this.inquiryIdCounter = 1;
     this.appointmentIdCounter = 1;
     this.testimonialIdCounter = 1;
+    this.carouselImageIdCounter = 1;
+    this.featureCardIdCounter = 1;
 
     // Add an admin user by default
     this.createUser({
@@ -241,6 +267,39 @@ export class MemStorage implements IStorage {
       content: "The landscape design service from Green Garden was excellent. They listened to our needs, worked within our budget, and created a sustainable garden that we love spending time in.",
       imageUrl: null,
       rating: 4,
+      displayOrder: 3
+    });
+
+      // Add carousel images
+    await this.createCarouselImage({
+      imageUrl: "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+      altText: "Beautiful Garden"
+    });
+
+    await this.createCarouselImage({
+      imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+      altText: "Green Plants"
+    });
+
+        // Add feature cards
+    await this.createFeatureCard({
+      imageUrl: "https://images.unsplash.com/photo-1592031830199-ca48fca22851?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      title: "Expert Landscaping",
+      description: "We offer expert landscaping services to transform your outdoor space into a beautiful oasis.",
+      displayOrder: 1
+    });
+
+    await this.createFeatureCard({
+      imageUrl: "https://images.unsplash.com/photo-1601498330075-434934f7538e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      title: "Professional Gardeners",
+      description: "Our professional gardeners are dedicated to providing top-notch gardening services.",
+      displayOrder: 2
+    });
+
+    await this.createFeatureCard({
+      imageUrl: "https://images.unsplash.com/photo-1587620962725-9e2569a7db67?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      title: "Sustainable Practices",
+      description: "We use sustainable gardening practices to protect the environment.",
       displayOrder: 3
     });
   }
@@ -508,6 +567,112 @@ export class MemStorage implements IStorage {
 
   async deleteTestimonial(id: string | number): Promise<boolean> {
     return this.testimonials.delete(id);
+  }
+
+    // Carousel Image methods
+  async getCarouselImages(): Promise<CarouselImage[]> {
+    return Array.from(this.carouselImages.values());
+  }
+
+  async getCarouselImageById(id: string): Promise<CarouselImage | null> {
+    return this.carouselImages.get(id) || null;
+  }
+
+  async createCarouselImage(imageData: Omit<CarouselImage, 'id'>): Promise<CarouselImage> {
+    const id = String(this.carouselImageIdCounter++);
+    const carouselImage: CarouselImage = { id, ...imageData };
+    this.carouselImages.set(id, carouselImage);
+    return carouselImage;
+  }
+
+  async updateCarouselImage(id: string, imageData: Partial<CarouselImage>): Promise<boolean> {
+    const carouselImage = this.carouselImages.get(id);
+    if (!carouselImage) return false;
+
+    const updatedCarouselImage = { ...carouselImage, ...imageData };
+    this.carouselImages.set(id, updatedCarouselImage);
+    return true;
+  }
+
+  async deleteCarouselImage(id: string): Promise<boolean> {
+    return this.carouselImages.delete(id);
+  }
+
+  async reorderCarouselImage(id: string, direction: 'up' | 'down'): Promise<boolean> {
+    const images = Array.from(this.carouselImages.values());
+    const index = images.findIndex(img => img.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    let newIndex = index + (direction === 'up' ? -1 : 1);
+
+    if (newIndex < 0 || newIndex >= images.length) {
+      return false;
+    }
+
+    // Swap the images in the array
+    [images[index], images[newIndex]] = [images[newIndex], images[index]];
+
+    // Update the map with the reordered images
+    this.carouselImages.clear();
+    images.forEach(img => this.carouselImages.set(img.id, img));
+
+    return true;
+  }
+
+  // Feature Card methods
+  async getFeatureCards(): Promise<FeatureCard[]> {
+    return Array.from(this.featureCards.values());
+  }
+
+  async getFeatureCardById(id: string): Promise<FeatureCard | null> {
+    return this.featureCards.get(id) || null;
+  }
+
+  async createFeatureCard(cardData: Omit<FeatureCard, 'id'>): Promise<FeatureCard> {
+    const id = String(this.featureCardIdCounter++);
+    const featureCard: FeatureCard = { id, ...cardData };
+    this.featureCards.set(id, featureCard);
+    return featureCard;
+  }
+
+  async updateFeatureCard(id: string, cardData: Partial<FeatureCard>): Promise<boolean> {
+    const featureCard = this.featureCards.get(id);
+    if (!featureCard) return false;
+
+    const updatedFeatureCard = { ...featureCard, ...cardData };
+    this.featureCards.set(id, updatedFeatureCard);
+    return true;
+  }
+
+  async deleteFeatureCard(id: string): Promise<boolean> {
+    return this.featureCards.delete(id);
+  }
+
+  async reorderFeatureCard(id: string, direction: 'up' | 'down'): Promise<boolean> {
+    const cards = Array.from(this.featureCards.values());
+    const index = cards.findIndex(card => card.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    let newIndex = index + (direction === 'up' ? -1 : 1);
+
+    if (newIndex < 0 || newIndex >= cards.length) {
+      return false;
+    }
+
+    // Swap the cards in the array
+    [cards[index], cards[newIndex]] = [cards[newIndex], cards[index]];
+
+    // Update the map with the reordered cards
+    this.featureCards.clear();
+    cards.forEach(card => this.featureCards.set(card.id, card));
+
+    return true;
   }
 }
 

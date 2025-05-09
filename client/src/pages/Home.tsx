@@ -7,6 +7,42 @@ import MainLayout from "@/components/layouts/MainLayout";
 import { HomeCarousel } from "@/components/ui/home-carousel";
 import { ServicesCarousel } from "@/components/ui/services-carousel";
 
+// Default feature cards as fallback
+const defaultFeatureCards = [
+  {
+    id: "1",
+    title: "Expert Gardeners",
+    description: "Our team consists of certified and experienced gardening professionals",
+    icon: "fa-check",
+    imageUrl: "https://images.unsplash.com/photo-1590682680695-43b964a3ae17?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+    order: 1
+  },
+  {
+    id: "2",
+    title: "Eco-Friendly Practices",
+    description: "We use sustainable methods and materials in all our garden work",
+    icon: "fa-leaf",
+    imageUrl: "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+    order: 2
+  },
+  {
+    id: "3",
+    title: "Reliable Service",
+    description: "Always on time with consistent, dependable garden maintenance",
+    icon: "fa-calendar-check",
+    imageUrl: "https://images.unsplash.com/photo-1557429287-b2e26467fc2b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+    order: 3
+  },
+  {
+    id: "4",
+    title: "Satisfaction Guaranteed",
+    description: "We stand behind our work with a 100% satisfaction guarantee",
+    icon: "fa-award",
+    imageUrl: "https://images.unsplash.com/photo-1589923188900-85e90f6f61c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+    order: 4
+  }
+];
+
 export default function Home() {
   // State for the testimonial carousel
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -28,6 +64,15 @@ export default function Home() {
 
   // Testimonials
   const testimonials = testimonialsData?.testimonials || [];
+  
+  // Get feature cards
+  const { data: featureCardsData } = useQuery({
+    queryKey: ['/api/feature-cards'],
+    refetchOnWindowFocus: false,
+  });
+  
+  // Feature cards with fallback to defaults if none exist
+  const featureCards = featureCardsData?.cards?.length ? featureCardsData.cards : defaultFeatureCards;
 
   // Auto-rotate testimonials
   useEffect(() => {
@@ -151,7 +196,7 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-20 bg-white">
+      <section className="py-24 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl font-bold mb-4 text-gray-900">Why Choose Us</h2>
@@ -160,41 +205,26 @@ export default function Home() {
             </p>
           </div>
           
+          {/* Feature Cards with Images */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            <div className="bg-green-50 p-6 rounded-xl border border-green-100 text-center hover:shadow-md transition-shadow">
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-check text-green-600 text-xl"></i>
+            {featureCards.map((card) => (
+              <div key={card.id} className="relative group overflow-hidden rounded-xl border-2 border-green-100 shadow-md hover:shadow-xl transition-all duration-300 h-80">
+                <div className="absolute inset-0 bg-cover bg-center" 
+                  style={{ backgroundImage: `url(${card.imageUrl})` }}>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-green-900 via-green-900/70 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                <div className="absolute inset-0 flex flex-col items-center justify-end p-6 text-center">
+                  <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center mb-4 shadow-lg">
+                    <i className={`fas ${card.icon} text-green-600 text-xl`}></i>
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2 drop-shadow-md">{card.title}</h3>
+                  <p className="text-green-50 text-sm mb-4 max-w-[85%] leading-snug drop-shadow-md">{card.description}</p>
+                </div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Expert Gardeners</h3>
-              <p className="text-gray-600">Our team consists of certified and experienced gardening professionals</p>
-            </div>
-            
-            <div className="bg-green-50 p-6 rounded-xl border border-green-100 text-center hover:shadow-md transition-shadow">
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-leaf text-green-600 text-xl"></i>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Eco-Friendly Practices</h3>
-              <p className="text-gray-600">We use sustainable methods and materials in all our garden work</p>
-            </div>
-            
-            <div className="bg-green-50 p-6 rounded-xl border border-green-100 text-center hover:shadow-md transition-shadow">
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-calendar-check text-green-600 text-xl"></i>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Reliable Service</h3>
-              <p className="text-gray-600">Always on time with consistent, dependable garden maintenance</p>
-            </div>
-            
-            <div className="bg-green-50 p-6 rounded-xl border border-green-100 text-center hover:shadow-md transition-shadow">
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-award text-green-600 text-xl"></i>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Satisfaction Guaranteed</h3>
-              <p className="text-gray-600">We stand behind our work with a 100% satisfaction guarantee</p>
-            </div>
+            ))}
           </div>
           
-          <div className="mt-10 text-center">
+          <div className="mt-12 text-center">
             <Link href="/services">
               <Button className="bg-green-600 hover:bg-green-700">
                 Explore Our Services

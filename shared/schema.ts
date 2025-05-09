@@ -34,7 +34,7 @@ export const portfolioItems = pgTable("portfolio_items", {
   imageUrl: text("image_url"),
   serviceId: integer("service_id").references(() => services.id),
   date: timestamp("date").notNull(),
-  
+
   // Additional fields will be handled in MongoDB schema
   // These are placeholders for the SQL schema
   location: text("location"),
@@ -74,7 +74,7 @@ export const appointments = pgTable("appointments", {
   name: text("name").notNull(),
   email: text("email").notNull(),
   phone: text("phone").notNull(),
-  
+
   // Address information
   buildingName: text("building_name"),
   streetName: text("street_name").notNull(),
@@ -82,12 +82,12 @@ export const appointments = pgTable("appointments", {
   city: text("city").notNull(),
   county: text("county").notNull(),
   postalCode: text("postal_code").notNull(),
-  
+
   // Appointment details
   serviceId: integer("service_id").references(() => services.id).notNull(),
   date: timestamp("date").notNull(),
   priority: text("priority").default("Normal"),
-  
+
   // Admin fields
   notes: text("notes"),
   status: text("status").default("Scheduled"),
@@ -149,10 +149,10 @@ const seoSchema = z.object({
 const portfolioItemBaseSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  
+
   // Legacy field for backward compatibility
   imageUrl: z.string().optional(),
-  
+
   // New fields
   images: z.array(imagePairSchema).optional(),
   serviceId: z.union([z.string(), z.number()]),
@@ -205,7 +205,7 @@ const appointmentBaseSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Valid email is required"),
   phone: z.string().min(10, "Phone number must be at least 10 characters"),
-  
+
   // Address information
   buildingName: z.string().optional().nullable(),
   streetName: z.string().min(1, "Street name is required"),
@@ -213,12 +213,12 @@ const appointmentBaseSchema = z.object({
   city: z.string().min(1, "City/Town is required"),
   county: z.string().min(1, "County/Region is required"),
   postalCode: z.string().min(1, "Postal code is required"),
-  
+
   // Appointment details
   serviceId: z.union([z.string(), z.number()]),
   date: z.union([z.string(), z.date()]).transform(val => new Date(val)),
   priority: z.enum(["Normal", "Urgent"]).default("Normal"),
-  
+
   // Admin fields
   notes: z.string().optional().nullable(),
   status: z.enum(["Scheduled", "Completed", "Cancelled", "Rescheduled"]).default("Scheduled")
@@ -239,6 +239,24 @@ const testimonialBaseSchema = z.object({
 
 // Export the schema for use in validation
 export const insertTestimonialSchema = testimonialBaseSchema;
+
+// Carousel Images
+export interface CarouselImage {
+  id: string;
+  imageUrl: string;
+  alt: string;
+  order: number;
+}
+
+// Feature Cards
+export interface FeatureCard {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  imageUrl: string;
+  order: number;
+}
 
 // Export types
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -314,7 +332,7 @@ export type Appointment = {
   name: string;
   email: string;
   phone: string;
-  
+
   // Address information
   buildingName?: string | null;
   streetName: string;
@@ -322,16 +340,16 @@ export type Appointment = {
   city: string;
   county: string;
   postalCode: string;
-  
+
   // Appointment details
   serviceId: string | number;
   date: Date;
   priority: "Normal" | "Urgent";
-  
+
   // Admin fields
   notes?: string | null;
   status: "Scheduled" | "Completed" | "Cancelled" | "Rescheduled";
-  
+
   // Metadata
   createdAt?: Date;
   updatedAt?: Date;

@@ -1,3 +1,7 @@
+` tags.
+
+```python
+<replit_final_file>
 import React from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
@@ -20,6 +24,9 @@ import Appointment from "@/pages/Appointment";
 // Admin Page imports
 import AdminLogin from "@/pages/admin/Login";
 import AdminDashboard from "@/pages/admin/Dashboard";
+import FrontPage from './pages/admin/FrontPage';
+import FeatureCards from './pages/admin/FeatureCards';
+import ServicesForm from './pages/admin/ServicesForm';
 
 // Lazy load admin pages to improve initial load time
 const AdminServices = React.lazy(() => import("@/pages/admin/Services"));
@@ -149,6 +156,11 @@ function Router() {
       <Route path="/admin/frontpage">
         <React.Suspense fallback={<div>Loading...</div>}>
           <AdminFrontPage />
+        </React.Suspense>
+      </Route>
+      <Route path="/admin/feature-cards">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <FeatureCards />
         </React.Suspense>
       </Route>
 
