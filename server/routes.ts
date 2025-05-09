@@ -867,7 +867,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const cards = await storage.getFeatureCards();
       res.json({ cards });
-    ```text
     } catch (error) {
       console.error('Error fetching feature cards:', error);
       res.status(500).json({ message: 'Failed to retrieve feature cards' });
