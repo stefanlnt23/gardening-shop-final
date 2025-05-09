@@ -245,9 +245,9 @@ export default function Home() {
                     <Card key={testimonial.id} className="shadow-lg transform transition-all duration-300 hover:scale-105">
                       <CardContent className="p-6">
                         <div className="flex flex-col items-center text-center space-y-4">
-                          {testimonial.photoUrl ? (
+                          {testimonial.imageUrl ? (
                             <img 
-                              src={testimonial.photoUrl} 
+                              src={testimonial.imageUrl} 
                               alt={testimonial.name}
                               className="w-16 h-16 object-cover rounded-full border-2 border-green-200"
                             />
