@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
 
 export default function PortfolioDetail() {
   const { id } = useParams();
@@ -104,10 +105,9 @@ export default function PortfolioDetail() {
             <div className="mb-12">
               {portfolioItem.imageUrl && (
                 <div className="rounded-xl overflow-hidden shadow-xl mb-6">
-                  <img 
-                    src={portfolioItem.imageUrl} 
+                  <ImageLightbox 
+                    image={portfolioItem.imageUrl} 
                     alt={portfolioItem.title} 
-                    className="w-full h-auto"
                   />
                 </div>
               )}
@@ -203,10 +203,9 @@ export default function PortfolioDetail() {
                               Before
                             </h4>
                             <div className="overflow-hidden rounded-lg border border-gray-200">
-                              <img 
-                                src={image.before} 
+                              <ImageLightbox 
+                                image={image.before} 
                                 alt={`Before ${image.caption || `Transformation ${index + 1}`}`} 
-                                className="w-full h-auto"
                               />
                             </div>
                           </div>
@@ -219,10 +218,9 @@ export default function PortfolioDetail() {
                               After
                             </h4>
                             <div className="overflow-hidden rounded-lg border border-gray-200">
-                              <img 
-                                src={image.after} 
+                              <ImageLightbox 
+                                image={image.after} 
                                 alt={`After ${image.caption || `Transformation ${index + 1}`}`} 
-                                className="w-full h-auto"
                               />
                             </div>
                           </div>
