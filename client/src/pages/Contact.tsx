@@ -480,6 +480,6 @@ export default function Contact() {
           </div>
         </div>
       </footer>
-    </div>
+    </MainLayout>
   );
 }
