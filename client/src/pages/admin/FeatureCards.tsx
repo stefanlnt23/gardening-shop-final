@@ -197,10 +197,10 @@ export default function FeatureCards() {
 
   const startEdit = (card: FeatureCard) => {
     setEditMode(card.id);
-    setEditTitle(card.title);
-    setEditDescription(card.description);
-    setEditIcon(card.icon);
-    setEditImageUrl(card.imageUrl);
+    setEditTitle(card.title || '');
+    setEditDescription(card.description || '');
+    setEditIcon(card.icon || 'fa-check');
+    setEditImageUrl(card.imageUrl || '');
   };
 
   const cancelEdit = () => {
