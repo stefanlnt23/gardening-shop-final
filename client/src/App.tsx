@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
@@ -23,7 +22,6 @@ import AdminLogin from "@/pages/admin/Login";
 import AdminDashboard from "@/pages/admin/Dashboard";
 import FrontPage from './pages/admin/FrontPage';
 import FeatureCards from './pages/admin/FeatureCards';
-import ServicesForm from './pages/admin/ServicesForm';
 
 // Lazy load admin pages to improve initial load time
 const AdminServices = React.lazy(() => import("@/pages/admin/Services"));
@@ -38,6 +36,7 @@ const AdminInquiries = React.lazy(() => import("@/pages/admin/Inquiries"));
 const AdminAppointments = React.lazy(() => import("@/pages/admin/Appointments"));
 const AdminAppointmentsForm = React.lazy(() => import("@/pages/admin/AppointmentsForm"));
 const AdminFrontPage = React.lazy(() => import("@/pages/admin/FrontPage"));
+const AdminFeatureCards = React.lazy(() => import("@/pages/admin/FeatureCards"));
 
 function Router() {
   return (
@@ -107,6 +106,16 @@ function Router() {
           <AdminTestimonials />
         </React.Suspense>
       </Route>
+          <Route path="/admin/frontpage">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AdminFrontPage />
+        </React.Suspense>
+      </Route>
+      <Route path="/admin/feature-cards">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AdminFeatureCards />
+        </React.Suspense>
+      </Route>
 
       {/* Admin Blog Posts */}
       <Route path="/admin/blog/new">
@@ -149,17 +158,7 @@ function Router() {
         </React.Suspense>
       </Route>
 
-      {/* Front Page Management */}
-      <Route path="/admin/frontpage">
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <AdminFrontPage />
-        </React.Suspense>
-      </Route>
-      <Route path="/admin/feature-cards">
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <FeatureCards />
-        </React.Suspense>
-      </Route>
+
 
       {/* 404 Route */}
       <Route component={NotFound} />

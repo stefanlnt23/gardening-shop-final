@@ -873,6 +873,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Feature Cards endpoints
+  app.get('/api/admin/feature-cards', requireAdmin, async (req, res) => {
+    try {
+      const cards = await storage.getFeatureCards();
+      res.json({ cards });
+    } catch (error) {
+      console.error('Error fetching feature cards for admin:', error);
+      res.status(500).json({ message: 'Failed to fetch feature cards' });
+    }
+  });
+
+  app.post('/api/admin/feature-cards', requireAdmin, async (req, res) => {
+    try {
+      const { title, description, icon, imageUrl } = req.body;
+
+      if (!title || !description || !icon || !imageUrl) {
+        return res.status(400).json({ message: 'All fields are required' });
+      }
+
+      const newCard = await storage.addFeatureCard({ title, description, icon, imageUrl });
+      res.status(201).json({ success: true, card: newCard });
+    } catch (error) {
+      console.error("Error adding feature card:", error);
+      res.status(500).json({ message: 'Failed to add feature card' });
+    }
+  });
+
+  app.put('/api/admin/feature-cards/:id', requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { title, description, icon, imageUrl } = req.body;
+      
+      // Update feature card implementation
+      res.json({ success: true });
+    } catch (error) {
+      console.error(`Error updating feature card ${req.params.id}:`, error);
+      res.status(500).json({ message: 'Failed to update feature card' });
+    }
+  });
+
+  app.delete('/api/admin/feature-cards/:id', requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteFeatureCard(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error(`Error deleting feature card ${req.params.id}:`, error);
+      res.status(500).json({ message: 'Failed to delete feature card' });
+    }
+  });
+
+  app.put('/api/admin/feature-cards/:id/reorder', requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { direction } = req.body;
+
+      if (!direction || !['up', 'down'].includes(direction)) {
+        return res.status(400).json({ message: 'Valid direction (up/down) is required' });
+      }
+
+      await storage.reorderFeatureCard(id, direction);
+      res.json({ success: true });
+    } catch (error) {
+      console.error(`Error reordering feature card ${req.params.id}:`, error);
+      res.status(500).json({ message: 'Failed to reorder feature card' });
+    }
+  });
+
   // Admin routes for carousel images
   async function requireAdmin(req: Request, res: Response, next: NextFunction) {
       // Placeholder for admin check
