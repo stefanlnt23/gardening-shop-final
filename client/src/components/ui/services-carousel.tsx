@@ -44,31 +44,31 @@ export function ServicesCarousel() {
     if (!api || services.length <= 1) return;
     
     const startAutoPlay = () => {
-      // Enable continuous smooth scrolling
-      api.scrollTo(0);
-      api.on('init', () => {
-        // Configure for continuous scrolling animation
-        if (autoPlay) {
-          api.setOptions({
-            loop: true,
-            dragFree: true,
-            watchDrag: false,
-            speed: 0.05, // Slower speed for smoother animation
-          });
-          
-          // Start continuous scrolling animation
-          const animate = () => {
-            if (!autoPlay || !api) return;
-            const progress = api.scrollProgress();
-            
-            // Small incremental scroll for continuous animation
-            api.scrollTo(progress + 0.001, { duration: 16 });
-            animationRef.current = requestAnimationFrame(animate);
-          };
-          
-          animationRef.current = requestAnimationFrame(animate);
+      // Start continuous scrolling animation
+      const animate = () => {
+        if (!autoPlay || !api) return;
+        
+        // Get the current scroll position
+        const scrollSnaps = api.scrollSnapList();
+        const scrollProgress = api.scrollProgress();
+        
+        // Calculate a small increment for smooth scrolling
+        // This creates a continuous scrolling effect
+        const nextPosition = scrollProgress + 0.0005;
+        
+        // If we're at the end, loop back to start
+        if (nextPosition >= 1) {
+          api.scrollTo(0);
+        } else {
+          // Otherwise continue smooth scrolling
+          api.scrollBy(0.0005, { duration: 16 });
         }
-      });
+        
+        animationRef.current = requestAnimationFrame(animate);
+      };
+      
+      // Initialize position and start animation
+      animationRef.current = requestAnimationFrame(animate);
     };
 
     const stopAutoPlay = () => {
@@ -79,6 +79,7 @@ export function ServicesCarousel() {
     };
 
     if (autoPlay) {
+      stopAutoPlay(); // Clear any existing animation frame
       startAutoPlay();
     } else {
       stopAutoPlay();
@@ -94,19 +95,10 @@ export function ServicesCarousel() {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
     }
-    // Stop the carousel movement completely
-    api?.setOptions({ speed: 1 });
-    api?.scrollTo(current);
   };
   
   const handleMouseLeave = () => {
     setAutoPlay(true);
-    // Set options back for smooth animation
-    api?.setOptions({ 
-      loop: true,
-      dragFree: true,
-      speed: 0.05
-    });
   };
 
   if (isLoading) {
@@ -149,8 +141,8 @@ export function ServicesCarousel() {
         opts={{
           align: "start",
           loop: true,
-          skipSnaps: true,
           dragFree: true,
+          containScroll: "trimSnaps",
           inViewThreshold: 0.5,
         }}
         setApi={setApi}
