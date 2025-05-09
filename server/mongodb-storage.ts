@@ -11,6 +11,33 @@ import * as crypto from 'crypto';
 import { Db, ObjectId } from 'mongodb';
 
 export class MongoDBStorage implements IStorage {
+  private db: any;
+  
+  constructor() {
+    // Initialize the database connection when the class is instantiated
+    this.initDb();
+  }
+  
+  private async initDb() {
+    try {
+      // Get the database connection from mongoose
+      const connection = mongoose.connection;
+      if (connection.readyState === 1) { // 1 = connected
+        this.db = connection.db;
+        log('MongoDB storage: Database connection initialized', 'mongodb');
+      } else {
+        log('MongoDB storage: Waiting for database connection...', 'mongodb');
+        // Set up event handler for when connection is established
+        mongoose.connection.once('connected', () => {
+          this.db = mongoose.connection.db;
+          log('MongoDB storage: Database connection initialized', 'mongodb');
+        });
+      }
+    } catch (error) {
+      log(`Error initializing database connection: ${error}`, 'mongodb');
+    }
+  }
+  
   // User operations
   async getUser(id: string | number): Promise<any | undefined> {
     try {
@@ -661,10 +688,22 @@ export class MongoDBStorage implements IStorage {
   // Carousel Images methods
   async getCarouselImages(): Promise<any[]> {
     try {
-      // Initialize the collection if it doesn't exist
-      if (!this.db.collection('carouselImages')) {
-        await this.db.db.createCollection('carouselImages');
+      if (!this.db) {
+        log('Database connection not initialized yet, initializing now...', 'mongodb');
+        await this.initDb();
+        if (!this.db) {
+          log('Could not initialize database connection', 'mongodb');
+          return [];
+        }
       }
+      
+      // Check if collection exists and create it if not
+      const collections = await this.db.listCollections({name: 'carouselImages'}).toArray();
+      if (collections.length === 0) {
+        await this.db.createCollection('carouselImages');
+        log('Created carouselImages collection', 'mongodb');
+      }
+      
       const images = await this.db.collection('carouselImages')
         .find({})
         .sort({ order: 1 })
@@ -686,6 +725,22 @@ export class MongoDBStorage implements IStorage {
 
   async addCarouselImage(image: { imageUrl: string; alt?: string }): Promise<any> {
     try {
+      if (!this.db) {
+        log('Database connection not initialized yet, initializing now...', 'mongodb');
+        await this.initDb();
+        if (!this.db) {
+          log('Could not initialize database connection', 'mongodb');
+          throw new Error('Database connection not initialized');
+        }
+      }
+      
+      // Check if collection exists and create it if not
+      const collections = await this.db.listCollections({name: 'carouselImages'}).toArray();
+      if (collections.length === 0) {
+        await this.db.createCollection('carouselImages');
+        log('Created carouselImages collection', 'mongodb');
+      }
+      
       // Get highest order to place new image at the end
       const highestOrderImage = await this.db.collection('carouselImages')
         .find({})
@@ -720,6 +775,15 @@ export class MongoDBStorage implements IStorage {
 
   async deleteCarouselImage(id: string): Promise<void> {
     try {
+      if (!this.db) {
+        log('Database connection not initialized yet, initializing now...', 'mongodb');
+        await this.initDb();
+        if (!this.db) {
+          log('Could not initialize database connection', 'mongodb');
+          throw new Error('Database connection not initialized');
+        }
+      }
+      
       // Find the image to get its order
       const image = await this.db.collection('carouselImages').findOne({ 
         _id: new ObjectId(id) 
@@ -747,6 +811,15 @@ export class MongoDBStorage implements IStorage {
 
   async reorderCarouselImage(id: string, direction: 'up' | 'down'): Promise<void> {
     try {
+      if (!this.db) {
+        log('Database connection not initialized yet, initializing now...', 'mongodb');
+        await this.initDb();
+        if (!this.db) {
+          log('Could not initialize database connection', 'mongodb');
+          throw new Error('Database connection not initialized');
+        }
+      }
+      
       // Find the image
       const image = await this.db.collection('carouselImages').findOne({ 
         _id: new ObjectId(id) 
