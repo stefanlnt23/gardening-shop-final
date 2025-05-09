@@ -42,39 +42,35 @@ export function ServicesCarousel() {
   useEffect(() => {
     if (!api || services.length <= 1) return;
     
+    let intervalId: number | null = null;
+    
     const startAutoPlay = () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
+      // Clear any previous interval
+      if (intervalId) {
+        clearInterval(intervalId);
       }
       
-      const animate = () => {
+      // Set up a constant interval for smooth animation
+      intervalId = window.setInterval(() => {
         if (!autoPlay || !api) return;
-
-        // Move to next slide with smooth animation
-        const nextIndex = (current + 1) % count;
-        api.scrollTo(nextIndex, { duration: 2000 });
         
-        // Schedule the next scroll after the animation completes
-        animationRef.current = window.setTimeout(() => {
-          if (autoPlay) {
-            animationRef.current = requestAnimationFrame(animate);
-          }
-        }, 3000);
-      };
-      
-      animationRef.current = requestAnimationFrame(animate);
+        // Get the next index
+        const nextIndex = (current + 1) % count;
+        
+        // Scroll to the next index with a slow, smooth animation
+        api.scrollTo(nextIndex, { duration: 800 });
+      }, 4000); // Longer interval between slides
     };
 
     const stopAutoPlay = () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-        clearTimeout(animationRef.current);
-        animationRef.current = null;
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
       }
     };
 
     if (autoPlay) {
-      stopAutoPlay();
+      stopAutoPlay(); // Clear any existing interval
       startAutoPlay();
     } else {
       stopAutoPlay();
