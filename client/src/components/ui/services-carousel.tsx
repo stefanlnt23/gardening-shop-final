@@ -18,7 +18,6 @@ export function ServicesCarousel() {
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
-  const autoPlayIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const animationRef = useRef<number | null>(null);
 
   const { data: servicesData, isLoading } = useQuery({
@@ -39,59 +38,57 @@ export function ServicesCarousel() {
     });
   }, [api]);
 
-  // Handle auto-play functionality with continuous smooth animation
+  // Handle auto-play functionality
   useEffect(() => {
     if (!api || services.length <= 1) return;
     
     const startAutoPlay = () => {
-      // Start continuous scrolling animation
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      
       const animate = () => {
         if (!autoPlay || !api) return;
+
+        // Move to next slide with smooth animation
+        const nextIndex = (current + 1) % count;
+        api.scrollTo(nextIndex, { duration: 2000 });
         
-        // Get the current scroll position
-        const scrollProgress = api.scrollProgress();
-        
-        // Calculate a small increment for smooth scrolling
-        // This creates a continuous scrolling effect
-        const nextPosition = scrollProgress + 0.0005;
-        
-        // If we're at the end, loop back to start
-        if (nextPosition >= 1) {
-          api.scrollTo(0);
-        } else {
-          // Otherwise continue smooth scrolling by using scrollTo with the calculated position
-          api.scrollTo(nextPosition);
-        }
-        
-        animationRef.current = requestAnimationFrame(animate);
+        // Schedule the next scroll after the animation completes
+        animationRef.current = window.setTimeout(() => {
+          if (autoPlay) {
+            animationRef.current = requestAnimationFrame(animate);
+          }
+        }, 3000);
       };
       
-      // Initialize position and start animation
       animationRef.current = requestAnimationFrame(animate);
     };
 
     const stopAutoPlay = () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
+        clearTimeout(animationRef.current);
         animationRef.current = null;
       }
     };
 
     if (autoPlay) {
-      stopAutoPlay(); // Clear any existing animation frame
+      stopAutoPlay();
       startAutoPlay();
     } else {
       stopAutoPlay();
     }
 
     return () => stopAutoPlay();
-  }, [api, autoPlay, services.length]);
+  }, [api, autoPlay, services.length, current, count]);
 
   const handleMouseEnter = () => {
     setAutoPlay(false);
     // Cancel any ongoing animation immediately
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
+      clearTimeout(animationRef.current);
       animationRef.current = null;
     }
   };
@@ -141,8 +138,6 @@ export function ServicesCarousel() {
           align: "start",
           loop: true,
           dragFree: true,
-          containScroll: "trimSnaps",
-          inViewThreshold: 0.5,
         }}
         setApi={setApi}
         className="w-full"

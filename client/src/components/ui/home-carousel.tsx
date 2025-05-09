@@ -82,8 +82,11 @@ export function HomeCarousel() {
     >
       <Carousel 
         className="w-full" 
-        selectedIndex={currentSlide}
-        onSelect={(index) => setCurrentSlide(index)}
+        setApi={(api) => {
+          if (api) {
+            api.on('select', () => setCurrentSlide(api.selectedScrollSnap()));
+          }
+        }}
       >
         <CarouselContent>
           {images.map((image) => (
