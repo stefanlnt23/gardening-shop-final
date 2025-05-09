@@ -15,6 +15,7 @@ import ServiceDetail from "@/pages/ServiceDetail";
 import BlogDetail from "@/pages/BlogDetail";
 import Portfolio from "@/pages/Portfolio";
 import PortfolioDetail from "@/pages/PortfolioDetail";
+import Appointment from "@/pages/Appointment";
 
 // Admin Page imports
 import AdminLogin from "@/pages/admin/Login";
