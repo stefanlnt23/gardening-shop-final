@@ -196,11 +196,12 @@ export default function FeatureCards() {
   };
 
   const startEdit = (card: FeatureCard) => {
+    console.log("Editing card:", card); // For debugging
     setEditMode(card.id);
-    setEditTitle(card.title || '');
-    setEditDescription(card.description || '');
-    setEditIcon(card.icon || 'fa-check');
-    setEditImageUrl(card.imageUrl || '');
+    setEditTitle(card.title);
+    setEditDescription(card.description);
+    setEditIcon(card.icon);
+    setEditImageUrl(card.imageUrl);
   };
 
   const cancelEdit = () => {

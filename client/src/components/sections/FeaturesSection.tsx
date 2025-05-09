@@ -63,8 +63,8 @@ export default function FeaturesSection() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature) => (
             <div key={feature.id} className="bg-gray-50 rounded-xl p-8 border border-gray-100 hover:shadow-md transition-shadow">
-              <div className={`w-12 h-12 ${feature.iconBg} rounded-lg flex items-center justify-center mb-4`}>
-                <i className={`${feature.icon} ${feature.iconColor} text-xl`}></i>
+              <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center mb-4">
+                <i className={`fas ${feature.icon} text-green-600 text-xl`}></i>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
               <p className="text-gray-600">
