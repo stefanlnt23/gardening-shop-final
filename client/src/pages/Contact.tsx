@@ -86,11 +86,6 @@ export default function Contact() {
 
   return (
     <MainLayout>
-              <i className="fas fa-bars text-xl"></i>
-            </button>
-          </div>
-        </div>
-      </header>
 
       {/* Page Header */}
       <section className="bg-gradient-to-br from-green-50 to-green-100 py-12 md:py-20">
