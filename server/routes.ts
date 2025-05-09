@@ -884,6 +884,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/admin/feature-cards/:id', requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const card = await storage.getFeatureCard(id);
+      if (!card) {
+        return res.status(404).json({ message: 'Feature card not found' });
+      }
+      res.json({ card });
+    } catch (error) {
+      console.error(`Error fetching feature card ${req.params.id}:`, error);
+      res.status(500).json({ message: 'Failed to fetch feature card' });
+    }
+  });
+
   app.post('/api/admin/feature-cards', requireAdmin, async (req, res) => {
     try {
       const { title, description, imageUrl } = req.body;
@@ -897,6 +911,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error adding feature card:", error);
       res.status(500).json({ message: 'Failed to add feature card' });
+    }
+  });
+
+  app.put('/api/admin/feature-cards/:id', requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { title, description, imageUrl } = req.body;
+
+      if (!title || !description || !imageUrl) {
+        return res.status(400).json({ message: 'All fields are required' });
+      }
+
+      const updatedCard = await storage.updateFeatureCard(id, { title, description, imageUrl });
+      if (!updatedCard) {
+        return res.status(404).json({ message: 'Feature card not found' });
+      }
+
+      res.json({ success: true, card: updatedCard });
+    } catch (error) {
+      console.error(`Error updating feature card ${req.params.id}:`, error);
+      res.status(500).json({ message: 'Failed to update feature card' });
+    }
+  });
+
+  app.delete('/api/admin/feature-cards/:id', requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = await storage.deleteFeatureCard(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: 'Feature card not found' });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error(`Error deleting feature card ${req.params.id}:`, error);
+      res.status(500).json({ message: 'Failed to delete feature card' });
     }
   });
 
