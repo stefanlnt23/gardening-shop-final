@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
@@ -18,7 +18,8 @@ export function ServicesCarousel() {
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
-  const animationRef = useRef<number | null>(null);
+  const autoPlayIntervalRef = useRef<number | null>(null);
+  const autoPlaySpeedRef = useRef(3000); // Milliseconds between slide transitions
 
   const { data: servicesData, isLoading } = useQuery({
     queryKey: ['/api/services'],
@@ -27,6 +28,7 @@ export function ServicesCarousel() {
 
   const services = servicesData?.services || [];
 
+  // Setup API when carousel is initialized
   useEffect(() => {
     if (!api) return;
     
@@ -38,60 +40,51 @@ export function ServicesCarousel() {
     });
   }, [api]);
 
-  // Handle auto-play functionality
-  useEffect(() => {
+  // Auto-play functionality with smooth transitions
+  const startAutoPlay = useCallback(() => {
     if (!api || services.length <= 1) return;
     
-    let intervalId: number | null = null;
+    if (autoPlayIntervalRef.current) {
+      window.clearInterval(autoPlayIntervalRef.current);
+    }
     
-    const startAutoPlay = () => {
-      // Clear any previous interval
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+    autoPlayIntervalRef.current = window.setInterval(() => {
+      if (!api) return;
       
-      // Set up a constant interval for smooth animation
-      intervalId = window.setInterval(() => {
-        if (!autoPlay || !api) return;
-        
-        // Get the next index
-        const nextIndex = (current + 1) % count;
-        
-        // Scroll to the next index with a slow, smooth animation
-        api.scrollTo(nextIndex, { duration: 800 });
-      }, 4000); // Longer interval between slides
-    };
+      // Get the next slide index
+      const nextIndex = api.canScrollNext() ? current + 1 : 0;
+      
+      // Smooth transition to next slide
+      api.scrollTo(nextIndex, { duration: 1000 });
+    }, autoPlaySpeedRef.current);
+  }, [api, current, services.length]);
 
-    const stopAutoPlay = () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-        intervalId = null;
-      }
-    };
+  const stopAutoPlay = useCallback(() => {
+    if (autoPlayIntervalRef.current) {
+      window.clearInterval(autoPlayIntervalRef.current);
+      autoPlayIntervalRef.current = null;
+    }
+  }, []);
 
+  // Start/stop autoplay based on autoPlay state
+  useEffect(() => {
     if (autoPlay) {
-      stopAutoPlay(); // Clear any existing interval
       startAutoPlay();
     } else {
       stopAutoPlay();
     }
 
     return () => stopAutoPlay();
-  }, [api, autoPlay, services.length, current, count]);
+  }, [autoPlay, startAutoPlay, stopAutoPlay, current, api]);
 
-  const handleMouseEnter = () => {
+  // Handle mouse interactions
+  const handleMouseEnter = useCallback(() => {
     setAutoPlay(false);
-    // Cancel any ongoing animation immediately
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-      clearTimeout(animationRef.current);
-      animationRef.current = null;
-    }
-  };
+  }, []);
   
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     setAutoPlay(true);
-  };
+  }, []);
 
   if (isLoading) {
     return (
@@ -133,7 +126,6 @@ export function ServicesCarousel() {
         opts={{
           align: "start",
           loop: true,
-          dragFree: true,
         }}
         setApi={setApi}
         className="w-full"
