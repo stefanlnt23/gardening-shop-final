@@ -15,7 +15,7 @@ externalPort = 80
 exposeLocalhost = true
 
 [workflows]
-runButton = "Project"
+runButton = "Start dev server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -34,3 +34,12 @@ author = "agent"
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Start dev server"
+author = 42493007
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
