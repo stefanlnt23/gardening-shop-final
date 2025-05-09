@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import MainLayout from "@/components/layouts/MainLayout";
 
 export default function Home() {
   // State for the testimonial carousel
@@ -39,9 +40,7 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [testimonials.length]);
 
-  import MainLayout from "@/components/layouts/MainLayout";
-
-return (
+  return (
     <MainLayout>
 
       {/* Hero Section */}

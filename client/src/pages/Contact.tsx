@@ -1,4 +1,5 @@
 import { useState } from "react";
+import MainLayout from "@/components/layouts/MainLayout";
 import { Link } from "wouter";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -83,9 +84,7 @@ export default function Contact() {
       });
   }
 
-  import MainLayout from "@/components/layouts/MainLayout";
-
-return (
+  return (
     <MainLayout>
               <i className="fas fa-bars text-xl"></i>
             </button>

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import MainLayout from "@/components/layouts/MainLayout";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -22,8 +23,6 @@ export default function Blog() {
         post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : blogPosts;
-
-  import MainLayout from "@/components/layouts/MainLayout";
 
 return (
     <MainLayout>
@@ -59,7 +58,7 @@ return (
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            
+
             {/* Featured Post (first post) */}
             {!isLoading && filteredPosts.length > 0 && (
               <div className="mb-16">

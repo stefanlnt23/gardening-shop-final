@@ -44,7 +44,8 @@ function Router() {
       <Route path="/blog" component={Blog} />
       <Route path="/blog/:id" component={BlogDetail} />
       <Route path="/contact" component={Contact} />
-      <Route path="/appointment" component={Appointment} />
+      {/* Temporarily commenting out until Appointment component is created */}
+      {/* <Route path="/appointment" component={Appointment} /> */}
       <Route path="/portfolio" component={Portfolio} />
       <Route path="/portfolio/:id" component={PortfolioDetail} />
 
