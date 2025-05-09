@@ -150,6 +150,60 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Why Choose Us Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl font-bold mb-4 text-gray-900">Why Choose Us</h2>
+            <p className="text-gray-600">
+              We're committed to delivering exceptional garden services with expertise and care.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            <div className="bg-green-50 p-6 rounded-xl border border-green-100 text-center hover:shadow-md transition-shadow">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <i className="fas fa-check text-green-600 text-xl"></i>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Expert Gardeners</h3>
+              <p className="text-gray-600">Our team consists of certified and experienced gardening professionals</p>
+            </div>
+            
+            <div className="bg-green-50 p-6 rounded-xl border border-green-100 text-center hover:shadow-md transition-shadow">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <i className="fas fa-leaf text-green-600 text-xl"></i>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Eco-Friendly Practices</h3>
+              <p className="text-gray-600">We use sustainable methods and materials in all our garden work</p>
+            </div>
+            
+            <div className="bg-green-50 p-6 rounded-xl border border-green-100 text-center hover:shadow-md transition-shadow">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <i className="fas fa-calendar-check text-green-600 text-xl"></i>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Reliable Service</h3>
+              <p className="text-gray-600">Always on time with consistent, dependable garden maintenance</p>
+            </div>
+            
+            <div className="bg-green-50 p-6 rounded-xl border border-green-100 text-center hover:shadow-md transition-shadow">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <i className="fas fa-award text-green-600 text-xl"></i>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Satisfaction Guaranteed</h3>
+              <p className="text-gray-600">We stand behind our work with a 100% satisfaction guarantee</p>
+            </div>
+          </div>
+          
+          <div className="mt-10 text-center">
+            <Link href="/services">
+              <Button className="bg-green-600 hover:bg-green-700">
+                Explore Our Services
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -160,174 +214,110 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto">
-            {/* Testimonials Carousel - Takes 2/3 of the space */}
-            <div className="lg:w-2/3">
-              {isLoadingTestimonials ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {[1, 2].map((i) => (
-                    <Card key={i} className="shadow-lg">
+          {isLoadingTestimonials ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="shadow-lg">
+                  <CardContent className="p-6">
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className="animate-pulse w-16 h-16 bg-gray-200 rounded-full"></div>
+                      <div className="animate-pulse h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+                      <div className="space-y-2 w-full">
+                        <div className="animate-pulse h-3 bg-gray-200 rounded w-full"></div>
+                        <div className="animate-pulse h-3 bg-gray-200 rounded w-5/6 mx-auto"></div>
+                        <div className="animate-pulse h-3 bg-gray-200 rounded w-4/6 mx-auto"></div>
+                      </div>
+                      <div className="animate-pulse h-4 bg-gray-200 rounded w-32 mx-auto"></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : testimonials.length > 0 ? (
+            <div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                {/* Show 3 testimonials at a time, based on the active one */}
+                {[0, 1, 2].map((offset) => {
+                  const index = (activeTestimonial + offset) % testimonials.length;
+                  const testimonial = testimonials[index];
+                  
+                  return testimonial ? (
+                    <Card key={testimonial.id} className="shadow-lg transform transition-all duration-300 hover:scale-105">
                       <CardContent className="p-6">
                         <div className="flex flex-col items-center text-center space-y-4">
-                          <div className="animate-pulse w-16 h-16 bg-gray-200 rounded-full"></div>
-                          <div className="animate-pulse h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
-                          <div className="space-y-2 w-full">
-                            <div className="animate-pulse h-3 bg-gray-200 rounded w-full"></div>
-                            <div className="animate-pulse h-3 bg-gray-200 rounded w-5/6 mx-auto"></div>
-                            <div className="animate-pulse h-3 bg-gray-200 rounded w-4/6 mx-auto"></div>
+                          {testimonial.photoUrl ? (
+                            <img 
+                              src={testimonial.photoUrl} 
+                              alt={testimonial.name}
+                              className="w-16 h-16 object-cover rounded-full border-2 border-green-200"
+                            />
+                          ) : (
+                            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                              <i className="fas fa-user text-green-600 text-2xl"></i>
+                            </div>
+                          )}
+                          <div className="flex items-center justify-center">
+                            {Array.from({ length: testimonial.rating }).map((_, i) => (
+                              <i key={i} className="fas fa-star text-yellow-400 text-sm mr-0.5"></i>
+                            ))}
                           </div>
-                          <div className="animate-pulse h-4 bg-gray-200 rounded w-32 mx-auto"></div>
+                          <blockquote className="text-lg italic text-gray-800">"{testimonial.comment}"</blockquote>
+                          <div>
+                            <p className="font-bold text-gray-900">{testimonial.name}</p>
+                            {testimonial.company && (
+                              <p className="text-sm text-gray-600">{testimonial.company}</p>
+                            )}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
+                  ) : null;
+                })}
+              </div>
+
+              {/* Pagination dots */}
+              {testimonials.length > 3 && (
+                <div className="flex justify-center space-x-2 mt-6">
+                  {Array.from({ length: Math.ceil(testimonials.length / 3) }).map((_, index) => (
+                    <button
+                      key={index}
+                      className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                        Math.floor(activeTestimonial / 3) === index ? "bg-green-600" : "bg-gray-300"
+                      }`}
+                      onClick={() => setActiveTestimonial(index * 3)}
+                      aria-label={`Testimonial page ${index + 1}`}
+                    />
                   ))}
                 </div>
-              ) : testimonials.length > 0 ? (
-                <div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Show 2 testimonials at a time, based on the active one */}
-                    {[0, 1].map((offset) => {
-                      const index = (activeTestimonial + offset) % testimonials.length;
-                      const testimonial = testimonials[index];
-
-                      return (
-                        <Card key={testimonial.id} className="shadow-lg transform transition-all duration-300 hover:scale-105">
-                          <CardContent className="p-6">
-                            <div className="flex flex-col items-center text-center space-y-4">
-                              {testimonial.photoUrl ? (
-                                <img 
-                                  src={testimonial.photoUrl} 
-                                  alt={testimonial.name}
-                                  className="w-16 h-16 object-cover rounded-full border-2 border-green-200"
-                                />
-                              ) : (
-                                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-                                  <i className="fas fa-user text-green-600 text-2xl"></i>
-                                </div>
-                              )}
-                              <div className="flex items-center justify-center">
-                                {Array.from({ length: testimonial.rating }).map((_, i) => (
-                                  <i key={i} className="fas fa-star text-yellow-400 text-sm mr-0.5"></i>
-                                ))}
-                              </div>
-                              <blockquote className="text-lg italic text-gray-800">"{testimonial.comment}"</blockquote>
-                              <div>
-                                <p className="font-bold text-gray-900">{testimonial.name}</p>
-                                {testimonial.company && (
-                                  <p className="text-sm text-gray-600">{testimonial.company}</p>
-                                )}
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-
-                  {/* Pagination dots */}
-                  {testimonials.length > 2 && (
-                    <div className="flex justify-center space-x-2 mt-6">
-                      {Array.from({ length: Math.ceil(testimonials.length / 2) }).map((_, index) => (
-                        <button
-                          key={index}
-                          className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                            Math.floor(activeTestimonial / 2) === index ? "bg-green-600" : "bg-gray-300"
-                          }`}
-                          onClick={() => setActiveTestimonial(index * 2)}
-                          aria-label={`Testimonial page ${index + 1}`}
-                        />
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Navigation buttons */}
-                  <div className="flex justify-center mt-4 space-x-4">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="border-green-600 text-green-600 hover:bg-green-50"
-                      onClick={() => setActiveTestimonial((activeTestimonial - 2 + testimonials.length) % testimonials.length)}
-                    >
-                      <i className="fas fa-chevron-left mr-2"></i>
-                      Previous
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="border-green-600 text-green-600 hover:bg-green-50"
-                      onClick={() => setActiveTestimonial((activeTestimonial + 2) % testimonials.length)}
-                    >
-                      Next
-                      <i className="fas fa-chevron-right ml-2"></i>
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center p-8">
-                  <p className="text-gray-500">No testimonials available at the moment.</p>
-                </div>
               )}
+
+              {/* Navigation buttons */}
+              <div className="flex justify-center mt-4 space-x-4">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="border-green-600 text-green-600 hover:bg-green-50"
+                  onClick={() => setActiveTestimonial((activeTestimonial - 3 + testimonials.length) % testimonials.length)}
+                >
+                  <i className="fas fa-chevron-left mr-2"></i>
+                  Previous
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="border-green-600 text-green-600 hover:bg-green-50"
+                  onClick={() => setActiveTestimonial((activeTestimonial + 3) % testimonials.length)}
+                >
+                  Next
+                  <i className="fas fa-chevron-right ml-2"></i>
+                </Button>
+              </div>
             </div>
-
-            {/* "Why Choose Us" Sidebar - Takes 1/3 of the space */}
-            <div className="lg:w-1/3">
-              <Card className="shadow-lg h-full bg-white border-green-100 border">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Why Choose Us</h3>
-
-                  <ul className="space-y-4">
-                    <li className="flex items-start">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
-                        <i className="fas fa-check text-green-600"></i>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">Expert Gardeners</h4>
-                        <p className="text-sm text-gray-600">Our team consists of certified and experienced gardening professionals</p>
-                      </div>
-                    </li>
-
-                    <li className="flex items-start">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
-                        <i className="fas fa-leaf text-green-600"></i>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">Eco-Friendly Practices</h4>
-                        <p className="text-sm text-gray-600">We use sustainable methods and materials in all our garden work</p>
-                      </div>
-                    </li>
-
-                    <li className="flex items-start">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
-                        <i className="fas fa-calendar-check text-green-600"></i>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">Reliable Service</h4>
-                        <p className="text-sm text-gray-600">Always on time with consistent, dependable garden maintenance</p>
-                      </div>
-                    </li>
-
-                    <li className="flex items-start">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
-                        <i className="fas fa-award text-green-600"></i>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">Satisfaction Guaranteed</h4>
-                        <p className="text-sm text-gray-600">We stand behind our work with a 100% satisfaction guarantee</p>
-                      </div>
-                    </li>
-                  </ul>
-
-                  <div className="mt-6 text-center">
-                    <Link href="/services">
-                      <Button className="bg-green-600 hover:bg-green-700">
-                        Our Services
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
+          ) : (
+            <div className="text-center p-8">
+              <p className="text-gray-500">No testimonials available at the moment.</p>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
