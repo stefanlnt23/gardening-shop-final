@@ -1,25 +1,16 @@
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { type CarouselApi } from "embla-carousel-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function ServicesCarousel() {
-  const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
-  const autoPlayIntervalRef = useRef<number | null>(null);
-  const autoPlaySpeedRef = useRef(3000); // Milliseconds between slide transitions
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const { data: servicesData, isLoading } = useQuery({
     queryKey: ['/api/services'],
@@ -27,64 +18,44 @@ export function ServicesCarousel() {
   });
 
   const services = servicesData?.services || [];
+  const totalSlides = services.length;
 
-  // Setup API when carousel is initialized
+  const nextSlide = () => {
+    setCurrentIndex(prev => (prev + 1) % totalSlides);
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex(prev => (prev - 1 + totalSlides) % totalSlides);
+  };
+
+  // Handle auto-play
   useEffect(() => {
-    if (!api) return;
-    
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap());
-    
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
-    });
-  }, [api]);
-
-  // Auto-play functionality with smooth transitions
-  const startAutoPlay = useCallback(() => {
-    if (!api || services.length <= 1) return;
-    
-    if (autoPlayIntervalRef.current) {
-      window.clearInterval(autoPlayIntervalRef.current);
-    }
-    
-    autoPlayIntervalRef.current = window.setInterval(() => {
-      if (!api) return;
+    if (autoPlay && totalSlides > 1) {
+      if (timerRef.current) clearInterval(timerRef.current);
       
-      // Get the next slide index
-      const nextIndex = api.canScrollNext() ? current + 1 : 0;
-      
-      // Smooth transition to next slide
-      api.scrollTo(nextIndex, { duration: 1000 });
-    }, autoPlaySpeedRef.current);
-  }, [api, current, services.length]);
-
-  const stopAutoPlay = useCallback(() => {
-    if (autoPlayIntervalRef.current) {
-      window.clearInterval(autoPlayIntervalRef.current);
-      autoPlayIntervalRef.current = null;
+      timerRef.current = setInterval(() => {
+        nextSlide();
+      }, 4000);
     }
-  }, []);
-
-  // Start/stop autoplay based on autoPlay state
-  useEffect(() => {
-    if (autoPlay) {
-      startAutoPlay();
-    } else {
-      stopAutoPlay();
-    }
-
-    return () => stopAutoPlay();
-  }, [autoPlay, startAutoPlay, stopAutoPlay, current, api]);
+    
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [autoPlay, totalSlides, currentIndex]);
 
   // Handle mouse interactions
-  const handleMouseEnter = useCallback(() => {
+  const handleMouseEnter = () => {
     setAutoPlay(false);
-  }, []);
+  };
   
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeave = () => {
     setAutoPlay(true);
-  }, []);
+  };
+
+  // Slide indicators
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
+  };
 
   if (isLoading) {
     return (
@@ -116,23 +87,50 @@ export function ServicesCarousel() {
     );
   }
 
+  // Show 1 card on mobile, 2 on tablets, 3 on desktop
+  const visibleSlides = {
+    mobile: 1,
+    tablet: 2,
+    desktop: 3
+  };
+
+  // Display the correct number of slides based on viewport
+  const getVisibleCards = () => {
+    // Use a flexible slice approach to show the right number of cards
+    const cards = [];
+    
+    // Determine how many cards to show (simplified - would be better with a responsive hook)
+    const visibleCount = window.innerWidth < 640 ? visibleSlides.mobile : 
+                         window.innerWidth < 1024 ? visibleSlides.tablet : 
+                         visibleSlides.desktop;
+    
+    // Create a wrapped index array to handle looping
+    for (let i = 0; i < visibleCount; i++) {
+      const index = (currentIndex + i) % totalSlides;
+      cards.push(services[index]);
+    }
+    
+    return cards;
+  };
+
   return (
     <div 
       className="relative w-full" 
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      ref={sliderRef}
     >
-      <Carousel
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-        setApi={setApi}
-        className="w-full"
-      >
-        <CarouselContent className="-ml-2 md:-ml-4">
-          {services.map((service) => (
-            <CarouselItem key={service.id} className="pl-2 md:pl-4 sm:basis-1/2 md:basis-1/3 lg:basis-1/3 transition-all duration-300">
+      {/* Main slider content */}
+      <div className="overflow-hidden">
+        <div 
+          className="flex transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${currentIndex * (100 / visibleSlides.desktop)}%)` }}
+        >
+          {services.map((service, index) => (
+            <div 
+              key={service.id} 
+              className="min-w-full sm:min-w-[50%] md:min-w-[33.333%] px-2 md:px-4 transition-all duration-300"
+            >
               <Card className="transition-all duration-300 hover:shadow-lg hover:scale-105 h-full">
                 <CardContent className="p-6 flex flex-col items-center text-center space-y-4 h-full">
                   {service.imageUrl ? (
@@ -166,22 +164,37 @@ export function ServicesCarousel() {
                   </div>
                 </CardContent>
               </Card>
-            </CarouselItem>
+            </div>
           ))}
-        </CarouselContent>
-        <CarouselPrevious className="hidden md:flex -left-4 hover:bg-green-50 border-green-200 hover:border-green-300" />
-        <CarouselNext className="hidden md:flex -right-4 hover:bg-green-50 border-green-200 hover:border-green-300" />
-      </Carousel>
+        </div>
+      </div>
       
-      {/* Carousel indicators */}
+      {/* Navigation arrows */}
+      <button 
+        onClick={prevSlide}
+        className="absolute top-1/2 left-0 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-green-50 border border-green-200 z-10 hidden md:flex items-center justify-center"
+        aria-label="Previous slide"
+      >
+        <ChevronLeft className="h-6 w-6 text-green-600" />
+      </button>
+      
+      <button 
+        onClick={nextSlide}
+        className="absolute top-1/2 right-0 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-green-50 border border-green-200 z-10 hidden md:flex items-center justify-center"
+        aria-label="Next slide"
+      >
+        <ChevronRight className="h-6 w-6 text-green-600" />
+      </button>
+      
+      {/* Slide indicators */}
       <div className="flex justify-center space-x-2 mt-6">
-        {Array.from({ length: count }).map((_, index) => (
+        {Array.from({ length: totalSlides }).map((_, index) => (
           <button
             key={index}
             className={`w-2.5 h-2.5 rounded-full transition-colors ${
-              index === current ? "bg-green-600" : "bg-gray-300"
+              index === currentIndex ? "bg-green-600" : "bg-gray-300"
             }`}
-            onClick={() => api?.scrollTo(index)}
+            onClick={() => goToSlide(index)}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
