@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import MainLayout from "@/components/layouts/MainLayout";
 import { HomeCarousel } from "@/components/ui/home-carousel";
+import { ServicesCarousel } from "@/components/ui/services-carousel";
 
 export default function Home() {
   // State for the testimonial carousel
@@ -117,52 +118,9 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {isLoadingServices ? (
-              Array(3).fill(0).map((_, i) => (
-                <Card key={i} className="transition-all duration-300 hover:shadow-lg">
-                  <CardContent className="p-6 flex flex-col items-center text-center space-y-4">
-                    <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-2">
-                      <div className="animate-pulse w-8 h-8 bg-green-200 rounded-full"></div>
-                    </div>
-                    <div className="space-y-3 w-full">
-                      <div className="animate-pulse h-6 bg-gray-200 rounded w-3/4 mx-auto"></div>
-                      <div className="animate-pulse h-4 bg-gray-100 rounded w-full"></div>
-                      <div className="animate-pulse h-4 bg-gray-100 rounded w-5/6 mx-auto"></div>
-                      <div className="animate-pulse h-4 bg-gray-100 rounded w-4/6 mx-auto"></div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : featuredServices.length > 0 ? (
-              featuredServices.map((service) => (
-                <Card key={service.id} className="transition-all duration-300 hover:shadow-lg">
-                  <CardContent className="p-6 flex flex-col items-center text-center space-y-4">
-                    <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-2">
-                      <span className="text-green-600 text-2xl">
-                        <i className="fas fa-leaf"></i>
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900">{service.name}</h3>
-                    <p className="text-gray-600 flex-grow">
-                      {service.description.length > 120
-                        ? `${service.description.substring(0, 120)}...`
-                        : service.description}
-                    </p>
-                    <span className="text-green-600 font-semibold">{service.price}</span>
-                    <Link href={`/contact`}>
-                      <Button variant="outline" className="border-green-600 text-green-600 hover:bg-green-50 w-full">
-                        Get Started
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="col-span-1 md:col-span-3 text-center py-10">
-                <p className="text-gray-500">No services available at the moment.</p>
-              </div>
-            )}
+          {/* Services Carousel */}
+          <div className="px-4 md:px-8 lg:px-12">
+            <ServicesCarousel />
           </div>
                 
           <div className="text-center mt-12">
