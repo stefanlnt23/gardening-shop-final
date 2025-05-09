@@ -1,40 +1,96 @@
-import MainLayout from "@/components/layouts/MainLayout";
+
+import { useEffect, useState } from "react";
+import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import MainLayout from "@/components/layouts/MainLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useLocation } from "wouter";
+import { format } from "date-fns";
 
 export default function Portfolio() {
   const [, setLocation] = useLocation();
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+  
+  // Fetch all portfolio items
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/portfolio'],
+    queryFn: async () => {
+      const response = await fetch('/api/portfolio');
+      if (!response.ok) {
+        throw new Error('Failed to fetch portfolio items');
+      }
+      return response.json();
+    },
     refetchOnWindowFocus: false
   });
-
+  
+  // Fetch all services for filtering
+  const { data: servicesData } = useQuery({
+    queryKey: ['/api/services'],
+    queryFn: async () => {
+      const response = await fetch('/api/services');
+      if (!response.ok) {
+        throw new Error('Failed to fetch services');
+      }
+      return response.json();
+    },
+    refetchOnWindowFocus: false
+  });
+  
+  const services = servicesData?.services || [];
   const portfolioItems = data?.portfolioItems || [];
   
-  // Filter published items only
-  const publishedItems = portfolioItems.filter(item => item.status === "Published");
-
-  // Navigate to portfolio detail page
-  const handleViewDetails = (id) => {
-    setLocation(`/portfolio/${id}`);
+  // Filter items based on selected service
+  const filteredItems = selectedService 
+    ? portfolioItems.filter((item: any) => item.serviceId === selectedService)
+    : portfolioItems;
+    
+  // Only show published items
+  const publishedItems = filteredItems.filter((item: any) => item.status === 'Published');
+  
+  // Get service name for display
+  const getServiceName = (serviceId: string) => {
+    const service = services.find((s: any) => s.id === serviceId);
+    return service ? service.name : 'General Service';
   };
-
+  
   return (
     <MainLayout>
-      <div className="py-16 bg-gradient-to-b from-green-50 to-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h1 className="text-4xl font-bold text-gray-900 mb-6">
-              Our Portfolio
-            </h1>
-            <p className="text-xl text-gray-600">
-              Browse through our collection of completed projects and garden transformations.
+      <div className="bg-green-50 py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Portfolio</h1>
+            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+              Browse through our completed projects and see how we've transformed outdoor spaces for our valued clients.
             </p>
           </div>
-
+          
+          {/* Service Filter */}
+          <div className="mb-12">
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button 
+                variant={selectedService === null ? "default" : "outline"}
+                className={selectedService === null ? "bg-green-600 hover:bg-green-700" : ""}
+                onClick={() => setSelectedService(null)}
+              >
+                All Projects
+              </Button>
+              
+              {services.map((service: any) => (
+                <Button 
+                  key={service.id}
+                  variant={selectedService === service.id ? "default" : "outline"}
+                  className={selectedService === service.id ? "bg-green-600 hover:bg-green-700" : ""}
+                  onClick={() => setSelectedService(service.id)}
+                >
+                  {service.name}
+                </Button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Portfolio Grid */}
           {isLoading ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -64,56 +120,92 @@ export default function Portfolio() {
                   <p className="text-gray-600">We're currently updating our portfolio. Please check back later.</p>
                 </div>
               ) : (
-                publishedItems.map((item) => (
-                  <div 
-                    key={item.id} 
-                    className="group overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all cursor-pointer"
-                    onClick={() => handleViewDetails(item.id)}
-                  >
-                    <div className="relative">
-                      <img 
-                        src={item.imageUrl || "https://placehold.co/600x600/e2e8f0/64748b?text=No+Image"} 
-                        alt={item.title}
-                        className="w-full aspect-square object-cover transition-transform group-hover:scale-105" 
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                        <Button className="bg-white text-green-700 hover:bg-green-50">
-                          View Details
-                        </Button>
-                      </div>
+                publishedItems.map((item: any) => (
+                  <Card key={item.id} className="overflow-hidden group">
+                    <div className="relative aspect-square">
+                      {item.imageUrl ? (
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.title} 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-green-100 flex items-center justify-center">
+                          <i className="fas fa-leaf text-5xl text-green-500"></i>
+                        </div>
+                      )}
+                      
                       {item.featured && (
-                        <Badge className="absolute top-2 right-2 bg-yellow-100 text-yellow-800 border-yellow-300">
+                        <Badge className="absolute top-2 right-2 bg-yellow-400 text-yellow-900">
                           Featured
                         </Badge>
                       )}
                     </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-bold text-gray-900 mb-2">{item.title}</h3>
-                      <p className="text-gray-600 line-clamp-2">{item.description}</p>
-                      <div className="flex justify-between items-center mt-3">
-                        <p className="text-sm text-gray-500">
-                          {item.date ? new Date(item.date).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long'
-                          }) : "No date"}
-                        </p>
+                    
+                    <CardContent className="p-4">
+                      <h3 className="text-xl font-semibold mb-2 group-hover:text-green-600 transition-colors">
+                        {item.title}
+                      </h3>
+                      
+                      <div className="text-sm text-gray-500 mb-3 flex items-center">
+                        <i className="fas fa-map-marker-alt mr-1 text-green-600"></i>
+                        {item.location || "Various Locations"}
+                        
+                        {item.date && (
+                          <>
+                            <span className="mx-2">•</span>
+                            <i className="far fa-calendar-alt mr-1 text-green-600"></i>
+                            {format(new Date(item.date), "MMM yyyy")}
+                          </>
+                        )}
+                      </div>
+                      
+                      <p className="text-gray-700 line-clamp-2 mb-4">
+                        {item.description}
+                      </p>
+                      
+                      <div className="flex justify-between items-center">
+                        <Badge variant="outline" className="bg-green-50 text-green-800 border-green-200">
+                          {getServiceName(item.serviceId)}
+                        </Badge>
+                        
                         <Button 
-                          variant="link" 
-                          className="text-green-600 p-0 h-auto"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewDetails(item.id);
-                          }}
+                          variant="ghost" 
+                          className="text-green-600 hover:text-green-800"
+                          onClick={() => setLocation(`/portfolio/${item.id}`)}
                         >
-                          Read More →
+                          Read More
+                          <i className="fas fa-arrow-right ml-2"></i>
                         </Button>
                       </div>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 ))
               )}
             </div>
           )}
+          
+          {/* CTA Section */}
+          <div className="mt-16 text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready to transform your space?</h2>
+            <p className="text-lg text-gray-700 mb-6 max-w-2xl mx-auto">
+              Contact us today to discuss your project or book an appointment for a consultation.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Button 
+                className="bg-green-600 hover:bg-green-700"
+                onClick={() => setLocation("/appointment")}
+              >
+                Book an Appointment
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => setLocation("/contact")}
+              >
+                Contact Us
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </MainLayout>

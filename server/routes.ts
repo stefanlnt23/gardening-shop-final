@@ -80,7 +80,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/portfolio/item/:id", async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
+      console.log(`Fetching portfolio item with ID: ${id}`);
+      
       const portfolioItem = await storage.getPortfolioItem(id);
       
       if (!portfolioItem) {
