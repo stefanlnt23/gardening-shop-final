@@ -15,8 +15,6 @@ export default function AdminNavigation() {
     { label: "Testimonials", path: "/admin/testimonials", icon: "fas fa-star" },
     { label: "Front Page", path: "/admin/frontpage", icon: "fas fa-home" },
     { label: "Feature Cards", path: "/admin/feature-cards", icon: "fas fa-columns" },
-    { label: "Front Page", path: "/admin/frontpage", icon: "fas fa-home" }, // Added Front Page Link
-    { label: "Feature Cards", path: "/admin/feature-cards", icon: "fas fa-columns" },
   ];
 
   return (
