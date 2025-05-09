@@ -48,12 +48,16 @@ export default function AdminTestimonialsForm() {
       if (!id) return null;
       const response = await apiRequest("GET", `/api/admin/testimonials/${id}`);
       const data = await response.json();
+      console.log('Fetched testimonial data:', data);
       return data;
     },
     enabled: isEditing,
   });
 
   const testimonial = data?.testimonial;
+  
+  // Debug logging
+  console.log('Testimonial data:', testimonial);
 
   // Form setup
   const form = useForm<FormValues>({
