@@ -11,68 +11,68 @@ import {
 // Storage interface for all CRUD operations
 export interface IStorage {
   // User operations
-  getUser(id: number): Promise<User | undefined>;
+  getUser(id: string | number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   getUsers(): Promise<User[]>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined>;
-  deleteUser(id: number): Promise<boolean>;
+  updateUser(id: string | number, userData: Partial<InsertUser>): Promise<User | undefined>;
+  deleteUser(id: string | number): Promise<boolean>;
 
   // Service operations
-  getService(id: number): Promise<Service | undefined>;
+  getService(id: number | string): Promise<Service | undefined>;
   getServices(): Promise<Service[]>;
   getFeaturedServices(): Promise<Service[]>;
   createService(service: InsertService): Promise<Service>;
-  updateService(id: number, serviceData: Partial<InsertService>): Promise<Service | undefined>;
-  deleteService(id: number): Promise<boolean>;
+  updateService(id: number | string, serviceData: Partial<InsertService>): Promise<Service | undefined>;
+  deleteService(id: number | string): Promise<boolean>;
 
   // Portfolio operations
-  getPortfolioItem(id: number): Promise<PortfolioItem | undefined>;
+  getPortfolioItem(id: string | number): Promise<PortfolioItem | undefined>;
   getPortfolioItems(): Promise<PortfolioItem[]>;
-  getPortfolioItemsByService(serviceId: number): Promise<PortfolioItem[]>;
+  getPortfolioItemsByService(serviceId: number | string): Promise<PortfolioItem[]>;
   createPortfolioItem(portfolioItem: InsertPortfolioItem): Promise<PortfolioItem>;
-  updatePortfolioItem(id: number, portfolioItemData: Partial<InsertPortfolioItem>): Promise<PortfolioItem | undefined>;
-  deletePortfolioItem(id: number): Promise<boolean>;
+  updatePortfolioItem(id: number | string, portfolioItemData: Partial<InsertPortfolioItem>): Promise<PortfolioItem | undefined>;
+  deletePortfolioItem(id: number | string): Promise<boolean>;
 
   // Blog operations
-  getBlogPost(id: number): Promise<BlogPost | undefined>;
+  getBlogPost(id: string | number): Promise<BlogPost | undefined>;
   getBlogPosts(): Promise<BlogPost[]>;
   createBlogPost(blogPost: InsertBlogPost): Promise<BlogPost>;
-  updateBlogPost(id: number, blogPostData: Partial<InsertBlogPost>): Promise<BlogPost | undefined>;
-  deleteBlogPost(id: number): Promise<boolean>;
+  updateBlogPost(id: string | number, blogPostData: Partial<InsertBlogPost>): Promise<BlogPost | undefined>;
+  deleteBlogPost(id: string | number): Promise<boolean>;
 
   // Inquiry operations
-  getInquiry(id: number): Promise<Inquiry | undefined>;
+  getInquiry(id: number | string): Promise<Inquiry | undefined>;
   getInquiries(): Promise<Inquiry[]>;
   createInquiry(inquiry: InsertInquiry): Promise<Inquiry>;
-  updateInquiry(id: number, inquiryData: Partial<InsertInquiry>): Promise<Inquiry | undefined>;
-  deleteInquiry(id: number): Promise<boolean>;
+  updateInquiry(id: number | string, inquiryData: Partial<InsertInquiry>): Promise<Inquiry | undefined>;
+  deleteInquiry(id: number | string): Promise<boolean>;
 
   // Appointment operations
-  getAppointment(id: number): Promise<Appointment | undefined>;
+  getAppointment(id: string | number): Promise<Appointment | undefined>;
   getAppointments(): Promise<Appointment[]>;
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
-  updateAppointment(id: number, appointmentData: Partial<InsertAppointment>): Promise<Appointment | undefined>;
-  deleteAppointment(id: number): Promise<boolean>;
+  updateAppointment(id: string | number, appointmentData: Partial<InsertAppointment>): Promise<Appointment | undefined>;
+  deleteAppointment(id: string | number): Promise<boolean>;
 
   // Testimonial operations
-  getTestimonial(id: number): Promise<Testimonial | undefined>;
+  getTestimonial(id: number | string): Promise<Testimonial | undefined>;
   getTestimonials(): Promise<Testimonial[]>;
   createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial>;
-  updateTestimonial(id: number, testimonialData: Partial<InsertTestimonial>): Promise<Testimonial | undefined>;
-  deleteTestimonial(id: number): Promise<boolean>;
+  updateTestimonial(id: number | string, testimonialData: Partial<InsertTestimonial>): Promise<Testimonial | undefined>;
+  deleteTestimonial(id: number | string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
   // In-memory storage maps
-  private users: Map<number, User>;
-  private services: Map<number, Service>;
-  private portfolioItems: Map<number, PortfolioItem>;
-  private blogPosts: Map<number, BlogPost>;
-  private inquiries: Map<number, Inquiry>;
-  private appointments: Map<number, Appointment>;
-  private testimonials: Map<number, Testimonial>;
+  private users: Map<string | number, User>;
+  private services: Map<string | number, Service>;
+  private portfolioItems: Map<string | number, PortfolioItem>;
+  private blogPosts: Map<string | number, BlogPost>;
+  private inquiries: Map<string | number, Inquiry>;
+  private appointments: Map<string | number, Appointment>;
+  private testimonials: Map<string | number, Testimonial>;
 
   // ID counters
   private userIdCounter: number;
@@ -121,6 +121,7 @@ export class MemStorage implements IStorage {
     await this.createService({
       name: "Garden Maintenance",
       description: "Regular maintenance to keep your garden looking its best year-round. Includes weeding, pruning, mulching, and seasonal clean-up. Our expert gardeners will ensure your plants thrive in every season.",
+      shortDesc: "Professional garden maintenance services for a thriving outdoor space.",
       price: "From $120/month",
       imageUrl: null,
       featured: true
@@ -129,6 +130,7 @@ export class MemStorage implements IStorage {
     await this.createService({
       name: "Landscape Design",
       description: "Transform your outdoor space with our professional landscape design services. We create beautiful, sustainable landscapes tailored to your preferences and local climate conditions.",
+      shortDesc: "Custom landscape design for beautiful, sustainable outdoor spaces.",
       price: "From $500",
       imageUrl: null,
       featured: true
@@ -137,6 +139,7 @@ export class MemStorage implements IStorage {
     await this.createService({
       name: "Tree & Shrub Care",
       description: "Comprehensive care for your trees and shrubs, including pruning, fertilization, pest management, and disease treatment to ensure healthy growth and longevity.",
+      shortDesc: "Expert care for healthy, thriving trees and shrubs.",
       price: "From $150",
       imageUrl: null,
       featured: true
@@ -145,6 +148,7 @@ export class MemStorage implements IStorage {
     await this.createService({
       name: "Lawn Care",
       description: "Complete lawn maintenance services including mowing, fertilization, aeration, overseeding, and pest control to keep your lawn lush, green, and healthy.",
+      shortDesc: "Complete lawn maintenance for a lush, healthy yard.",
       price: "From $80/visit",
       imageUrl: null,
       featured: false
@@ -153,6 +157,7 @@ export class MemStorage implements IStorage {
     await this.createService({
       name: "Irrigation Systems",
       description: "Design, installation, and maintenance of efficient irrigation systems to ensure your garden gets the right amount of water while conserving this precious resource.",
+      shortDesc: "Efficient irrigation solutions for optimal garden watering.",
       price: "From $350",
       imageUrl: null,
       featured: false
@@ -164,7 +169,13 @@ export class MemStorage implements IStorage {
       description: "Complete transformation of a neglected backyard into a vibrant garden with native plants, a water feature, and sustainable irrigation.",
       date: new Date("2023-04-15"),
       imageUrl: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-      serviceId: gardenMaintenanceId
+      serviceId: gardenMaintenanceId,
+      featured: true,
+      status: 'Published',
+      viewCount: 0,
+      location: 'London, UK',
+      projectDuration: '3 weeks',
+      difficultyLevel: 'Moderate'
     });
     
     await this.createPortfolioItem({
@@ -172,16 +183,25 @@ export class MemStorage implements IStorage {
       description: "Designed and implemented landscaping for a corporate campus, featuring drought-resistant plants and efficient irrigation systems.",
       date: new Date("2023-05-22"),
       imageUrl: "https://images.unsplash.com/photo-1626807236036-8c9584a9f8a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-      serviceId: gardenMaintenanceId
+      serviceId: gardenMaintenanceId,
+      featured: false,
+      status: 'Published',
+      viewCount: 0,
+      location: 'Manchester, UK',
+      projectDuration: '6 weeks',
+      difficultyLevel: 'Complex'
     });
     
     // Add blog posts
+    const now = new Date();
     await this.createBlogPost({
       title: "10 Tips for a Thriving Summer Garden",
       excerpt: "Essential tips to help your garden flourish during the hot summer months, from watering techniques to pest management.",
       content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. In hac habitasse platea dictumst. Vivamus adipiscing fermentum quam volutpat aliquam. Integer et elit eget elit facilisis tristique. Nam vel iaculis mauris. Sed ullamcorper tellus erat, ultrices sem tincidunt euismod.",
-      authorId: 1,
+      authorId: 1, // Add authorId field
       publishedAt: new Date("2023-06-01"),
+      createdAt: now,
+      updatedAt: now,
       imageUrl: "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
     });
     
@@ -189,8 +209,10 @@ export class MemStorage implements IStorage {
       title: "Sustainable Gardening Practices",
       excerpt: "Learn how to create an eco-friendly garden that conserves water, supports local wildlife, and reduces environmental impact.",
       content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. In hac habitasse platea dictumst. Vivamus adipiscing fermentum quam volutpat aliquam. Integer et elit eget elit facilisis tristique. Nam vel iaculis mauris. Sed ullamcorper tellus erat, ultrices sem tincidunt euismod.",
-      authorId: 1,
+      authorId: 1, // Add authorId field
       publishedAt: new Date("2023-05-15"),
+      createdAt: now,
+      updatedAt: now,
       imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
     });
     
@@ -224,7 +246,7 @@ export class MemStorage implements IStorage {
   }
 
   // User methods
-  async getUser(id: number): Promise<User | undefined> {
+  async getUser(id: string | number): Promise<User | undefined> {
     return this.users.get(id);
   }
 
@@ -255,7 +277,7 @@ export class MemStorage implements IStorage {
     return user;
   }
 
-  async updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined> {
+  async updateUser(id: string | number, userData: Partial<InsertUser>): Promise<User | undefined> {
     const user = this.users.get(id);
     if (!user) return undefined;
 
@@ -264,12 +286,12 @@ export class MemStorage implements IStorage {
     return updatedUser;
   }
 
-  async deleteUser(id: number): Promise<boolean> {
+  async deleteUser(id: string | number): Promise<boolean> {
     return this.users.delete(id);
   }
 
   // Service methods
-  async getService(id: number): Promise<Service | undefined> {
+  async getService(id: string | number): Promise<Service | undefined> {
     return this.services.get(id);
   }
 
@@ -295,7 +317,7 @@ export class MemStorage implements IStorage {
     return service;
   }
 
-  async updateService(id: number, serviceData: Partial<InsertService>): Promise<Service | undefined> {
+  async updateService(id: string | number, serviceData: Partial<InsertService>): Promise<Service | undefined> {
     const service = this.services.get(id);
     if (!service) return undefined;
 
@@ -304,12 +326,12 @@ export class MemStorage implements IStorage {
     return updatedService;
   }
 
-  async deleteService(id: number): Promise<boolean> {
+  async deleteService(id: string | number): Promise<boolean> {
     return this.services.delete(id);
   }
 
   // Portfolio methods
-  async getPortfolioItem(id: number): Promise<PortfolioItem | undefined> {
+  async getPortfolioItem(id: string | number): Promise<PortfolioItem | undefined> {
     return this.portfolioItems.get(id);
   }
 
@@ -317,7 +339,7 @@ export class MemStorage implements IStorage {
     return Array.from(this.portfolioItems.values());
   }
 
-  async getPortfolioItemsByService(serviceId: number): Promise<PortfolioItem[]> {
+  async getPortfolioItemsByService(serviceId: number | string): Promise<PortfolioItem[]> {
     return Array.from(this.portfolioItems.values()).filter(
       (item) => item.serviceId === serviceId
     );
@@ -328,13 +350,16 @@ export class MemStorage implements IStorage {
     const portfolioItem: PortfolioItem = { 
       ...insertPortfolioItem, 
       id,
-      serviceId: insertPortfolioItem.serviceId || null
+      serviceId: insertPortfolioItem.serviceId || null,
+      featured: insertPortfolioItem.featured || false,
+      status: insertPortfolioItem.status || 'Draft',
+      viewCount: insertPortfolioItem.viewCount || 0
     };
     this.portfolioItems.set(id, portfolioItem);
     return portfolioItem;
   }
 
-  async updatePortfolioItem(id: number, portfolioItemData: Partial<InsertPortfolioItem>): Promise<PortfolioItem | undefined> {
+  async updatePortfolioItem(id: number | string, portfolioItemData: Partial<InsertPortfolioItem>): Promise<PortfolioItem | undefined> {
     const portfolioItem = this.portfolioItems.get(id);
     if (!portfolioItem) return undefined;
 
@@ -343,12 +368,12 @@ export class MemStorage implements IStorage {
     return updatedPortfolioItem;
   }
 
-  async deletePortfolioItem(id: number): Promise<boolean> {
+  async deletePortfolioItem(id: number | string): Promise<boolean> {
     return this.portfolioItems.delete(id);
   }
 
   // Blog methods
-  async getBlogPost(id: number): Promise<BlogPost | undefined> {
+  async getBlogPost(id: string | number): Promise<BlogPost | undefined> {
     return this.blogPosts.get(id);
   }
 
@@ -367,7 +392,7 @@ export class MemStorage implements IStorage {
     return blogPost;
   }
 
-  async updateBlogPost(id: number, blogPostData: Partial<InsertBlogPost>): Promise<BlogPost | undefined> {
+  async updateBlogPost(id: string | number, blogPostData: Partial<InsertBlogPost>): Promise<BlogPost | undefined> {
     const blogPost = this.blogPosts.get(id);
     if (!blogPost) return undefined;
 
@@ -376,12 +401,12 @@ export class MemStorage implements IStorage {
     return updatedBlogPost;
   }
 
-  async deleteBlogPost(id: number): Promise<boolean> {
+  async deleteBlogPost(id: string | number): Promise<boolean> {
     return this.blogPosts.delete(id);
   }
 
   // Inquiry methods
-  async getInquiry(id: number): Promise<Inquiry | undefined> {
+  async getInquiry(id: string | number): Promise<Inquiry | undefined> {
     return this.inquiries.get(id);
   }
 
@@ -402,7 +427,7 @@ export class MemStorage implements IStorage {
     return inquiry;
   }
 
-  async updateInquiry(id: number, inquiryData: Partial<InsertInquiry>): Promise<Inquiry | undefined> {
+  async updateInquiry(id: string | number, inquiryData: Partial<InsertInquiry>): Promise<Inquiry | undefined> {
     const inquiry = this.inquiries.get(id);
     if (!inquiry) return undefined;
 
@@ -411,12 +436,12 @@ export class MemStorage implements IStorage {
     return updatedInquiry;
   }
 
-  async deleteInquiry(id: number): Promise<boolean> {
+  async deleteInquiry(id: string | number): Promise<boolean> {
     return this.inquiries.delete(id);
   }
 
   // Appointment methods
-  async getAppointment(id: number): Promise<Appointment | undefined> {
+  async getAppointment(id: string | number): Promise<Appointment | undefined> {
     return this.appointments.get(id);
   }
 
@@ -429,14 +454,14 @@ export class MemStorage implements IStorage {
     const appointment: Appointment = { 
       ...insertAppointment, 
       id,
-      status: 'scheduled',
+      status: 'Scheduled',
       notes: insertAppointment.notes || null
     };
     this.appointments.set(id, appointment);
     return appointment;
   }
 
-  async updateAppointment(id: number, appointmentData: Partial<InsertAppointment>): Promise<Appointment | undefined> {
+  async updateAppointment(id: string | number, appointmentData: Partial<InsertAppointment>): Promise<Appointment | undefined> {
     const appointment = this.appointments.get(id);
     if (!appointment) return undefined;
 
@@ -445,12 +470,12 @@ export class MemStorage implements IStorage {
     return updatedAppointment;
   }
 
-  async deleteAppointment(id: number): Promise<boolean> {
+  async deleteAppointment(id: string | number): Promise<boolean> {
     return this.appointments.delete(id);
   }
 
   // Testimonial methods
-  async getTestimonial(id: number): Promise<Testimonial | undefined> {
+  async getTestimonial(id: string | number): Promise<Testimonial | undefined> {
     return this.testimonials.get(id);
   }
 
@@ -472,7 +497,7 @@ export class MemStorage implements IStorage {
     return testimonial;
   }
 
-  async updateTestimonial(id: number, testimonialData: Partial<InsertTestimonial>): Promise<Testimonial | undefined> {
+  async updateTestimonial(id: string | number, testimonialData: Partial<InsertTestimonial>): Promise<Testimonial | undefined> {
     const testimonial = this.testimonials.get(id);
     if (!testimonial) return undefined;
 
@@ -481,7 +506,7 @@ export class MemStorage implements IStorage {
     return updatedTestimonial;
   }
 
-  async deleteTestimonial(id: number): Promise<boolean> {
+  async deleteTestimonial(id: string | number): Promise<boolean> {
     return this.testimonials.delete(id);
   }
 }

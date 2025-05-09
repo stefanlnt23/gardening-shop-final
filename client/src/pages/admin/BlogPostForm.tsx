@@ -30,9 +30,10 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 
 // Extend the schema with validation
 const formSchema = insertBlogPostSchema.extend({
-  // Add any additional validation here
   content: z.string().min(30, "Content must be at least 30 characters"),
   excerpt: z.string().min(10, "Excerpt must be at least 10 characters").max(150, "Excerpt must be less than 150 characters"),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional()
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -45,11 +46,11 @@ export default function AdminBlogPostForm() {
 
   // Fetch blog post data if editing
   const { data, isLoading: isLoadingPost } = useQuery({
-    queryKey: ['/api/admin/blog', id],
+    queryKey: ['/api/blog', id],
     queryFn: async () => {
       if (!id) return null;
       console.log(`Fetching blog post with ID: ${id}`);
-      const response = await apiRequest("GET", `/api/admin/blog/${id}`);
+      const response = await apiRequest("GET", `/api/blog/${id}`);
       const data = await response.json();
       console.log("Retrieved blog post data:", data);
       return data;
@@ -57,13 +58,6 @@ export default function AdminBlogPostForm() {
     enabled: isEditing,
   });
 
-  // Fetch users (authors) for the dropdown
-  const { data: usersData, isLoading: isLoadingUsers } = useQuery({
-    queryKey: ['/api/users'],
-    refetchOnWindowFocus: false,
-  });
-
-  const users = usersData?.users || [];
   const blogPost = data?.blogPost;
 
   // Form setup
@@ -74,8 +68,9 @@ export default function AdminBlogPostForm() {
       content: "",
       excerpt: "",
       imageUrl: "",
-      authorId: users.length > 0 ? users[0].id : "000000000000000000000000", // Use first user or default
       publishedAt: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date()
     },
   });
 
@@ -87,8 +82,9 @@ export default function AdminBlogPostForm() {
         content: blogPost.content,
         excerpt: blogPost.excerpt,
         imageUrl: blogPost.imageUrl || "",
-        authorId: blogPost.authorId,
         publishedAt: new Date(blogPost.publishedAt),
+        createdAt: new Date(blogPost.createdAt),
+        updatedAt: new Date(blogPost.updatedAt)
       });
     }
   }, [blogPost, form]);
@@ -150,10 +146,31 @@ export default function AdminBlogPostForm() {
 
   // Handle form submission
   const onSubmit = (values: FormValues) => {
+    const now = new Date();
+    
+    // Ensure all dates are valid Date objects
+    const publishedAt = values.publishedAt instanceof Date ? values.publishedAt : new Date(values.publishedAt);
+    
+    const submissionData = {
+      ...values,
+      imageUrl: values.imageUrl || null,
+      authorId: 1, // Add authorId field
+      publishedAt: publishedAt,
+      createdAt: now,
+      updatedAt: now
+    };
+
+    console.log("Submitting data:", JSON.stringify({
+      ...submissionData,
+      publishedAt: submissionData.publishedAt.toISOString(),
+      createdAt: submissionData.createdAt.toISOString(),
+      updatedAt: submissionData.updatedAt.toISOString()
+    }, null, 2));
+
     if (isEditing) {
-      updateMutation.mutate(values);
+      updateMutation.mutate(submissionData);
     } else {
-      createMutation.mutate(values);
+      createMutation.mutate(submissionData);
     }
   };
 
@@ -241,48 +258,6 @@ export default function AdminBlogPostForm() {
 
                 <FormField
                   control={form.control}
-                  name="authorId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Author</FormLabel>
-                      <Select 
-                        onValueChange={(value) => field.onChange(value)} // Handle as string for MongoDB
-                        value={field.value ? field.value.toString() : undefined}
-                        disabled={isLoadingUsers}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an author" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {isLoadingUsers ? (
-                            <SelectItem value="loading" disabled>Loading authors...</SelectItem>
-                          ) : users.length === 0 ? (
-                            // If no users are available, use a default ID as placeholder
-                            <>
-                              <SelectItem value="none" disabled>No authors available</SelectItem>
-                              <SelectItem value="000000000000000000000000">Use Default Author</SelectItem>
-                            </>
-                          ) : (
-                            users.map((user) => (
-                              <SelectItem key={user.id} value={user.id.toString()}>
-                                {user.name}
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        Who wrote this blog post
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="publishedAt"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
@@ -330,7 +305,14 @@ export default function AdminBlogPostForm() {
                     <FormItem>
                       <FormLabel>Featured Image URL</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://example.com/image.jpg" {...field} />
+                        <Input 
+                          placeholder="https://example.com/image.jpg" 
+                          value={field.value || ''} 
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
                       </FormControl>
                       <FormDescription>
                         A URL to an image for the blog post (optional)

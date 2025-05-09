@@ -18,17 +18,17 @@ export default function AdminTestimonials() {
   const [itemToDelete, setItemToDelete] = useState<Testimonial | null>(null);
 
   // Fetch testimonials
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['/api/testimonials'],
+  const { data, isLoading, error } = useQuery<{ testimonials: Testimonial[] }>({
+    queryKey: ['/api/admin/testimonials'],
     refetchOnWindowFocus: false,
   });
 
-  const testimonials = data?.testimonials || [];
+  const testimonials = data?.testimonials ?? [];
 
   // Delete testimonial mutation
   const deleteTestimonialMutation = useMutation({
-    mutationFn: async (itemId: number) => {
-      return await apiRequest("DELETE", `/api/testimonials/${itemId}`);
+    mutationFn: async (itemId: string | number) => {
+      return await apiRequest("DELETE", `/api/admin/testimonials/${itemId}`);
     },
     onSuccess: () => {
       toast({
@@ -36,6 +36,8 @@ export default function AdminTestimonials() {
         description: "The testimonial has been successfully deleted",
       });
       // Invalidate testimonials query to refresh the list
+      // Invalidate both admin and public testimonials queries
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/testimonials'] });
       queryClient.invalidateQueries({ queryKey: ['/api/testimonials'] });
       setDeleteDialogOpen(false);
     },
@@ -127,7 +129,7 @@ export default function AdminTestimonials() {
                           {Array.from({ length: 5 }).map((_, i) => (
                             <i 
                               key={i}
-                              className={`fas fa-star ${i < item.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                              className={`fas fa-star ${i < (item.rating ?? 0) ? 'text-yellow-400' : 'text-gray-300'}`}
                             ></i>
                           ))}
                         </div>

@@ -74,10 +74,49 @@ const serviceSchema = new mongoose.Schema({
 const portfolioItemSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
-  serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service', required: true },
-  imageUrl: { type: String, required: true },
+  serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
+  
+  // Legacy field for backward compatibility
+  imageUrl: { type: String },
+  
+  // Before/After images
+  images: [{
+    before: { type: String, required: true },
+    after: { type: String, required: true },
+    caption: { type: String },
+    order: { type: Number, default: 0 }
+  }],
+  
+  // Project details
+  location: { type: String },
   completionDate: { type: Date },
-  clientName: { type: String },
+  projectDuration: { type: String },
+  difficultyLevel: { type: String, enum: ['Easy', 'Moderate', 'Complex'] },
+  
+  // Client testimonial
+  clientTestimonial: {
+    clientName: { type: String },
+    comment: { type: String },
+    displayPermission: { type: Boolean, default: false }
+  },
+  
+  // Featured status
+  featured: { type: Boolean, default: false },
+  
+  // SEO fields
+  seo: {
+    metaTitle: { type: String },
+    metaDescription: { type: String },
+    tags: [{ type: String }]
+  },
+  
+  // Status
+  status: { type: String, enum: ['Published', 'Draft'], default: 'Draft' },
+  
+  // Analytics
+  viewCount: { type: Number, default: 0 },
+  
+  // Metadata
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
@@ -86,11 +125,10 @@ const blogPostSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
   excerpt: { type: String, required: true },
-  authorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   imageUrl: { type: String },
-  publishedAt: { type: Date, default: Date.now },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  publishedAt: { type: Date, required: true },
+  createdAt: { type: Date, required: true },
+  updatedAt: { type: Date, required: true }
 });
 
 const inquirySchema = new mongoose.Schema({
@@ -98,19 +136,36 @@ const inquirySchema = new mongoose.Schema({
   email: { type: String, required: true },
   phone: { type: String },
   message: { type: String, required: true },
-  status: { type: String, enum: ['new', 'in-progress', 'completed'], default: 'new' },
+  serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
+  status: { type: String, enum: ['new', 'in-progress', 'resolved', 'archived'], default: 'new' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
 
 const appointmentSchema = new mongoose.Schema({
+  // Customer information
   name: { type: String, required: true },
   email: { type: String, required: true },
   phone: { type: String, required: true },
+  
+  // Address information
+  buildingName: { type: String },
+  streetName: { type: String, required: true },
+  houseNumber: { type: String, required: true },
+  city: { type: String, required: true },
+  county: { type: String, required: true },
+  postalCode: { type: String, required: true },
+  
+  // Appointment details
   serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service', required: true },
   date: { type: Date, required: true },
-  message: { type: String },
-  status: { type: String, enum: ['pending', 'confirmed', 'completed', 'cancelled'], default: 'pending' },
+  priority: { type: String, enum: ['Normal', 'Urgent'], default: 'Normal' },
+  
+  // Admin fields
+  notes: { type: String },
+  status: { type: String, enum: ['Scheduled', 'Completed', 'Cancelled', 'Rescheduled'], default: 'Scheduled' },
+  
+  // Metadata
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
@@ -166,10 +221,20 @@ export function mapPortfolioItemToSchema(item: any): any {
     id: item._id.toString(),
     title: item.title,
     description: item.description,
-    serviceId: item.serviceId.toString(),
+    serviceId: item.serviceId ? item.serviceId.toString() : null,
     imageUrl: item.imageUrl,
+    images: item.images || [],
+    location: item.location,
     completionDate: item.completionDate,
-    clientName: item.clientName
+    projectDuration: item.projectDuration,
+    difficultyLevel: item.difficultyLevel,
+    clientTestimonial: item.clientTestimonial || null,
+    featured: item.featured || false,
+    seo: item.seo || { metaTitle: '', metaDescription: '', tags: [] },
+    status: item.status || 'Draft',
+    viewCount: item.viewCount || 0,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt
   };
 }
 
@@ -179,9 +244,10 @@ export function mapBlogPostToSchema(post: any): any {
     title: post.title,
     content: post.content,
     excerpt: post.excerpt,
-    authorId: post.authorId.toString(),
     imageUrl: post.imageUrl,
-    publishedAt: post.publishedAt
+    publishedAt: post.publishedAt,
+    createdAt: post.createdAt,
+    updatedAt: post.updatedAt
   };
 }
 
@@ -192,8 +258,10 @@ export function mapInquiryToSchema(inquiry: any): any {
     email: inquiry.email,
     phone: inquiry.phone,
     message: inquiry.message,
+    serviceId: inquiry.serviceId ? inquiry.serviceId.toString() : null,
     status: inquiry.status,
-    createdAt: inquiry.createdAt
+    createdAt: inquiry.createdAt,
+    updatedAt: inquiry.updatedAt
   };
 }
 
@@ -203,10 +271,19 @@ export function mapAppointmentToSchema(appointment: any): any {
     name: appointment.name,
     email: appointment.email,
     phone: appointment.phone,
+    buildingName: appointment.buildingName,
+    streetName: appointment.streetName,
+    houseNumber: appointment.houseNumber,
+    city: appointment.city,
+    county: appointment.county,
+    postalCode: appointment.postalCode,
     serviceId: appointment.serviceId.toString(),
     date: appointment.date,
-    message: appointment.message,
-    status: appointment.status
+    priority: appointment.priority,
+    notes: appointment.notes,
+    status: appointment.status,
+    createdAt: appointment.createdAt,
+    updatedAt: appointment.updatedAt
   };
 }
 

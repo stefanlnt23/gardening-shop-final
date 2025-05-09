@@ -12,6 +12,7 @@ import Blog from "@/pages/Blog";
 import Contact from "@/pages/Contact";
 import Services from "@/pages/Services";
 import ServiceDetail from "@/pages/ServiceDetail";
+import BlogDetail from "@/pages/BlogDetail";
 
 // Admin Page imports
 import AdminLogin from "@/pages/admin/Login";
@@ -27,6 +28,8 @@ const AdminTestimonialsForm = React.lazy(() => import("@/pages/admin/Testimonial
 const AdminBlogPosts = React.lazy(() => import("@/pages/admin/BlogPosts"));
 const AdminBlogPostForm = React.lazy(() => import("@/pages/admin/BlogPostForm"));
 const AdminInquiries = React.lazy(() => import("@/pages/admin/Inquiries"));
+const AdminAppointments = React.lazy(() => import("@/pages/admin/Appointments"));
+const AdminAppointmentsForm = React.lazy(() => import("@/pages/admin/AppointmentsForm"));
 
 function Router() {
   return (
@@ -36,6 +39,7 @@ function Router() {
       <Route path="/services" component={Services} />
       <Route path="/services/:id" component={ServiceDetail} />
       <Route path="/blog" component={Blog} />
+      <Route path="/blog/:id" component={BlogDetail} />
       <Route path="/contact" component={Contact} />
       
       {/* Admin Routes */}
@@ -114,6 +118,23 @@ function Router() {
       <Route path="/admin/inquiries">
         <React.Suspense fallback={<div>Loading...</div>}>
           <AdminInquiries />
+        </React.Suspense>
+      </Route>
+      
+      {/* Admin Appointments */}
+      <Route path="/admin/appointments/new">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AdminAppointmentsForm />
+        </React.Suspense>
+      </Route>
+      <Route path="/admin/appointments/:id">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AdminAppointmentsForm />
+        </React.Suspense>
+      </Route>
+      <Route path="/admin/appointments">
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AdminAppointments />
         </React.Suspense>
       </Route>
       

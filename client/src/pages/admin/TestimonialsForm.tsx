@@ -43,10 +43,10 @@ export default function AdminTestimonialsForm() {
 
   // Fetch testimonial data if editing
   const { data, isLoading: isLoadingItem } = useQuery({
-    queryKey: ['/api/testimonials', id],
+    queryKey: ['/api/admin/testimonials', id],
     queryFn: async () => {
       if (!id) return null;
-      const response = await apiRequest("GET", `/api/testimonials/${id}`);
+      const response = await apiRequest("GET", `/api/admin/testimonials/${id}`);
       const data = await response.json();
       return data;
     },
@@ -60,11 +60,11 @@ export default function AdminTestimonialsForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      role: "",
+      role: null,
       content: "",
       rating: 5,
-      displayOrder: 0,
-      imageUrl: ""
+      displayOrder: null,
+      imageUrl: null
     },
   });
 
@@ -73,11 +73,11 @@ export default function AdminTestimonialsForm() {
     if (testimonial) {
       form.reset({
         name: testimonial.name,
-        role: testimonial.role || "",
+        role: testimonial.role || null,
         content: testimonial.content,
-        rating: testimonial.rating || 5,
-        displayOrder: testimonial.displayOrder || 0,
-        imageUrl: testimonial.imageUrl || ""
+        rating: testimonial.rating !== null ? Number(testimonial.rating) : 5,
+        displayOrder: testimonial.displayOrder !== null ? Number(testimonial.displayOrder) : null,
+        imageUrl: testimonial.imageUrl || null
       });
     }
   }, [testimonial, form]);
@@ -85,13 +85,20 @@ export default function AdminTestimonialsForm() {
   // Create mutation
   const createMutation = useMutation({
     mutationFn: async (values: FormValues) => {
-      return await apiRequest("POST", "/api/testimonials", values);
+      const response = await apiRequest("POST", "/api/admin/testimonials", values);
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || "Failed to create testimonial");
+      }
+      return data;
     },
     onSuccess: () => {
       toast({
         title: "Testimonial Created",
         description: "The testimonial has been successfully created",
       });
+      // Invalidate both admin and public testimonials queries
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/testimonials'] });
       queryClient.invalidateQueries({ queryKey: ['/api/testimonials'] });
       setLocation("/admin/testimonials");
     },
@@ -107,15 +114,22 @@ export default function AdminTestimonialsForm() {
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: async (values: FormValues) => {
-      return await apiRequest("PUT", `/api/testimonials/${id}`, values);
+      const response = await apiRequest("PUT", `/api/admin/testimonials/${id}`, values);
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || "Failed to update testimonial");
+      }
+      return data;
     },
     onSuccess: () => {
       toast({
         title: "Testimonial Updated",
         description: "The testimonial has been successfully updated",
       });
+      // Invalidate both admin and public testimonials queries
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/testimonials'] });
       queryClient.invalidateQueries({ queryKey: ['/api/testimonials'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/testimonials', id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/testimonials', id] });
       setLocation("/admin/testimonials");
     },
     onError: (error: any) => {
@@ -131,10 +145,19 @@ export default function AdminTestimonialsForm() {
 
   // Handle form submission
   const onSubmit = (values: FormValues) => {
+    // Ensure rating and displayOrder are numbers
+    const formattedValues = {
+      ...values,
+      rating: values.rating ? Number(values.rating) : null,
+      displayOrder: values.displayOrder ? Number(values.displayOrder) : null
+    };
+
+    console.log('Submitting testimonial:', formattedValues);
+
     if (isEditing) {
-      updateMutation.mutate(values);
+      updateMutation.mutate(formattedValues);
     } else {
-      createMutation.mutate(values);
+      createMutation.mutate(formattedValues);
     }
   };
 
@@ -168,7 +191,7 @@ export default function AdminTestimonialsForm() {
                     <FormItem>
                       <FormLabel>Customer Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter customer name" {...field} />
+                        <Input placeholder="Enter customer name" {...field} value={field.value || ''} />
                       </FormControl>
                       <FormDescription>
                         The name of the customer providing the testimonial
@@ -185,7 +208,7 @@ export default function AdminTestimonialsForm() {
                     <FormItem>
                       <FormLabel>Customer Role/Title</FormLabel>
                       <FormControl>
-                        <Input placeholder="E.g. Homeowner, Business Owner" {...field} />
+                        <Input placeholder="E.g. Homeowner, Business Owner" {...field} value={field.value || ''} />
                       </FormControl>
                       <FormDescription>
                         An optional role or title for the customer
@@ -206,6 +229,7 @@ export default function AdminTestimonialsForm() {
                           placeholder="Enter the customer's testimonial"
                           className="min-h-32"
                           {...field}
+                          value={field.value || ''}
                         />
                       </FormControl>
                       <FormDescription>
@@ -225,7 +249,7 @@ export default function AdminTestimonialsForm() {
                       <FormControl>
                         <RadioGroup
                           onValueChange={(value) => field.onChange(parseInt(value))}
-                          defaultValue={field.value.toString()}
+                          defaultValue={(field.value || 5).toString()}
                           className="flex space-x-2"
                         >
                           {[1, 2, 3, 4, 5].map((rating) => (
@@ -265,6 +289,7 @@ export default function AdminTestimonialsForm() {
                           min={0} 
                           placeholder="0" 
                           {...field} 
+                          value={field.value || 0}
                           onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                         />
                       </FormControl>
@@ -283,7 +308,7 @@ export default function AdminTestimonialsForm() {
                     <FormItem>
                       <FormLabel>Customer Image URL</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://example.com/image.jpg" {...field} />
+                        <Input placeholder="https://example.com/image.jpg" {...field} value={field.value || ''} />
                       </FormControl>
                       <FormDescription>
                         An optional URL to an image of the customer (optional)

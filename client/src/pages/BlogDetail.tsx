@@ -10,6 +10,13 @@ export default function BlogDetail() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/blog', blogId],
+    queryFn: async () => {
+      const response = await fetch(`/api/blog/${blogId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch blog post');
+      }
+      return response.json();
+    },
     enabled: !!blogId,
     refetchOnWindowFocus: false
   });
@@ -88,12 +95,9 @@ export default function BlogDetail() {
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 {blogPost.title}
               </h1>
-              <div className="flex items-center text-gray-600 mb-6">
-                <span className="mr-4">
-                  <i className="fas fa-calendar-alt mr-2"></i> {formattedDate}
-                </span>
+              <div className="text-gray-600 mb-6">
                 <span>
-                  <i className="fas fa-user mr-2"></i> Garden Expert
+                  <i className="fas fa-calendar-alt mr-2"></i> {formattedDate}
                 </span>
               </div>
               {blogPost.imageUrl && (

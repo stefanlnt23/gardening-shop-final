@@ -11,7 +11,7 @@ import * as crypto from 'crypto';
 
 export class MongoDBStorage implements IStorage {
   // User operations
-  async getUser(id: number): Promise<any | undefined> {
+  async getUser(id: string | number): Promise<any | undefined> {
     try {
       const user = await User.findById(id);
       return user ? mapUserToSchema(user) : undefined;
@@ -68,16 +68,17 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
-  async updateUser(id: number, userData: Partial<InsertUser>): Promise<any | undefined> {
+  async updateUser(id: string | number, userData: Partial<InsertUser>): Promise<any | undefined> {
     try {
       // If password is being updated, hash it
-      if (userData.password) {
-        userData.password = await import('./auth').then(auth => auth.hashPassword(userData.password));
+      const updatedData = { ...userData };
+      if (updatedData.password) {
+        updatedData.password = await import('./auth').then(auth => auth.hashPassword(updatedData.password as string));
       }
       
       const updatedUser = await User.findByIdAndUpdate(
         id,
-        { ...userData, updatedAt: new Date() },
+        { ...updatedData, updatedAt: new Date() },
         { new: true }
       );
       return updatedUser ? mapUserToSchema(updatedUser) : undefined;
@@ -87,7 +88,7 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
-  async deleteUser(id: number): Promise<boolean> {
+  async deleteUser(id: string | number): Promise<boolean> {
     try {
       const result = await User.findByIdAndDelete(id);
       return !!result;
@@ -211,7 +212,7 @@ export class MongoDBStorage implements IStorage {
   }
 
   // Portfolio operations
-  async getPortfolioItem(id: number): Promise<any | undefined> {
+  async getPortfolioItem(id: string | number): Promise<any | undefined> {
     try {
       const item = await PortfolioItem.findById(id);
       return item ? mapPortfolioItemToSchema(item) : undefined;
@@ -244,7 +245,15 @@ export class MongoDBStorage implements IStorage {
 
   async createPortfolioItem(insertPortfolioItem: InsertPortfolioItem): Promise<any> {
     try {
-      const newItem = new PortfolioItem(insertPortfolioItem);
+      // Ensure required fields are present
+      const portfolioData = {
+        ...insertPortfolioItem,
+        featured: insertPortfolioItem.featured || false,
+        status: insertPortfolioItem.status || 'Draft',
+        viewCount: insertPortfolioItem.viewCount || 0
+      };
+      
+      const newItem = new PortfolioItem(portfolioData);
       const savedItem = await newItem.save();
       return mapPortfolioItemToSchema(savedItem);
     } catch (error) {
@@ -253,7 +262,7 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
-  async updatePortfolioItem(id: number, portfolioItemData: Partial<InsertPortfolioItem>): Promise<any | undefined> {
+  async updatePortfolioItem(id: string | number, portfolioItemData: Partial<InsertPortfolioItem>): Promise<any | undefined> {
     try {
       const updatedItem = await PortfolioItem.findByIdAndUpdate(
         id,
@@ -267,7 +276,7 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
-  async deletePortfolioItem(id: number): Promise<boolean> {
+  async deletePortfolioItem(id: string | number): Promise<boolean> {
     try {
       const result = await PortfolioItem.findByIdAndDelete(id);
       return !!result;
@@ -307,21 +316,22 @@ export class MongoDBStorage implements IStorage {
     try {
       log(`Creating blog post with data: ${JSON.stringify(insertBlogPost)}`, 'mongodb');
       
-      // Ensure authorId exists - if it's a placeholder, fetch the first admin user
-      if (!insertBlogPost.authorId || insertBlogPost.authorId === '000000000000000000000000') {
-        log(`AuthorId is missing or placeholder, trying to find default admin...`, 'mongodb');
-        const adminUser = await User.findOne({ role: 'admin' });
-        
-        if (adminUser) {
-          log(`Found admin user ${adminUser._id} to use as author`, 'mongodb');
-          insertBlogPost.authorId = adminUser._id;
-        } else {
-          log(`No admin user found for default author`, 'mongodb');
-          // We'll let it continue with the placeholder ID, which might fail
-        }
-      }
+      // Log the schema of the BlogPost model
+      log(`BlogPost schema: ${JSON.stringify(BlogPost.schema.paths)}`, 'mongodb');
       
-      const newPost = new BlogPost(insertBlogPost);
+      const now = new Date();
+      const postData = {
+        ...insertBlogPost,
+        imageUrl: insertBlogPost.imageUrl || null,
+        createdAt: insertBlogPost.createdAt || now,
+        updatedAt: insertBlogPost.updatedAt || now
+      };
+      
+      log(`Processed blog post data for MongoDB: ${JSON.stringify(postData)}`, 'mongodb');
+      
+      const newPost = new BlogPost(postData);
+      log(`New blog post instance created: ${JSON.stringify(newPost)}`, 'mongodb');
+      
       const savedPost = await newPost.save();
       log(`Blog post created successfully with ID: ${savedPost._id}`, 'mongodb');
       return mapBlogPostToSchema(savedPost);
@@ -334,21 +344,15 @@ export class MongoDBStorage implements IStorage {
   async updateBlogPost(id: number | string, blogPostData: Partial<InsertBlogPost>): Promise<any | undefined> {
     try {
       log(`Updating blog post with ID: ${id}, data: ${JSON.stringify(blogPostData)}`, 'mongodb');
-      
-      // Handle default authorId or placeholder the same as in create
-      if (!blogPostData.authorId || blogPostData.authorId === '000000000000000000000000') {
-        log(`AuthorId is missing or placeholder, trying to find default admin...`, 'mongodb');
-        const adminUser = await User.findOne({ role: 'admin' });
-        
-        if (adminUser) {
-          log(`Found admin user ${adminUser._id} to use as author`, 'mongodb');
-          blogPostData.authorId = adminUser._id;
-        }
-      }
-      
+      const now = new Date();
+      const updateData = {
+        ...blogPostData,
+        imageUrl: blogPostData.imageUrl || null,
+        updatedAt: now
+      };
       const updatedPost = await BlogPost.findByIdAndUpdate(
         id,
-        { ...blogPostData, updatedAt: new Date() },
+        updateData,
         { new: true }
       );
       
@@ -377,10 +381,29 @@ export class MongoDBStorage implements IStorage {
   }
 
   // Inquiry operations
-  async getInquiry(id: number): Promise<any | undefined> {
+  async getInquiry(id: number | string): Promise<any | undefined> {
     try {
-      const inquiry = await Inquiry.findById(id);
-      return inquiry ? mapInquiryToSchema(inquiry) : undefined;
+      log(`Fetching inquiry with ID: ${id}`, 'mongodb');
+      
+      // Ensure we have a valid MongoDB ObjectId
+      let objectId;
+      try {
+        objectId = new mongoose.Types.ObjectId(id.toString());
+        log(`Converted ID ${id} to ObjectId: ${objectId}`, 'mongodb');
+      } catch (error) {
+        log(`Failed to convert ID ${id} to ObjectId: ${error}`, 'mongodb');
+        return undefined;
+      }
+      
+      const inquiry = await Inquiry.findById(objectId);
+      
+      if (!inquiry) {
+        log(`Inquiry with ID ${id} not found`, 'mongodb');
+        return undefined;
+      }
+      
+      log(`Successfully found inquiry: ${inquiry._id}`, 'mongodb');
+      return mapInquiryToSchema(inquiry);
     } catch (error) {
       log(`Error fetching inquiry with id ${id}: ${error}`, 'mongodb');
       return undefined;
@@ -399,8 +422,18 @@ export class MongoDBStorage implements IStorage {
 
   async createInquiry(insertInquiry: InsertInquiry): Promise<any> {
     try {
-      const newInquiry = new Inquiry(insertInquiry);
+      log(`Creating new inquiry with data: ${JSON.stringify(insertInquiry)}`, 'mongodb');
+      
+      // Convert serviceId to ObjectId if it exists
+      const inquiryData = {
+        ...insertInquiry,
+        serviceId: insertInquiry.serviceId ? new mongoose.Types.ObjectId(insertInquiry.serviceId.toString()) : null,
+        status: insertInquiry.status || 'new'
+      };
+      
+      const newInquiry = new Inquiry(inquiryData);
       const savedInquiry = await newInquiry.save();
+      log(`Successfully created inquiry with ID: ${savedInquiry._id}`, 'mongodb');
       return mapInquiryToSchema(savedInquiry);
     } catch (error) {
       log(`Error creating inquiry: ${error}`, 'mongodb');
@@ -408,24 +441,71 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
-  async updateInquiry(id: number, inquiryData: Partial<InsertInquiry>): Promise<any | undefined> {
+  async updateInquiry(id: number | string, inquiryData: Partial<InsertInquiry>): Promise<any | undefined> {
     try {
+      log(`Updating inquiry with ID: ${id}, data: ${JSON.stringify(inquiryData)}`, 'mongodb');
+      
+      // Ensure we have a valid MongoDB ObjectId
+      let objectId;
+      try {
+        objectId = new mongoose.Types.ObjectId(id.toString());
+        log(`Converted ID ${id} to ObjectId: ${objectId}`, 'mongodb');
+      } catch (error) {
+        log(`Failed to convert ID ${id} to ObjectId: ${error}`, 'mongodb');
+        return undefined;
+      }
+      
+      // Convert serviceId to ObjectId if it exists in the update data
+      const updateData = {
+        ...inquiryData,
+        serviceId: inquiryData.serviceId ? new mongoose.Types.ObjectId(inquiryData.serviceId.toString()) : undefined,
+        updatedAt: new Date()
+      };
+      
+      log(`Finding and updating inquiry with ObjectId: ${objectId}`, 'mongodb');
       const updatedInquiry = await Inquiry.findByIdAndUpdate(
-        id,
-        { ...inquiryData, updatedAt: new Date() },
+        objectId,
+        updateData,
         { new: true }
       );
-      return updatedInquiry ? mapInquiryToSchema(updatedInquiry) : undefined;
+      
+      if (!updatedInquiry) {
+        log(`Inquiry with ID ${id} not found for update`, 'mongodb');
+        return undefined;
+      }
+      
+      log(`Successfully updated inquiry: ${updatedInquiry._id}`, 'mongodb');
+      return mapInquiryToSchema(updatedInquiry);
     } catch (error) {
       log(`Error updating inquiry with id ${id}: ${error}`, 'mongodb');
       return undefined;
     }
   }
 
-  async deleteInquiry(id: number): Promise<boolean> {
+  async deleteInquiry(id: number | string): Promise<boolean> {
     try {
-      const result = await Inquiry.findByIdAndDelete(id);
-      return !!result;
+      log(`Attempting to delete inquiry with ID: ${id}`, 'mongodb');
+      
+      // Ensure we have a valid MongoDB ObjectId
+      let objectId;
+      try {
+        objectId = new mongoose.Types.ObjectId(id.toString());
+        log(`Converted ID ${id} to ObjectId: ${objectId}`, 'mongodb');
+      } catch (error) {
+        log(`Failed to convert ID ${id} to ObjectId: ${error}`, 'mongodb');
+        return false;
+      }
+      
+      log(`Finding and deleting inquiry with ObjectId: ${objectId}`, 'mongodb');
+      const result = await Inquiry.findByIdAndDelete(objectId);
+      
+      if (!result) {
+        log(`Inquiry with ID ${id} not found for deletion`, 'mongodb');
+        return false;
+      }
+      
+      log(`Successfully deleted inquiry with ID: ${id}`, 'mongodb');
+      return true;
     } catch (error) {
       log(`Error deleting inquiry with id ${id}: ${error}`, 'mongodb');
       return false;
@@ -433,7 +513,7 @@ export class MongoDBStorage implements IStorage {
   }
 
   // Appointment operations
-  async getAppointment(id: number): Promise<any | undefined> {
+  async getAppointment(id: string | number): Promise<any | undefined> {
     try {
       const appointment = await Appointment.findById(id);
       return appointment ? mapAppointmentToSchema(appointment) : undefined;
@@ -455,8 +535,19 @@ export class MongoDBStorage implements IStorage {
 
   async createAppointment(insertAppointment: InsertAppointment): Promise<any> {
     try {
-      const newAppointment = new Appointment(insertAppointment);
+      log(`Creating new appointment with data: ${JSON.stringify(insertAppointment)}`, 'mongodb');
+      
+      // Ensure serviceId is a valid ObjectId
+      const appointmentData = {
+        ...insertAppointment,
+        serviceId: insertAppointment.serviceId 
+          ? new mongoose.Types.ObjectId(insertAppointment.serviceId.toString()) 
+          : null
+      };
+      
+      const newAppointment = new Appointment(appointmentData);
       const savedAppointment = await newAppointment.save();
+      log(`Successfully created appointment with ID: ${savedAppointment._id}`, 'mongodb');
       return mapAppointmentToSchema(savedAppointment);
     } catch (error) {
       log(`Error creating appointment: ${error}`, 'mongodb');
@@ -464,21 +555,40 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
-  async updateAppointment(id: number, appointmentData: Partial<InsertAppointment>): Promise<any | undefined> {
+  async updateAppointment(id: string | number, appointmentData: Partial<InsertAppointment>): Promise<any | undefined> {
     try {
+      log(`Updating appointment with ID: ${id}, data: ${JSON.stringify(appointmentData)}`, 'mongodb');
+      
+      // Process serviceId if it exists in the update data
+      const updateData: any = {
+        ...appointmentData,
+        updatedAt: new Date()
+      };
+      
+      if (appointmentData.serviceId) {
+        updateData.serviceId = new mongoose.Types.ObjectId(appointmentData.serviceId.toString());
+      }
+      
       const updatedAppointment = await Appointment.findByIdAndUpdate(
         id,
-        { ...appointmentData, updatedAt: new Date() },
+        updateData,
         { new: true }
       );
-      return updatedAppointment ? mapAppointmentToSchema(updatedAppointment) : undefined;
+      
+      if (!updatedAppointment) {
+        log(`Appointment with ID ${id} not found for update`, 'mongodb');
+        return undefined;
+      }
+      
+      log(`Successfully updated appointment: ${updatedAppointment._id}`, 'mongodb');
+      return mapAppointmentToSchema(updatedAppointment);
     } catch (error) {
       log(`Error updating appointment with id ${id}: ${error}`, 'mongodb');
       return undefined;
     }
   }
 
-  async deleteAppointment(id: number): Promise<boolean> {
+  async deleteAppointment(id: string | number): Promise<boolean> {
     try {
       const result = await Appointment.findByIdAndDelete(id);
       return !!result;
@@ -489,8 +599,9 @@ export class MongoDBStorage implements IStorage {
   }
 
   // Testimonial operations
-  async getTestimonial(id: number): Promise<any | undefined> {
+  async getTestimonial(id: number | string): Promise<any | undefined> {
     try {
+      log(`Fetching testimonial with ID: ${id}`, 'mongodb');
       const testimonial = await Testimonial.findById(id);
       return testimonial ? mapTestimonialToSchema(testimonial) : undefined;
     } catch (error) {
@@ -520,7 +631,7 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
-  async updateTestimonial(id: number, testimonialData: Partial<InsertTestimonial>): Promise<any | undefined> {
+  async updateTestimonial(id: number | string, testimonialData: Partial<InsertTestimonial>): Promise<any | undefined> {
     try {
       const updatedTestimonial = await Testimonial.findByIdAndUpdate(
         id,
@@ -534,9 +645,11 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
-  async deleteTestimonial(id: number): Promise<boolean> {
+  async deleteTestimonial(id: number | string): Promise<boolean> {
     try {
+      log(`Attempting to delete testimonial with ID: ${id}`, 'mongodb');
       const result = await Testimonial.findByIdAndDelete(id);
+      log(`Delete testimonial result: ${result ? 'Success' : 'Not found'}`, 'mongodb');
       return !!result;
     } catch (error) {
       log(`Error deleting testimonial with id ${id}: ${error}`, 'mongodb');
@@ -567,46 +680,56 @@ export class MongoDBStorage implements IStorage {
           name: 'Garden Maintenance',
           description: 'Our garden maintenance service includes weeding, pruning, lawn care, and general upkeep to keep your garden looking its best year-round.',
           shortDesc: 'Regular maintenance to keep your garden healthy and beautiful',
-          price: 125,
+          price: "From $125/month",
           imageUrl: '/images/services/maintenance.jpg',
-          isFeatured: true
+          featured: true
         });
         
         const service2 = await this.createService({
           name: 'Landscape Design',
           description: 'Our landscape design service creates beautiful, functional outdoor spaces tailored to your preferences and site conditions.',
           shortDesc: 'Custom designs to transform your outdoor space',
-          price: 350,
+          price: "From $350",
           imageUrl: '/images/services/design.jpg',
-          isFeatured: true
+          featured: true
         });
         
         const service3 = await this.createService({
           name: 'Planting Services',
           description: 'Our planting services include selection, placement, and installation of trees, shrubs, perennials, and seasonal flowers.',
           shortDesc: 'Expert plant selection and installation',
-          price: 200,
+          price: "From $200",
           imageUrl: '/images/services/planting.jpg',
-          isFeatured: true
+          featured: true
         });
         
         // Create portfolio items
         await this.createPortfolioItem({
           title: 'Modern Backyard Transformation',
           description: 'Complete redesign of a neglected backyard into a modern outdoor living space with native plants and sustainable features.',
-          serviceId: service2.id,
+          serviceId: "2",
           imageUrl: '/images/portfolio/backyard1.jpg',
-          completionDate: new Date('2023-05-15'),
-          clientName: 'Johnson Family'
+          date: new Date('2023-05-15'),
+          featured: true,
+          status: 'Published',
+          viewCount: 0,
+          location: 'London, UK',
+          projectDuration: '4 weeks',
+          difficultyLevel: 'Moderate'
         });
         
         await this.createPortfolioItem({
           title: 'Drought-Resistant Front Yard',
           description: 'Conversion of a water-hungry lawn into a beautiful, low-maintenance xeriscape with native plants.',
-          serviceId: service3.id,
+          serviceId: "3",
           imageUrl: '/images/portfolio/frontyard1.jpg',
-          completionDate: new Date('2023-07-22'),
-          clientName: 'Smith Residence'
+          date: new Date('2023-07-22'),
+          featured: false,
+          status: 'Published',
+          viewCount: 0,
+          location: 'Manchester, UK',
+          projectDuration: '2 weeks',
+          difficultyLevel: 'Easy'
         });
         
         // Create testimonials
@@ -629,22 +752,27 @@ export class MongoDBStorage implements IStorage {
         });
         
         // Create blog posts
+        const now = new Date();
         await this.createBlogPost({
           title: 'Top 10 Plants for Shade Gardens',
           content: 'Long-form content about the best shade plants...',
           excerpt: 'Discover beautiful plants that thrive in shaded areas and create stunning garden displays even without direct sunlight.',
-          authorId: adminUser.id,
           imageUrl: '/images/blog/shade-plants.jpg',
-          publishedAt: new Date('2023-04-12')
+          authorId: "1", // Add authorId field
+          publishedAt: new Date('2023-04-12'),
+          createdAt: now,
+          updatedAt: now
         });
         
         await this.createBlogPost({
           title: 'How to Create a Pollinator-Friendly Garden',
           content: 'Long-form content about attracting pollinators...',
           excerpt: 'Learn how to support local ecosystems by creating a garden that attracts and nourishes important pollinators like bees and butterflies.',
-          authorId: adminUser.id,
           imageUrl: '/images/blog/pollinators.jpg',
-          publishedAt: new Date('2023-05-18')
+          authorId: "1", // Add authorId field
+          publishedAt: new Date('2023-05-18'),
+          createdAt: now,
+          updatedAt: now
         });
         
         log('Demo data successfully seeded to MongoDB', 'mongodb');
