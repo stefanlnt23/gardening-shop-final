@@ -84,6 +84,7 @@ const portfolioItemSchema = new mongoose.Schema({
     before: { type: String, required: true },
     after: { type: String, required: true },
     caption: { type: String },
+    richDescription: { type: String },
     order: { type: Number, default: 0 }
   }],
   

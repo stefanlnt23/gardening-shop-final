@@ -127,6 +127,7 @@ const imagePairSchema = z.object({
   before: z.string().min(1, "Before image is required"),
   after: z.string().min(1, "After image is required"),
   caption: z.string().optional(),
+  richDescription: z.string().optional(),
   order: z.number().default(0)
 });
 
