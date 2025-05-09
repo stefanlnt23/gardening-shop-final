@@ -343,6 +343,6 @@ return (
           </div>
         </div>
       </footer>
-    </div>
+    </MainLayout>
   );
 }
