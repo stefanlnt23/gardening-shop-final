@@ -65,8 +65,10 @@ export default function AdminPortfolioForm() {
     queryKey: ['/api/portfolio', id],
     queryFn: async () => {
       if (!id) return null;
-      const response = await apiRequest("GET", `/api/portfolio/${id}`);
+      console.log("Fetching portfolio item data for editing, ID:", id);
+      const response = await apiRequest("GET", `/api/admin/portfolio/${id}`);
       const data = await response.json();
+      console.log("Received portfolio item data:", data);
       return data;
     },
     enabled: isEditing,

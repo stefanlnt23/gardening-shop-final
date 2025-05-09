@@ -53,13 +53,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // With MongoDB we need to use the string ID directly instead of parsing to integer
       const id = req.params.id;
       console.log(`Fetching service with ID: ${id}`);
-      
+
       const service = await storage.getService(id);
-      
+
       if (!service) {
         return res.status(404).json({ message: "Service not found" });
       }
-      
+
       res.json({ service });
     } catch (error) {
       console.error("Error fetching service:", error);
@@ -82,13 +82,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = req.params.id;
       console.log(`Fetching portfolio item with ID: ${id}`);
-      
+
       const portfolioItem = await storage.getPortfolioItem(id);
-      
+
       if (!portfolioItem) {
         return res.status(404).json({ message: "Portfolio item not found" });
       }
-      
+
       res.json({ portfolioItem });
     } catch (error) {
       console.error("Error fetching portfolio item:", error);
@@ -101,7 +101,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // With MongoDB we need to use the string ID directly instead of parsing to integer
       const serviceId = req.params.serviceId;
       console.log(`Fetching portfolio items for service with ID: ${serviceId}`);
-      
+
       const portfolioItems = await storage.getPortfolioItemsByService(serviceId);
       res.json({ portfolioItems });
     } catch (error) {
@@ -125,14 +125,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = req.params.id;
       console.log(`Fetching blog post with ID: ${id}`);
-      
+
       const blogPost = await storage.getBlogPost(id);
-      
+
       if (!blogPost) {
         console.log(`Blog post with ID ${id} not found`);
         return res.status(404).json({ message: "Blog post not found" });
       }
-      
+
       console.log(`Successfully found blog post: ${blogPost.title}`);
       res.json({ blogPost });
     } catch (error) {
@@ -162,16 +162,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: z.string().min(10, "Message must be at least 10 characters"),
         serviceId: z.string().optional() // Changed to string for MongoDB IDs
       });
-      
+
       const validated = contactSchema.safeParse(req.body);
-      
+
       if (!validated.success) {
         return res.status(400).json({ 
           message: "Validation failed",
           errors: validated.error.format()
         });
       }
-      
+
       console.log("Creating new inquiry with data:", JSON.stringify(validated.data));
       const inquiry = await storage.createInquiry({
         ...validated.data,
@@ -179,7 +179,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: new Date()
       });
       console.log("Successfully created inquiry:", inquiry.id);
-      
+
       res.json({ 
         success: true, 
         message: "Thank you for your message! We'll get back to you soon.",
@@ -213,16 +213,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Optional fields
         notes: z.string().optional()
       });
-      
+
       const validated = publicAppointmentSchema.safeParse(req.body);
-      
+
       if (!validated.success) {
         return res.status(400).json({ 
           message: "Validation failed", 
           errors: validated.error.format()
         });
       }
-      
+
       const { date, ...rest } = validated.data;
       const appointment = await storage.createAppointment({
         ...rest,
@@ -230,7 +230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: "Scheduled",
         priority: "Normal"
       });
-      
+
       res.json({ 
         success: true, 
         message: "Your appointment has been booked! We'll see you soon.",
@@ -243,31 +243,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // =========== ADMIN API ROUTES ===========
-  
+
   // Admin authentication
   app.post("/api/admin/login", async (req, res) => {
     try {
       const { username, password } = req.body;
-      
+
       if (!username || !password) {
         return res.status(400).json({ message: "Username and password are required" });
       }
-      
+
       const user = await storage.getUserByUsername(username);
-      
+
       if (!user) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
-      
+
       const passwordsMatch = await comparePasswords(password, user.password);
       if (!passwordsMatch) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
-      
+
       if (user.role !== 'admin') {
         return res.status(403).json({ message: "Unauthorized access" });
       }
-      
+
       // In a real app you would create a session or JWT token here
       res.json({ 
         success: true, 
@@ -293,9 +293,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/services", authenticateAdmin, async (req, res) => {
     try {
       console.log("Request body for service creation:", JSON.stringify(req.body));
-      
+
       const validated = insertServiceSchema.safeParse(req.body);
-      
+
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
         return res.status(400).json({ 
@@ -303,9 +303,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           errors: validated.error.format()
         });
       }
-      
+
       console.log("Validated data:", JSON.stringify(validated.data));
-      
+
       const service = await storage.createService(validated.data);
       res.json({ success: true, service });
     } catch (error) {
@@ -318,20 +318,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = parseInt(req.params.id);
       const validated = insertServiceSchema.partial().safeParse(req.body);
-      
+
       if (!validated.success) {
         return res.status(400).json({ 
           message: "Validation failed", 
           errors: validated.error.format()
         });
       }
-      
+
       const service = await storage.updateService(id, validated.data);
-      
+
       if (!service) {
         return res.status(404).json({ message: "Service not found" });
       }
-      
+
       res.json({ success: true, service });
     } catch (error) {
       console.error("Error updating service:", error);
@@ -344,11 +344,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const id = req.params.id; // MongoDB uses string IDs directly
       console.log(`Admin deleting service with ID: ${id}`);
       const success = await storage.deleteService(id);
-      
+
       if (!success) {
         return res.status(404).json({ message: "Service not found" });
       }
-      
+
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting service:", error);
@@ -370,9 +370,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/portfolio", authenticateAdmin, async (req, res) => {
     try {
       console.log("Received portfolio item data:", JSON.stringify(req.body, null, 2));
-      
+
       const validated = insertPortfolioItemSchema.safeParse(req.body);
-      
+
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
         return res.status(400).json({ 
@@ -380,7 +380,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           errors: validated.error.format()
         });
       }
-      
+
       console.log("Validation successful, creating portfolio item");
       const portfolioItem = await storage.createPortfolioItem(validated.data);
       console.log("Portfolio item created successfully:", portfolioItem.id);
@@ -395,9 +395,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = req.params.id; // Use string ID for MongoDB
       console.log(`Admin updating portfolio item with ID: ${id}, data:`, JSON.stringify(req.body, null, 2));
-      
+
       const validated = insertPortfolioItemSchema.partial().safeParse(req.body);
-      
+
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
         return res.status(400).json({ 
@@ -405,15 +405,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           errors: validated.error.format()
         });
       }
-      
+
       console.log("Validation successful, updating portfolio item");
       const portfolioItem = await storage.updatePortfolioItem(id, validated.data);
-      
+
       if (!portfolioItem) {
         console.log(`Portfolio item with ID ${id} not found for update`);
         return res.status(404).json({ message: "Portfolio item not found" });
       }
-      
+
       console.log(`Successfully updated portfolio item: ${portfolioItem.id}`);
       res.json({ success: true, portfolioItem });
     } catch (error) {
@@ -426,19 +426,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = req.params.id; // Use string ID for MongoDB
       console.log(`Admin deleting portfolio item with ID: ${id}`);
-      
+
       const success = await storage.deletePortfolioItem(id);
-      
+
       if (!success) {
         console.log(`Portfolio item with ID ${id} not found for deletion`);
         return res.status(404).json({ message: "Portfolio item not found" });
       }
-      
+
       console.log(`Successfully deleted portfolio item with ID: ${id}`);
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting portfolio item:", error);
       res.status(500).json({ message: "Failed to delete portfolio item" });
+    }
+  });
+
+  // Get a specific portfolio item (admin)
+  app.get('/api/admin/portfolio/:id', async (req, res) => {
+    try {
+      console.log(`Fetching admin portfolio item with ID: ${req.params.id}`);
+      const portfolioItem = await storage.getPortfolioItem(req.params.id);
+      if (!portfolioItem) {
+        console.log(`Portfolio item not found: ${req.params.id}`);
+        return res.status(404).json({ error: 'Portfolio item not found' });
+      }
+      console.log("Returning portfolio item data for admin editing");
+      res.json({ portfolioItem });
+    } catch (error) {
+      console.error("Error fetching portfolio item:", error);
+      res.status(500).json({ error: 'Failed to fetch portfolio item' });
     }
   });
 
@@ -456,7 +473,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/blog", authenticateAdmin, async (req, res) => {
     try {
       console.log("Received blog post data:", JSON.stringify(req.body, null, 2));
-      
+
       // Ensure all date fields are properly converted to Date objects
       const data = {
         ...req.body
@@ -471,7 +488,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAtIsDate: data.createdAt instanceof Date,
         updatedAtIsDate: data.updatedAt instanceof Date
       });
-      
+
       console.log("Processed blog post data:", JSON.stringify(data, null, 2));
 
       // Create a custom schema for this specific endpoint
@@ -485,9 +502,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: z.string().transform(val => new Date(val)),
         updatedAt: z.string().transform(val => new Date(val))
       });
-      
+
       const validated = customBlogPostSchema.safeParse(data);
-      
+
       if (!validated.success) {
         console.error("Blog post validation failed:", JSON.stringify(validated.error.format(), null, 2));
         return res.status(400).json({ 
@@ -495,7 +512,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           errors: validated.error.format()
         });
       }
-      
+
       console.log("Validation successful, creating blog post");
       const blogPost = await storage.createBlogPost(validated.data);
       console.log("Blog post created successfully:", blogPost.id);
@@ -510,9 +527,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = req.params.id;
       console.log(`Admin updating blog post with ID: ${id}`);
-      
+
       const validated = insertBlogPostSchema.partial().safeParse(req.body);
-      
+
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
         return res.status(400).json({ 
@@ -520,14 +537,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           errors: validated.error.format()
         });
       }
-      
+
       const blogPost = await storage.updateBlogPost(id, validated.data);
-      
+
       if (!blogPost) {
         console.log(`Blog post with ID ${id} not found for update`);
         return res.status(404).json({ message: "Blog post not found" });
       }
-      
+
       console.log(`Successfully updated blog post: ${blogPost.title}`);
       res.json({ success: true, blogPost });
     } catch (error) {
@@ -540,14 +557,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = req.params.id;
       console.log(`Admin deleting blog post with ID: ${id}`);
-      
+
       const success = await storage.deleteBlogPost(id);
-      
+
       if (!success) {
         console.log(`Blog post with ID ${id} not found for deletion`);
         return res.status(404).json({ message: "Blog post not found" });
       }
-      
+
       console.log(`Successfully deleted blog post with ID: ${id}`);
       res.json({ success: true });
     } catch (error) {
@@ -570,9 +587,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/testimonials", authenticateAdmin, async (req, res) => {
     try {
       console.log("Received testimonial data:", JSON.stringify(req.body, null, 2));
-      
+
       const validated = insertTestimonialSchema.safeParse(req.body);
-      
+
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
         return res.status(400).json({ 
@@ -580,7 +597,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           errors: validated.error.format()
         });
       }
-      
+
       console.log("Validation successful, creating testimonial");
       const testimonial = await storage.createTestimonial(validated.data);
       console.log("Testimonial created successfully:", testimonial.id);
@@ -595,22 +612,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = req.params.id;
       console.log(`Admin updating testimonial with ID: ${id}`);
-      
+
       const validated = insertTestimonialSchema.partial().safeParse(req.body);
-      
+
       if (!validated.success) {
         return res.status(400).json({ 
           message: "Validation failed", 
           errors: validated.error.format()
         });
       }
-      
+
       const testimonial = await storage.updateTestimonial(id, validated.data);
-      
+
       if (!testimonial) {
         return res.status(404).json({ message: "Testimonial not found" });
       }
-      
+
       res.json({ success: true, testimonial });
     } catch (error) {
       console.error("Error updating testimonial:", error);
@@ -622,11 +639,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = req.params.id;
       const success = await storage.deleteTestimonial(id);
-      
+
       if (!success) {
         return res.status(404).json({ message: "Testimonial not found" });
       }
-      
+
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting testimonial:", error);
@@ -649,9 +666,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = req.params.id;
       console.log(`Admin updating inquiry with ID: ${id}`);
-      
+
       const validated = insertInquirySchema.partial().safeParse(req.body);
-      
+
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
         return res.status(400).json({ 
@@ -659,15 +676,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           errors: validated.error.format()
         });
       }
-      
+
       console.log("Validation successful, updating inquiry");
       const inquiry = await storage.updateInquiry(id, validated.data);
-      
+
       if (!inquiry) {
         console.log(`Inquiry with ID ${id} not found for update`);
         return res.status(404).json({ message: "Inquiry not found" });
       }
-      
+
       console.log(`Successfully updated inquiry: ${inquiry.id}`);
       res.json({ success: true, inquiry });
     } catch (error) {
@@ -680,14 +697,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = req.params.id;
       console.log(`Admin attempting to delete inquiry with ID: ${id}`);
-      
+
       const success = await storage.deleteInquiry(id);
-      
+
       if (!success) {
         console.log(`Inquiry with ID ${id} not found for deletion`);
         return res.status(404).json({ message: "Inquiry not found" });
       }
-      
+
       console.log(`Successfully deleted inquiry with ID: ${id}`);
       res.json({ success: true });
     } catch (error) {
@@ -706,20 +723,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch appointments" });
     }
   });
-  
+
   // Get single appointment by ID
   app.get("/api/admin/appointments/:id", authenticateAdmin, async (req, res) => {
     try {
       const id = req.params.id;
       console.log(`Fetching appointment with ID: ${id}`);
-      
+
       const appointment = await storage.getAppointment(id);
-      
+
       if (!appointment) {
         console.log(`Appointment with ID ${id} not found`);
         return res.status(404).json({ message: "Appointment not found" });
       }
-      
+
       console.log(`Successfully found appointment for: ${appointment.name}`);
       res.json({ success: true, appointment });
     } catch (error) {
@@ -732,9 +749,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/appointments", authenticateAdmin, async (req, res) => {
     try {
       console.log("Request body for appointment creation:", JSON.stringify(req.body));
-      
+
       const validated = insertAppointmentSchema.safeParse(req.body);
-      
+
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
         return res.status(400).json({ 
@@ -742,9 +759,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           errors: validated.error.format()
         });
       }
-      
+
       console.log("Validated data:", JSON.stringify(validated.data));
-      
+
       // Convert date string to Date object if needed
       const appointmentData = {
         ...validated.data,
@@ -752,7 +769,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ? validated.data.date 
           : new Date(validated.data.date)
       };
-      
+
       const appointment = await storage.createAppointment(appointmentData);
       res.json({ success: true, appointment });
     } catch (error) {
@@ -765,14 +782,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = req.params.id; // Use string ID for MongoDB
       const validated = insertAppointmentSchema.partial().safeParse(req.body);
-      
+
       if (!validated.success) {
         return res.status(400).json({ 
           message: "Validation failed", 
           errors: validated.error.format()
         });
       }
-      
+
       // Convert date string to Date object if needed
       const updateData = {
         ...validated.data,
@@ -782,13 +799,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             ? new Date(validated.data.date) 
             : undefined
       };
-      
+
       const appointment = await storage.updateAppointment(id, updateData);
-      
+
       if (!appointment) {
         return res.status(404).json({ message: "Appointment not found" });
       }
-      
+
       res.json({ success: true, appointment });
     } catch (error) {
       console.error("Error updating appointment:", error);
@@ -800,11 +817,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = req.params.id; // Use string ID for MongoDB
       const success = await storage.deleteAppointment(id);
-      
+
       if (!success) {
         return res.status(404).json({ message: "Appointment not found" });
       }
-      
+
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting appointment:", error);
