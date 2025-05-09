@@ -10,7 +10,7 @@ import { ServicesCarousel } from "@/components/ui/services-carousel";
 export default function Home() {
   // State for the testimonial carousel
   const [activeTestimonial, setActiveTestimonial] = useState(0);
-  
+
   // Get services data
   const { data: servicesData, isLoading: isLoadingServices } = useQuery({
     queryKey: ['/api/services'],
@@ -25,20 +25,20 @@ export default function Home() {
 
   // Feature services (limit to 3)
   const featuredServices = servicesData?.services?.filter(service => service.featured).slice(0, 3) || [];
-  
+
   // Testimonials
   const testimonials = testimonialsData?.testimonials || [];
 
   // Auto-rotate testimonials
   useEffect(() => {
     if (testimonials.length <= 1) return;
-    
+
     const interval = setInterval(() => {
       setActiveTestimonial((current) => 
         current === testimonials.length - 1 ? 0 : current + 1
       );
     }, 5000);
-    
+
     return () => clearInterval(interval);
   }, [testimonials.length]);
 
@@ -53,7 +53,7 @@ export default function Home() {
           <div className="absolute top-1/3 -right-24 w-96 h-96 rounded-full bg-green-200"></div>
           <div className="absolute -bottom-20 left-1/4 w-72 h-72 rounded-full bg-green-400"></div>
         </div>
-        
+
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="md:w-1/2 mb-10 md:mb-0 md:pr-8">
@@ -100,7 +100,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
+
       {/* Services Section */}
       <section className="py-20 bg-white relative">
         <div className="absolute right-0 top-0 w-1/3 h-full bg-green-50 opacity-50 clip-path-slant"></div>
@@ -122,7 +122,7 @@ export default function Home() {
           <div className="px-4 md:px-8 lg:px-12">
             <ServicesCarousel />
           </div>
-                
+
           <div className="text-center mt-12">
             <Link href="/services">
               <Button className="bg-green-600 hover:bg-green-700">
@@ -132,7 +132,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
+
       {/* CTA Section */}
       <section className="py-20 bg-green-700 text-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -149,102 +149,188 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
+
       {/* Testimonials */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl font-bold mb-4 text-gray-900">What Our Clients Say</h2>
             <p className="text-gray-600">
-              Hear from our satisfied customers about their experiences with Green Garden services.
+              Hear from our satisfied customers about their experiences with our services.
             </p>
           </div>
 
-          <div className="max-w-3xl mx-auto">
-            {isLoadingTestimonials ? (
-              <Card className="shadow-lg">
-                <CardContent className="p-8">
-                  <div className="flex flex-col items-center text-center space-y-6">
-                    <div className="animate-pulse w-20 h-20 bg-gray-200 rounded-full"></div>
-                    <div className="space-y-3 w-full">
-                      <div className="animate-pulse h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
-                      <div className="animate-pulse h-4 bg-gray-200 rounded w-full"></div>
-                      <div className="animate-pulse h-4 bg-gray-200 rounded w-5/6 mx-auto"></div>
-                      <div className="animate-pulse h-4 bg-gray-200 rounded w-4/6 mx-auto"></div>
-                    </div>
-                    <div className="animate-pulse h-6 bg-gray-200 rounded w-32 mx-auto"></div>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : testimonials.length > 0 ? (
-              <div className="relative">
-                {testimonials.map((testimonial, index) => (
-                  <div
-                    key={testimonial.id}
-                    className={`transition-opacity duration-500 absolute inset-0 ${
-                      index === activeTestimonial ? "opacity-100 z-10" : "opacity-0 z-0"
-                    }`}
-                    style={{ position: index === activeTestimonial ? "relative" : "absolute" }}
-                  >
-                    <Card className="shadow-lg">
-                      <CardContent className="p-8">
-                        <div className="flex flex-col items-center text-center space-y-6">
-                          {testimonial.imageUrl ? (
-                            <img
-                              src={testimonial.imageUrl}
-                              alt={testimonial.name}
-                              className="w-20 h-20 rounded-full object-cover border-4 border-green-200"
-                            />
-                          ) : (
-                            <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center border-4 border-green-200">
-                              <span className="text-green-600 text-2xl">
-                                <i className="fas fa-user"></i>
-                              </span>
-                            </div>
-                          )}
-                          <div className="text-yellow-400 flex space-x-1">
-                            {Array(5).fill(0).map((_, i) => (
-                              <i key={i} className={`fas fa-star ${i < (testimonial.rating || 5) ? "text-yellow-400" : "text-gray-300"}`}></i>
-                            ))}
+          <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto">
+            {/* Testimonials Carousel - Takes 2/3 of the space */}
+            <div className="lg:w-2/3">
+              {isLoadingTestimonials ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[1, 2].map((i) => (
+                    <Card key={i} className="shadow-lg">
+                      <CardContent className="p-6">
+                        <div className="flex flex-col items-center text-center space-y-4">
+                          <div className="animate-pulse w-16 h-16 bg-gray-200 rounded-full"></div>
+                          <div className="animate-pulse h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+                          <div className="space-y-2 w-full">
+                            <div className="animate-pulse h-3 bg-gray-200 rounded w-full"></div>
+                            <div className="animate-pulse h-3 bg-gray-200 rounded w-5/6 mx-auto"></div>
+                            <div className="animate-pulse h-3 bg-gray-200 rounded w-4/6 mx-auto"></div>
                           </div>
-                          <blockquote className="text-gray-700 text-lg italic">"{testimonial.content}"</blockquote>
-                          <div>
-                            <p className="font-semibold text-gray-900">{testimonial.name}</p>
-                            {testimonial.role && (
-                              <p className="text-gray-600 text-sm">{testimonial.role}</p>
-                            )}
-                          </div>
+                          <div className="animate-pulse h-4 bg-gray-200 rounded w-32 mx-auto"></div>
                         </div>
                       </CardContent>
                     </Card>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              ) : testimonials.length > 0 ? (
+                <div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Show 2 testimonials at a time, based on the active one */}
+                    {[0, 1].map((offset) => {
+                      const index = (activeTestimonial + offset) % testimonials.length;
+                      const testimonial = testimonials[index];
 
-                {/* Testimonial Controls */}
-                {testimonials.length > 1 && (
-                  <div className="flex justify-center space-x-2 mt-6">
-                    {testimonials.map((_, index) => (
-                      <button
-                        key={index}
-                        className={`w-3 h-3 rounded-full transition-colors ${
-                          index === activeTestimonial ? "bg-green-600" : "bg-gray-300"
-                        }`}
-                        onClick={() => setActiveTestimonial(index)}
-                        aria-label={`View testimonial ${index + 1}`}
-                      />
-                    ))}
+                      return (
+                        <Card key={testimonial.id} className="shadow-lg transform transition-all duration-300 hover:scale-105">
+                          <CardContent className="p-6">
+                            <div className="flex flex-col items-center text-center space-y-4">
+                              {testimonial.photoUrl ? (
+                                <img 
+                                  src={testimonial.photoUrl} 
+                                  alt={testimonial.name}
+                                  className="w-16 h-16 object-cover rounded-full border-2 border-green-200"
+                                />
+                              ) : (
+                                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                                  <i className="fas fa-user text-green-600 text-2xl"></i>
+                                </div>
+                              )}
+                              <div className="flex items-center justify-center">
+                                {Array.from({ length: testimonial.rating }).map((_, i) => (
+                                  <i key={i} className="fas fa-star text-yellow-400 text-sm mr-0.5"></i>
+                                ))}
+                              </div>
+                              <blockquote className="text-lg italic text-gray-800">"{testimonial.comment}"</blockquote>
+                              <div>
+                                <p className="font-bold text-gray-900">{testimonial.name}</p>
+                                {testimonial.company && (
+                                  <p className="text-sm text-gray-600">{testimonial.company}</p>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                   </div>
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-10">
-                <p className="text-gray-500">No testimonials available yet.</p>
-              </div>
-            )}
+
+                  {/* Pagination dots */}
+                  {testimonials.length > 2 && (
+                    <div className="flex justify-center space-x-2 mt-6">
+                      {Array.from({ length: Math.ceil(testimonials.length / 2) }).map((_, index) => (
+                        <button
+                          key={index}
+                          className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                            Math.floor(activeTestimonial / 2) === index ? "bg-green-600" : "bg-gray-300"
+                          }`}
+                          onClick={() => setActiveTestimonial(index * 2)}
+                          aria-label={`Testimonial page ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Navigation buttons */}
+                  <div className="flex justify-center mt-4 space-x-4">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="border-green-600 text-green-600 hover:bg-green-50"
+                      onClick={() => setActiveTestimonial((activeTestimonial - 2 + testimonials.length) % testimonials.length)}
+                    >
+                      <i className="fas fa-chevron-left mr-2"></i>
+                      Previous
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="border-green-600 text-green-600 hover:bg-green-50"
+                      onClick={() => setActiveTestimonial((activeTestimonial + 2) % testimonials.length)}
+                    >
+                      Next
+                      <i className="fas fa-chevron-right ml-2"></i>
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center p-8">
+                  <p className="text-gray-500">No testimonials available at the moment.</p>
+                </div>
+              )}
+            </div>
+
+            {/* "Why Choose Us" Sidebar - Takes 1/3 of the space */}
+            <div className="lg:w-1/3">
+              <Card className="shadow-lg h-full bg-white border-green-100 border">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Why Choose Us</h3>
+
+                  <ul className="space-y-4">
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                        <i className="fas fa-check text-green-600"></i>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">Expert Gardeners</h4>
+                        <p className="text-sm text-gray-600">Our team consists of certified and experienced gardening professionals</p>
+                      </div>
+                    </li>
+
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                        <i className="fas fa-leaf text-green-600"></i>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">Eco-Friendly Practices</h4>
+                        <p className="text-sm text-gray-600">We use sustainable methods and materials in all our garden work</p>
+                      </div>
+                    </li>
+
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                        <i className="fas fa-calendar-check text-green-600"></i>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">Reliable Service</h4>
+                        <p className="text-sm text-gray-600">Always on time with consistent, dependable garden maintenance</p>
+                      </div>
+                    </li>
+
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                        <i className="fas fa-award text-green-600"></i>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">Satisfaction Guaranteed</h4>
+                        <p className="text-sm text-gray-600">We stand behind our work with a 100% satisfaction guarantee</p>
+                      </div>
+                    </li>
+                  </ul>
+
+                  <div className="mt-6 text-center">
+                    <Link href="/services">
+                      <Button className="bg-green-600 hover:bg-green-700">
+                        Our Services
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
-      
+
       {/* Footer */}
       <footer className="bg-gray-900 text-white pt-16 pb-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
