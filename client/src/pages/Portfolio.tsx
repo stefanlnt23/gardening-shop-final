@@ -2,14 +2,25 @@ import MainLayout from "@/components/layouts/MainLayout";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useLocation } from "wouter";
 
 export default function Portfolio() {
+  const [, setLocation] = useLocation();
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/portfolio'],
     refetchOnWindowFocus: false
   });
 
   const portfolioItems = data?.portfolioItems || [];
+  
+  // Filter published items only
+  const publishedItems = portfolioItems.filter(item => item.status === "Published");
+
+  // Navigate to portfolio detail page
+  const handleViewDetails = (id) => {
+    setLocation(`/portfolio/${id}`);
+  };
 
   return (
     <MainLayout>
@@ -47,17 +58,21 @@ export default function Portfolio() {
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {portfolioItems.length === 0 ? (
+              {publishedItems.length === 0 ? (
                 <div className="col-span-3 text-center p-8">
                   <h3 className="text-xl font-bold text-gray-700 mb-2">No Portfolio Items Found</h3>
                   <p className="text-gray-600">We're currently updating our portfolio. Please check back later.</p>
                 </div>
               ) : (
-                portfolioItems.map((item) => (
-                  <div key={item.id} className="group overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all">
+                publishedItems.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="group overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all cursor-pointer"
+                    onClick={() => handleViewDetails(item.id)}
+                  >
                     <div className="relative">
                       <img 
-                        src={item.imageUrl} 
+                        src={item.imageUrl || "https://placehold.co/600x600/e2e8f0/64748b?text=No+Image"} 
                         alt={item.title}
                         className="w-full aspect-square object-cover transition-transform group-hover:scale-105" 
                       />
@@ -66,16 +81,33 @@ export default function Portfolio() {
                           View Details
                         </Button>
                       </div>
+                      {item.featured && (
+                        <Badge className="absolute top-2 right-2 bg-yellow-100 text-yellow-800 border-yellow-300">
+                          Featured
+                        </Badge>
+                      )}
                     </div>
                     <div className="p-4">
                       <h3 className="text-lg font-bold text-gray-900 mb-2">{item.title}</h3>
                       <p className="text-gray-600 line-clamp-2">{item.description}</p>
-                      <p className="text-sm text-gray-500 mt-2">
-                        {new Date(item.date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long'
-                        })}
-                      </p>
+                      <div className="flex justify-between items-center mt-3">
+                        <p className="text-sm text-gray-500">
+                          {item.date ? new Date(item.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long'
+                          }) : "No date"}
+                        </p>
+                        <Button 
+                          variant="link" 
+                          className="text-green-600 p-0 h-auto"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewDetails(item.id);
+                          }}
+                        >
+                          Read More →
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))

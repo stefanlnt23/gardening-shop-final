@@ -13,6 +13,8 @@ import Contact from "@/pages/Contact";
 import Services from "@/pages/Services";
 import ServiceDetail from "@/pages/ServiceDetail";
 import BlogDetail from "@/pages/BlogDetail";
+import Portfolio from "@/pages/Portfolio";
+import PortfolioDetail from "@/pages/PortfolioDetail";
 
 // Admin Page imports
 import AdminLogin from "@/pages/admin/Login";
@@ -41,11 +43,13 @@ function Router() {
       <Route path="/blog" component={Blog} />
       <Route path="/blog/:id" component={BlogDetail} />
       <Route path="/contact" component={Contact} />
-      
+      <Route path="/portfolio" component={Portfolio} />
+      <Route path="/portfolio/:id" component={PortfolioDetail} />
+
       {/* Admin Routes */}
       <Route path="/admin" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
-      
+
       {/* Admin Services */}
       <Route path="/admin/services/new">
         <React.Suspense fallback={<div>Loading...</div>}>
@@ -62,7 +66,7 @@ function Router() {
           <AdminServices />
         </React.Suspense>
       </Route>
-      
+
       {/* Admin Portfolio */}
       <Route path="/admin/portfolio/new">
         <React.Suspense fallback={<div>Loading...</div>}>
@@ -79,7 +83,7 @@ function Router() {
           <AdminPortfolio />
         </React.Suspense>
       </Route>
-      
+
       {/* Admin Testimonials */}
       <Route path="/admin/testimonials/new">
         <React.Suspense fallback={<div>Loading...</div>}>
@@ -96,7 +100,7 @@ function Router() {
           <AdminTestimonials />
         </React.Suspense>
       </Route>
-      
+
       {/* Admin Blog Posts */}
       <Route path="/admin/blog/new">
         <React.Suspense fallback={<div>Loading...</div>}>
@@ -113,14 +117,14 @@ function Router() {
           <AdminBlogPosts />
         </React.Suspense>
       </Route>
-      
+
       {/* Admin Inquiries */}
       <Route path="/admin/inquiries">
         <React.Suspense fallback={<div>Loading...</div>}>
           <AdminInquiries />
         </React.Suspense>
       </Route>
-      
+
       {/* Admin Appointments */}
       <Route path="/admin/appointments/new">
         <React.Suspense fallback={<div>Loading...</div>}>
@@ -137,7 +141,7 @@ function Router() {
           <AdminAppointments />
         </React.Suspense>
       </Route>
-      
+
       {/* 404 Route */}
       <Route component={NotFound} />
     </Switch>
