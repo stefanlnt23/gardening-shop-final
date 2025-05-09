@@ -1,7 +1,4 @@
-` tags.
 
-```python
-<replit_final_file>
 import React from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
