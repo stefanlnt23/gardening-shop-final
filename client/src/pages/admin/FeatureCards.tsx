@@ -21,7 +21,6 @@ interface FeatureCard {
   id: string;
   title: string;
   description: string;
-  icon: string;
   imageUrl: string;
   order: number;
 }
@@ -30,13 +29,11 @@ export default function FeatureCards() {
   const queryClient = useQueryClient();
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  const [newIcon, setNewIcon] = useState("fa-check");
   const [newImageUrl, setNewImageUrl] = useState("");
   
   const [editMode, setEditMode] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
-  const [editIcon, setEditIcon] = useState("");
   const [editImageUrl, setEditImageUrl] = useState("");
 
   const { data: featureCardsData, isLoading } = useQuery({
@@ -180,7 +177,6 @@ export default function FeatureCards() {
     addCardMutation.mutate({
       title: newTitle,
       description: newDescription,
-      icon: newIcon,
       imageUrl: newImageUrl,
     });
   };
@@ -198,10 +194,9 @@ export default function FeatureCards() {
   const startEdit = (card: FeatureCard) => {
     console.log("Editing card:", card); // For debugging
     setEditMode(card.id);
-    setEditTitle(card.title);
-    setEditDescription(card.description);
-    setEditIcon(card.icon);
-    setEditImageUrl(card.imageUrl);
+    setEditTitle(card.title || '');
+    setEditDescription(card.description || '');
+    setEditImageUrl(card.imageUrl || '');
   };
 
   const cancelEdit = () => {
@@ -223,7 +218,6 @@ export default function FeatureCards() {
       data: {
         title: editTitle,
         description: editDescription,
-        icon: editIcon,
         imageUrl: editImageUrl,
       }
     });
@@ -253,29 +247,13 @@ export default function FeatureCards() {
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Title</label>
-                  <Input
-                    placeholder="e.g., Expert Gardeners"
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Icon</label>
-                  <select 
-                    className="w-full p-2 border rounded-md"
-                    value={newIcon}
-                    onChange={(e) => setNewIcon(e.target.value)}
-                  >
-                    {commonIcons.map(icon => (
-                      <option key={icon.value} value={icon.value}>
-                        {icon.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Title</label>
+                <Input
+                  placeholder="e.g., Expert Gardeners"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                />
               </div>
               
               <div>
@@ -367,17 +345,7 @@ export default function FeatureCards() {
                                   />
                                 </TableCell>
                                 <TableCell>
-                                  <select 
-                                    value={editIcon}
-                                    onChange={(e) => setEditIcon(e.target.value)}
-                                    className="w-full p-2 border rounded-md"
-                                  >
-                                    {commonIcons.map(icon => (
-                                      <option key={icon.value} value={icon.value}>
-                                        {icon.label}
-                                      </option>
-                                    ))}
-                                  </select>
+                                  {/* Icon field removed */}
                                 </TableCell>
                                 <TableCell>
                                   <Input 
@@ -412,7 +380,7 @@ export default function FeatureCards() {
                                 <TableCell>{card.title}</TableCell>
                                 <TableCell className="max-w-[200px] truncate">{card.description}</TableCell>
                                 <TableCell>
-                                  <i className={`fas ${card.icon} text-green-600`}></i>
+                                  {/* Icon removed */}
                                 </TableCell>
                                 <TableCell>{card.order}</TableCell>
                                 <TableCell className="text-right">
@@ -473,9 +441,7 @@ export default function FeatureCards() {
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-green-900 via-green-900/70 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
                 <div className="absolute inset-0 flex flex-col items-center justify-end p-4 text-center">
-                  <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center mb-3 shadow-lg">
-                    <i className={`fas ${card.icon} text-green-600 text-sm`}></i>
-                  </div>
+                  {/* Icon removed */}
                   <h3 className="text-lg font-bold text-white mb-1 drop-shadow-md">{card.title}</h3>
                   <p className="text-green-50 text-xs mb-3 max-w-[85%] leading-snug drop-shadow-md">{card.description}</p>
                 </div>

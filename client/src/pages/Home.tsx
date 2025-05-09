@@ -64,13 +64,13 @@ export default function Home() {
 
   // Testimonials
   const testimonials = testimonialsData?.testimonials || [];
-  
+
   // Get feature cards
   const { data: featureCardsData } = useQuery({
     queryKey: ['/api/feature-cards'],
     refetchOnWindowFocus: false,
   });
-  
+
   // Feature cards with fallback to defaults if none exist
   const featureCards = featureCardsData?.cards?.length ? featureCardsData.cards : defaultFeatureCards;
 
@@ -204,7 +204,7 @@ export default function Home() {
               We're committed to delivering exceptional garden services with expertise and care.
             </p>
           </div>
-          
+
           {/* Feature Cards with Images */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {featureCards.map((card) => (
@@ -214,16 +214,13 @@ export default function Home() {
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-green-900 via-green-900/70 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
                 <div className="absolute inset-0 flex flex-col items-center justify-end p-6 text-center">
-                  <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center mb-4 shadow-lg">
-                    <i className={`fas ${card.icon} text-green-600 text-xl`}></i>
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2 drop-shadow-md">{card.title}</h3>
+                  <h3 className="text-lg font-bold text-white mb-1 drop-shadow-md">{card.title}</h3>
                   <p className="text-green-50 text-sm mb-4 max-w-[85%] leading-snug drop-shadow-md">{card.description}</p>
                 </div>
               </div>
             ))}
           </div>
-          
+
           <div className="mt-12 text-center">
             <Link href="/services">
               <Button className="bg-green-600 hover:bg-green-700">
@@ -305,7 +302,7 @@ export default function Home() {
                   [0, 1, 2].map((offset) => {
                     const index = (activeTestimonial + offset) % testimonials.length;
                     const testimonial = testimonials[index];
-                    
+
                     return testimonial ? (
                       <Card key={`${testimonial.id}-${index}`} className="shadow-lg transform transition-all duration-300 hover:scale-105">
                         <CardContent className="p-6">
