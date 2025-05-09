@@ -59,7 +59,6 @@ export function ServicesCarousel() {
           // Start continuous scrolling animation
           const animate = () => {
             if (!autoPlay || !api) return;
-            const scrollSnap = api.scrollSnapList();
             const progress = api.scrollProgress();
             
             // Small incremental scroll for continuous animation
@@ -78,9 +77,6 @@ export function ServicesCarousel() {
         animationRef.current = null;
       }
     };
-
-    // Setup animation frame reference
-    const animationRef = useRef<number | null>(null);
 
     if (autoPlay) {
       startAutoPlay();
