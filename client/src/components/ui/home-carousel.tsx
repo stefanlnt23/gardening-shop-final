@@ -1,15 +1,8 @@
 
 import { useState, useEffect, useCallback } from "react";
-import { Card } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { useQuery } from "@tanstack/react-query";
 import useEmblaCarousel from "embla-carousel-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CarouselImage {
   id: string;
@@ -19,141 +12,137 @@ interface CarouselImage {
 }
 
 export function HomeCarousel() {
-  const { data: carouselImages, isLoading } = useQuery({
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [autoPlay, setAutoPlay] = useState(true);
+  
+  // Initialize Embla carousel
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    loop: true,
+    align: "center"
+  });
+
+  const { data: carouselData, isLoading } = useQuery({
     queryKey: ['/api/carousel-images'],
     refetchOnWindowFocus: false,
   });
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
-  const [autoPlay, setAutoPlay] = useState(true);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  
-  const images: CarouselImage[] = carouselImages?.images || [];
+  const images: CarouselImage[] = carouselData?.images || [];
 
-  // Pause autoplay on hover
+  // Effect to update current slide index when emblaApi is available
+  useEffect(() => {
+    if (emblaApi) {
+      const onSelect = () => {
+        setCurrentIndex(emblaApi.selectedScrollSnap());
+      };
+      
+      emblaApi.on("select", onSelect);
+      return () => {
+        emblaApi.off("select", onSelect);
+      };
+    }
+  }, [emblaApi]);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (!autoPlay || !emblaApi || images.length <= 1) return;
+
+    const interval = setInterval(() => {
+      if (emblaApi.canScrollNext()) {
+        emblaApi.scrollNext();
+      } else {
+        emblaApi.scrollTo(0);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [autoPlay, emblaApi, images.length]);
+
+  // Handle mouse interactions
   const handleMouseEnter = () => setAutoPlay(false);
   const handleMouseLeave = () => setAutoPlay(true);
 
-  // Define a scroll function to advance to the next slide
-  const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext();
-  }, [emblaApi]);
+  // Navigation handlers
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
 
-  // Auto-rotate slides
-  useEffect(() => {
-    if (!autoPlay || images.length <= 1 || !emblaApi) return;
-    
-    const interval = setInterval(() => {
-      scrollNext();
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, [autoPlay, images.length, emblaApi, scrollNext]);
-
-  // Update current slide index when slide changes
-  useEffect(() => {
-    if (!emblaApi) return;
-    
-    const onSelect = () => {
-      setCurrentSlide(emblaApi.selectedScrollSnap());
-    };
-    
-    emblaApi.on('select', onSelect);
-    return () => {
-      emblaApi.off('select', onSelect);
-    };
-  }, [emblaApi]);
-
-  // For testing - add default images if none are loaded from the API
-  const defaultImages = [
-    {
-      id: "1",
-      imageUrl: "https://images.unsplash.com/photo-1590682680695-43b964a3ae17?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
-      alt: "Garden image 1",
-      order: 1
-    },
-    {
-      id: "2",
-      imageUrl: "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
-      alt: "Garden image 2",
-      order: 2
-    },
-    {
-      id: "3",
-      imageUrl: "https://images.unsplash.com/photo-1557429287-b2e26467fc2b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
-      alt: "Garden image 3",
-      order: 3
-    }
-  ];
-
-  // Use default images if none are available from API
-  const displayImages = images.length > 0 ? images : defaultImages;
-
+  // If there are no images, show at least a placeholder or fallback images
   if (isLoading) {
     return (
-      <div className="rounded-lg overflow-hidden shadow-xl bg-white p-2">
-        <div className="rounded-lg overflow-hidden bg-green-100 aspect-video flex items-center justify-center">
-          <div className="text-green-600 text-6xl animate-pulse">
-            <i className="fas fa-image"></i>
-          </div>
+      <div className="relative w-full h-[400px] bg-gray-100 animate-pulse rounded-lg">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-16 h-16 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
       </div>
     );
   }
 
+  // Fallback images if none are returned from the API
+  const finalImages = images.length > 0 ? images : [
+    {
+      id: '1',
+      imageUrl: 'https://images.unsplash.com/photo-1558904541-efa843a96f01',
+      alt: 'Garden landscape',
+      order: 1
+    },
+    {
+      id: '2',
+      imageUrl: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae',
+      alt: 'Beautiful garden',
+      order: 2
+    }
+  ];
+
   return (
     <div 
-      className="rounded-lg overflow-hidden shadow-xl bg-white p-2"
+      className="relative w-full" 
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="overflow-hidden" ref={emblaRef}>
+      <div className="overflow-hidden rounded-lg" ref={emblaRef}>
         <div className="flex">
-          {displayImages.map((image) => (
+          {finalImages.map((image) => (
             <div key={image.id} className="flex-[0_0_100%] min-w-0">
-              <Card className="border-0 rounded-lg overflow-hidden">
-                <div className="aspect-video w-full overflow-hidden">
-                  <img 
-                    src={image.imageUrl} 
-                    alt={image.alt || "Garden showcase"} 
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                  />
-                </div>
-              </Card>
+              <div className="relative aspect-[16/9] overflow-hidden">
+                <img
+                  src={image.imageUrl}
+                  alt={image.alt || "Carousel image"}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Navigation controls */}
+      <button
+        onClick={scrollPrev}
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md z-10"
+        aria-label="Previous slide"
+      >
+        <ChevronLeft className="h-6 w-6 text-green-700" />
+      </button>
       
-      <div className="mt-4 flex justify-center items-center gap-2">
-        <button 
-          onClick={() => emblaApi?.scrollPrev()} 
-          className="bg-white rounded-full w-8 h-8 flex items-center justify-center border border-green-100 text-green-600 hover:bg-green-50"
-          aria-label="Previous slide"
-        >
-          <i className="fas fa-chevron-left"></i>
-        </button>
-        
-        <div className="flex space-x-2">
-          {displayImages.map((_, index) => (
-            <button
-              key={index}
-              className={`w-3 h-3 rounded-full transition-colors ${
-                index === currentSlide ? "bg-green-600" : "bg-gray-300"
-              }`}
-              onClick={() => emblaApi?.scrollTo(index)}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-        
-        <button 
-          onClick={() => emblaApi?.scrollNext()} 
-          className="bg-white rounded-full w-8 h-8 flex items-center justify-center border border-green-100 text-green-600 hover:bg-green-50"
-          aria-label="Next slide"
-        >
-          <i className="fas fa-chevron-right"></i>
-        </button>
+      <button
+        onClick={scrollNext}
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md z-10"
+        aria-label="Next slide"
+      >
+        <ChevronRight className="h-6 w-6 text-green-700" />
+      </button>
+
+      {/* Pagination indicators */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+        {finalImages.map((_, index) => (
+          <button
+            key={index}
+            className={`w-2.5 h-2.5 rounded-full transition-all ${
+              index === currentIndex ? "bg-white" : "bg-white/50"
+            }`}
+            onClick={() => emblaApi?.scrollTo(index)}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
       </div>
     </div>
   );
