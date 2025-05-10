@@ -3,13 +3,13 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { comparePasswords } from "./auth";
 import { z } from "zod";
-import { 
+import {
   insertServiceSchema,
   insertPortfolioItemSchema,
   insertBlogPostSchema,
   insertInquirySchema,
   insertAppointmentSchema,
-  insertTestimonialSchema 
+  insertTestimonialSchema,
 } from "@shared/schema";
 
 // Authentication middleware
@@ -22,7 +22,10 @@ function authenticateAdmin(req: Request, res: Response, next: NextFunction) {
 export async function registerRoutes(app: Express): Promise<Server> {
   // API Status route
   app.get("/api/status", (req, res) => {
-    res.json({ status: "ok", message: "Green Garden Services API is running!" });
+    res.json({
+      status: "ok",
+      message: "Green Garden Services API is running!",
+    });
   });
 
   // =========== PUBLIC API ROUTES ===========
@@ -102,11 +105,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const serviceId = req.params.serviceId;
       console.log(`Fetching portfolio items for service with ID: ${serviceId}`);
 
-      const portfolioItems = await storage.getPortfolioItemsByService(serviceId);
+      const portfolioItems =
+        await storage.getPortfolioItemsByService(serviceId);
       res.json({ portfolioItems });
     } catch (error) {
       console.error("Error fetching service portfolio items:", error);
-      res.status(500).json({ message: "Failed to fetch service portfolio items" });
+      res
+        .status(500)
+        .json({ message: "Failed to fetch service portfolio items" });
     }
   });
 
@@ -160,30 +166,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email: z.string().email("Please enter a valid email address"),
         phone: z.string().optional(),
         message: z.string().min(10, "Message must be at least 10 characters"),
-        serviceId: z.string().optional() // Changed to string for MongoDB IDs
+        serviceId: z.string().optional(), // Changed to string for MongoDB IDs
       });
 
       const validated = contactSchema.safeParse(req.body);
 
       if (!validated.success) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           message: "Validation failed",
-          errors: validated.error.format()
+          errors: validated.error.format(),
         });
       }
 
-      console.log("Creating new inquiry with data:", JSON.stringify(validated.data));
+      console.log(
+        "Creating new inquiry with data:",
+        JSON.stringify(validated.data),
+      );
       const inquiry = await storage.createInquiry({
         ...validated.data,
         status: "new", // Set initial status
-        createdAt: new Date()
+        createdAt: new Date(),
       });
       console.log("Successfully created inquiry:", inquiry.id);
 
-      res.json({ 
-        success: true, 
+      res.json({
+        success: true,
         message: "Thank you for your message! We'll get back to you soon.",
-        inquiryId: inquiry.id
+        inquiryId: inquiry.id,
       });
     } catch (error) {
       console.error("Error processing contact form:", error);
@@ -198,10 +207,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const publicAppointmentSchema = z.object({
         name: z.string().min(2, "Name must be at least 2 characters"),
         email: z.string().email("Please enter a valid email address"),
-        phone: z.string().min(10, "Phone number must be at least 10 characters"),
+        phone: z
+          .string()
+          .min(10, "Phone number must be at least 10 characters"),
         serviceId: z.union([z.string(), z.number()]),
         date: z.string().refine((val: string) => !isNaN(Date.parse(val)), {
-          message: "Invalid date format"
+          message: "Invalid date format",
         }),
         // Address fields
         buildingName: z.string().optional(),
@@ -211,15 +222,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         county: z.string().min(1, "County/Region is required"),
         postalCode: z.string().min(1, "Postal code is required"),
         // Optional fields
-        notes: z.string().optional()
+        notes: z.string().optional(),
       });
 
       const validated = publicAppointmentSchema.safeParse(req.body);
 
       if (!validated.success) {
-        return res.status(400).json({ 
-          message: "Validation failed", 
-          errors: validated.error.format()
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: validated.error.format(),
         });
       }
 
@@ -228,13 +239,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...rest,
         date: new Date(date),
         status: "Scheduled",
-        priority: "Normal"
+        priority: "Normal",
       });
 
-      res.json({ 
-        success: true, 
+      res.json({
+        success: true,
         message: "Your appointment has been booked! We'll see you soon.",
-        appointmentId: appointment.id
+        appointmentId: appointment.id,
       });
     } catch (error) {
       console.error("Error booking appointment:", error);
@@ -250,7 +261,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { username, password } = req.body;
 
       if (!username || !password) {
-        return res.status(400).json({ message: "Username and password are required" });
+        return res
+          .status(400)
+          .json({ message: "Username and password are required" });
       }
 
       const user = await storage.getUserByUsername(username);
@@ -264,14 +277,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      if (user.role !== 'admin') {
+      if (user.role !== "admin") {
         return res.status(403).json({ message: "Unauthorized access" });
       }
 
       // In a real app you would create a session or JWT token here
-      res.json({ 
-        success: true, 
-        user: { id: user.id, username: user.username, name: user.name, email: user.email, role: user.role }
+      res.json({
+        success: true,
+        user: {
+          id: user.id,
+          username: user.username,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
       });
     } catch (error) {
       console.error("Error during login:", error);
@@ -292,15 +311,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/services", authenticateAdmin, async (req, res) => {
     try {
-      console.log("Request body for service creation:", JSON.stringify(req.body));
+      console.log(
+        "Request body for service creation:",
+        JSON.stringify(req.body),
+      );
 
       const validated = insertServiceSchema.safeParse(req.body);
 
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
-        return res.status(400).json({ 
-          message: "Validation failed", 
-          errors: validated.error.format()
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: validated.error.format(),
         });
       }
 
@@ -320,9 +342,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validated = insertServiceSchema.partial().safeParse(req.body);
 
       if (!validated.success) {
-        return res.status(400).json({ 
-          message: "Validation failed", 
-          errors: validated.error.format()
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: validated.error.format(),
         });
       }
 
@@ -369,15 +391,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/portfolio", authenticateAdmin, async (req, res) => {
     try {
-      console.log("Received portfolio item data:", JSON.stringify(req.body, null, 2));
+      console.log(
+        "Received portfolio item data:",
+        JSON.stringify(req.body, null, 2),
+      );
 
       const validated = insertPortfolioItemSchema.safeParse(req.body);
 
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
-        return res.status(400).json({ 
-          message: "Validation failed", 
-          errors: validated.error.format()
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: validated.error.format(),
         });
       }
 
@@ -394,20 +419,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/portfolio/:id", authenticateAdmin, async (req, res) => {
     try {
       const id = req.params.id; // Use string ID for MongoDB
-      console.log(`Admin updating portfolio item with ID: ${id}, data:`, JSON.stringify(req.body, null, 2));
+      console.log(
+        `Admin updating portfolio item with ID: ${id}, data:`,
+        JSON.stringify(req.body, null, 2),
+      );
 
       const validated = insertPortfolioItemSchema.partial().safeParse(req.body);
 
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
-        return res.status(400).json({ 
-          message: "Validation failed", 
-          errors: validated.error.format()
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: validated.error.format(),
         });
       }
 
       console.log("Validation successful, updating portfolio item");
-      const portfolioItem = await storage.updatePortfolioItem(id, validated.data);
+      const portfolioItem = await storage.updatePortfolioItem(
+        id,
+        validated.data,
+      );
 
       if (!portfolioItem) {
         console.log(`Portfolio item with ID ${id} not found for update`);
@@ -422,40 +453,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/portfolio/:id", authenticateAdmin, async (req, res) => {
-    try {
-      const id = req.params.id; // Use string ID for MongoDB
-      console.log(`Admin deleting portfolio item with ID: ${id}`);
+  app.delete(
+    "/api/admin/portfolio/:id",
+    authenticateAdmin,
+    async (req, res) => {
+      try {
+        const id = req.params.id; // Use string ID for MongoDB
+        console.log(`Admin deleting portfolio item with ID: ${id}`);
 
-      const success = await storage.deletePortfolioItem(id);
+        const success = await storage.deletePortfolioItem(id);
 
-      if (!success) {
-        console.log(`Portfolio item with ID ${id} not found for deletion`);
-        return res.status(404).json({ message: "Portfolio item not found" });
+        if (!success) {
+          console.log(`Portfolio item with ID ${id} not found for deletion`);
+          return res.status(404).json({ message: "Portfolio item not found" });
+        }
+
+        console.log(`Successfully deleted portfolio item with ID: ${id}`);
+        res.json({ success: true });
+      } catch (error) {
+        console.error("Error deleting portfolio item:", error);
+        res.status(500).json({ message: "Failed to delete portfolio item" });
       }
-
-      console.log(`Successfully deleted portfolio item with ID: ${id}`);
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting portfolio item:", error);
-      res.status(500).json({ message: "Failed to delete portfolio item" });
-    }
-  });
+    },
+  );
 
   // Get a specific portfolio item (admin)
-  app.get('/api/admin/portfolio/:id', async (req, res) => {
+  app.get("/api/admin/portfolio/:id", async (req, res) => {
     try {
       console.log(`Fetching admin portfolio item with ID: ${req.params.id}`);
       const portfolioItem = await storage.getPortfolioItem(req.params.id);
       if (!portfolioItem) {
         console.log(`Portfolio item not found: ${req.params.id}`);
-        return res.status(404).json({ error: 'Portfolio item not found' });
+        return res.status(404).json({ error: "Portfolio item not found" });
       }
       console.log("Returning portfolio item data for admin editing");
       res.json({ portfolioItem });
     } catch (error) {
       console.error("Error fetching portfolio item:", error);
-      res.status(500).json({ error: 'Failed to fetch portfolio item' });
+      res.status(500).json({ error: "Failed to fetch portfolio item" });
     }
   });
 
@@ -472,11 +507,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/blog", authenticateAdmin, async (req, res) => {
     try {
-      console.log("Received blog post data:", JSON.stringify(req.body, null, 2));
+      console.log(
+        "Received blog post data:",
+        JSON.stringify(req.body, null, 2),
+      );
 
       // Ensure all date fields are properly converted to Date objects
       const data = {
-        ...req.body
+        ...req.body,
       };
 
       // Log the data types for debugging
@@ -486,7 +524,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         updatedAt: typeof data.updatedAt,
         publishedAtIsDate: data.publishedAt instanceof Date,
         createdAtIsDate: data.createdAt instanceof Date,
-        updatedAtIsDate: data.updatedAt instanceof Date
+        updatedAtIsDate: data.updatedAt instanceof Date,
       });
 
       console.log("Processed blog post data:", JSON.stringify(data, null, 2));
@@ -498,18 +536,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         excerpt: z.string().min(1, "Excerpt is required"),
         imageUrl: z.string().nullable().optional(),
         authorId: z.number().default(1),
-        publishedAt: z.string().transform(val => new Date(val)),
-        createdAt: z.string().transform(val => new Date(val)),
-        updatedAt: z.string().transform(val => new Date(val))
+        publishedAt: z.string().transform((val) => new Date(val)),
+        createdAt: z.string().transform((val) => new Date(val)),
+        updatedAt: z.string().transform((val) => new Date(val)),
       });
 
       const validated = customBlogPostSchema.safeParse(data);
 
       if (!validated.success) {
-        console.error("Blog post validation failed:", JSON.stringify(validated.error.format(), null, 2));
-        return res.status(400).json({ 
-          message: "Validation failed", 
-          errors: validated.error.format()
+        console.error(
+          "Blog post validation failed:",
+          JSON.stringify(validated.error.format(), null, 2),
+        );
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: validated.error.format(),
         });
       }
 
@@ -532,9 +573,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
-        return res.status(400).json({ 
-          message: "Validation failed", 
-          errors: validated.error.format()
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: validated.error.format(),
         });
       }
 
@@ -585,37 +626,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get a specific testimonial by ID
-  app.get("/api/admin/testimonials/:id", authenticateAdmin, async (req, res) => {
-    try {
-      const id = req.params.id;
-      console.log(`Fetching testimonial with ID: ${id}`);
+  app.get(
+    "/api/admin/testimonials/:id",
+    authenticateAdmin,
+    async (req, res) => {
+      try {
+        const id = req.params.id;
+        console.log(`Fetching testimonial with ID: ${id}`);
 
-      const testimonial = await storage.getTestimonial(id);
+        const testimonial = await storage.getTestimonial(id);
 
-      if (!testimonial) {
-        console.log(`Testimonial with ID ${id} not found`);
-        return res.status(404).json({ message: "Testimonial not found" });
+        if (!testimonial) {
+          console.log(`Testimonial with ID ${id} not found`);
+          return res.status(404).json({ message: "Testimonial not found" });
+        }
+
+        console.log(`Successfully found testimonial: ${testimonial.name}`);
+        res.json({ testimonial });
+      } catch (error) {
+        console.error("Error fetching testimonial:", error);
+        res.status(500).json({ message: "Failed to fetch testimonial" });
       }
-
-      console.log(`Successfully found testimonial: ${testimonial.name}`);
-      res.json({ testimonial });
-    } catch (error) {
-      console.error("Error fetching testimonial:", error);
-      res.status(500).json({ message: "Failed to fetch testimonial" });
-    }
-  });
+    },
+  );
 
   app.post("/api/admin/testimonials", authenticateAdmin, async (req, res) => {
     try {
-      console.log("Received testimonial data:", JSON.stringify(req.body, null, 2));
+      console.log(
+        "Received testimonial data:",
+        JSON.stringify(req.body, null, 2),
+      );
 
       const validated = insertTestimonialSchema.safeParse(req.body);
 
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
-        return res.status(400).json({ 
-          message: "Validation failed", 
-          errors: validated.error.format()
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: validated.error.format(),
         });
       }
 
@@ -629,48 +677,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/testimonials/:id", authenticateAdmin, async (req, res) => {
-    try {
-      const id = req.params.id;
-      console.log(`Admin updating testimonial with ID: ${id}`);
+  app.put(
+    "/api/admin/testimonials/:id",
+    authenticateAdmin,
+    async (req, res) => {
+      try {
+        const id = req.params.id;
+        console.log(`Admin updating testimonial with ID: ${id}`);
 
-      const validated = insertTestimonialSchema.partial().safeParse(req.body);
+        const validated = insertTestimonialSchema.partial().safeParse(req.body);
 
-      if (!validated.success) {
-        return res.status(400).json({ 
-          message: "Validation failed", 
-          errors: validated.error.format()
-        });
+        if (!validated.success) {
+          return res.status(400).json({
+            message: "Validation failed",
+            errors: validated.error.format(),
+          });
+        }
+
+        const testimonial = await storage.updateTestimonial(id, validated.data);
+
+        if (!testimonial) {
+          return res.status(404).json({ message: "Testimonial not found" });
+        }
+
+        res.json({ success: true, testimonial });
+      } catch (error) {
+        console.error("Error updating testimonial:", error);
+        res.status(500).json({ message: "Failed to update testimonial" });
       }
+    },
+  );
 
-      const testimonial = await storage.updateTestimonial(id, validated.data);
+  app.delete(
+    "/api/admin/testimonials/:id",
+    authenticateAdmin,
+    async (req, res) => {
+      try {
+        const id = req.params.id;
+        const success = await storage.deleteTestimonial(id);
 
-      if (!testimonial) {
-        return res.status(404).json({ message: "Testimonial not found" });
+        if (!success) {
+          return res.status(404).json({ message: "Testimonial not found" });
+        }
+
+        res.json({ success: true });
+      } catch (error) {
+        console.error("Error deleting testimonial:", error);
+        res.status(500).json({ message: "Failed to delete testimonial" });
       }
-
-      res.json({ success: true, testimonial });
-    } catch (error) {
-      console.error("Error updating testimonial:", error);
-      res.status(500).json({ message: "Failed to update testimonial" });
-    }
-  });
-
-  app.delete("/api/admin/testimonials/:id", authenticateAdmin, async (req, res) => {
-    try {
-      const id = req.params.id;
-      const success = await storage.deleteTestimonial(id);
-
-      if (!success) {
-        return res.status(404).json({ message: "Testimonial not found" });
-      }
-
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting testimonial:", error);
-      res.status(500).json({ message: "Failed to delete testimonial" });
-    }
-  });
+    },
+  );
 
   // Admin Inquiry Management
   app.get("/api/admin/inquiries", authenticateAdmin, async (req, res) => {
@@ -692,9 +748,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
-        return res.status(400).json({ 
-          message: "Validation failed", 
-          errors: validated.error.format()
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: validated.error.format(),
         });
       }
 
@@ -714,25 +770,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/inquiries/:id", authenticateAdmin, async (req, res) => {
-    try {
-      const id = req.params.id;
-      console.log(`Admin attempting to delete inquiry with ID: ${id}`);
+  app.delete(
+    "/api/admin/inquiries/:id",
+    authenticateAdmin,
+    async (req, res) => {
+      try {
+        const id = req.params.id;
+        console.log(`Admin attempting to delete inquiry with ID: ${id}`);
 
-      const success = await storage.deleteInquiry(id);
+        const success = await storage.deleteInquiry(id);
 
-      if (!success) {
-        console.log(`Inquiry with ID ${id} not found for deletion`);
-        return res.status(404).json({ message: "Inquiry not found" });
+        if (!success) {
+          console.log(`Inquiry with ID ${id} not found for deletion`);
+          return res.status(404).json({ message: "Inquiry not found" });
+        }
+
+        console.log(`Successfully deleted inquiry with ID: ${id}`);
+        res.json({ success: true });
+      } catch (error) {
+        console.error("Error deleting inquiry:", error);
+        res.status(500).json({ message: "Failed to delete inquiry" });
       }
-
-      console.log(`Successfully deleted inquiry with ID: ${id}`);
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting inquiry:", error);
-      res.status(500).json({ message: "Failed to delete inquiry" });
-    }
-  });
+    },
+  );
 
   // Admin Appointment Management
   app.get("/api/admin/appointments", authenticateAdmin, async (req, res) => {
@@ -746,38 +806,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get single appointment by ID
-  app.get("/api/admin/appointments/:id", authenticateAdmin, async (req, res) => {
-    try {
-      const id = req.params.id;
-      console.log(`Fetching appointment with ID: ${id}`);
+  app.get(
+    "/api/admin/appointments/:id",
+    authenticateAdmin,
+    async (req, res) => {
+      try {
+        const id = req.params.id;
+        console.log(`Fetching appointment with ID: ${id}`);
 
-      const appointment = await storage.getAppointment(id);
+        const appointment = await storage.getAppointment(id);
 
-      if (!appointment) {
-        console.log(`Appointment with ID ${id} not found`);
-        return res.status(404).json({ message: "Appointment not found" });
+        if (!appointment) {
+          console.log(`Appointment with ID ${id} not found`);
+          return res.status(404).json({ message: "Appointment not found" });
+        }
+
+        console.log(`Successfully found appointment for: ${appointment.name}`);
+        res.json({ success: true, appointment });
+      } catch (error) {
+        console.error("Error fetching appointment:", error);
+        res.status(500).json({ message: "Failed to fetch appointment" });
       }
-
-      console.log(`Successfully found appointment for: ${appointment.name}`);
-      res.json({ success: true, appointment });
-    } catch (error) {
-      console.error("Error fetching appointment:", error);
-      res.status(500).json({ message: "Failed to fetch appointment" });
-    }
-  });
+    },
+  );
 
   // Admin create appointment endpoint
   app.post("/api/admin/appointments", authenticateAdmin, async (req, res) => {
     try {
-      console.log("Request body for appointment creation:", JSON.stringify(req.body));
+      console.log(
+        "Request body for appointment creation:",
+        JSON.stringify(req.body),
+      );
 
       const validated = insertAppointmentSchema.safeParse(req.body);
 
       if (!validated.success) {
         console.log("Validation failed:", validated.error.format());
-        return res.status(400).json({ 
-          message: "Validation failed", 
-          errors: validated.error.format()
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: validated.error.format(),
         });
       }
 
@@ -786,9 +853,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Convert date string to Date object if needed
       const appointmentData = {
         ...validated.data,
-        date: validated.data.date instanceof Date 
-          ? validated.data.date 
-          : new Date(validated.data.date)
+        date:
+          validated.data.date instanceof Date
+            ? validated.data.date
+            : new Date(validated.data.date),
       };
 
       const appointment = await storage.createAppointment(appointmentData);
@@ -799,266 +867,252 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/appointments/:id", authenticateAdmin, async (req, res) => {
-    try {
-      const id = req.params.id; // Use string ID for MongoDB
-      const validated = insertAppointmentSchema.partial().safeParse(req.body);
+  app.put(
+    "/api/admin/appointments/:id",
+    authenticateAdmin,
+    async (req, res) => {
+      try {
+        const id = req.params.id; // Use string ID for MongoDB
+        const validated = insertAppointmentSchema.partial().safeParse(req.body);
 
-      if (!validated.success) {
-        return res.status(400).json({ 
-          message: "Validation failed", 
-          errors: validated.error.format()
-        });
+        if (!validated.success) {
+          return res.status(400).json({
+            message: "Validation failed",
+            errors: validated.error.format(),
+          });
+        }
+
+        // Convert date string to Date object if needed
+        const updateData = {
+          ...validated.data,
+          date:
+            validated.data.date instanceof Date
+              ? validated.data.date
+              : validated.data.date
+                ? new Date(validated.data.date)
+                : undefined,
+        };
+
+        const appointment = await storage.updateAppointment(id, updateData);
+
+        if (!appointment) {
+          return res.status(404).json({ message: "Appointment not found" });
+        }
+
+        res.json({ success: true, appointment });
+      } catch (error) {
+        console.error("Error updating appointment:", error);
+        res.status(500).json({ message: "Failed to update appointment" });
       }
+    },
+  );
 
-      // Convert date string to Date object if needed
-      const updateData = {
-        ...validated.data,
-        date: validated.data.date instanceof Date 
-          ? validated.data.date 
-          : validated.data.date 
-            ? new Date(validated.data.date) 
-            : undefined
-      };
+  app.delete(
+    "/api/admin/appointments/:id",
+    authenticateAdmin,
+    async (req, res) => {
+      try {
+        const id = req.params.id; // Use string ID for MongoDB
+        const success = await storage.deleteAppointment(id);
 
-      const appointment = await storage.updateAppointment(id, updateData);
+        if (!success) {
+          return res.status(404).json({ message: "Appointment not found" });
+        }
 
-      if (!appointment) {
-        return res.status(404).json({ message: "Appointment not found" });
+        res.json({ success: true });
+      } catch (error) {
+        console.error("Error deleting appointment:", error);
+        res.status(500).json({ message: "Failed to delete appointment" });
       }
-
-      res.json({ success: true, appointment });
-    } catch (error) {
-      console.error("Error updating appointment:", error);
-      res.status(500).json({ message: "Failed to update appointment" });
-    }
-  });
-
-  app.delete("/api/admin/appointments/:id", authenticateAdmin, async (req, res) => {
-    try {
-      const id = req.params.id; // Use string ID for MongoDB
-      const success = await storage.deleteAppointment(id);
-
-      if (!success) {
-        return res.status(404).json({ message: "Appointment not found" });
-      }
-
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting appointment:", error);
-      res.status(500).json({ message: "Failed to delete appointment" });
-    }
-  });
+    },
+  );
 
   // Carousel images routes
   // Public route to get carousel images
-  app.get('/api/carousel-images', async (req, res) => {
+  app.get("/api/carousel-images", async (req, res) => {
     try {
       const images = await storage.getCarouselImages();
       res.json({ images });
     } catch (error) {
       console.error("Error fetching carousel images:", error);
-      res.status(500).json({ message: 'Failed to fetch carousel images' });
+      res.status(500).json({ message: "Failed to fetch carousel images" });
     }
   });
 
   // Feature Cards endpoints
-  app.get('/api/feature-cards', async (req, res) => {
+  app.get("/api/feature-cards", async (req, res) => {
     try {
       const cards = await storage.getFeatureCards();
       res.json({ cards });
     } catch (error) {
-      console.error('Error fetching feature cards:', error);
-      res.status(500).json({ message: 'Failed to retrieve feature cards' });
+      console.error("Error fetching feature cards:", error);
+      res.status(500).json({ message: "Failed to retrieve feature cards" });
     }
   });
 
   // Admin Feature Cards endpoints
-  app.get('/api/admin/feature-cards', requireAdmin, async (req, res) => {
+  app.get("/api/admin/feature-cards", requireAdmin, async (req, res) => {
     try {
       const cards = await storage.getFeatureCards();
       res.json({ cards });
     } catch (error) {
-      console.error('Error fetching feature cards for admin:', error);
-      res.status(500).json({ message: 'Failed to fetch feature cards' });
+      console.error("Error fetching feature cards for admin:", error);
+      res.status(500).json({ message: "Failed to fetch feature cards" });
     }
   });
 
-  app.get('/api/admin/feature-cards/:id', requireAdmin, async (req, res) => {
+  app.post("/api/admin/feature-cards", requireAdmin, async (req, res) => {
     try {
-      const { id } = req.params;
-      const card = await storage.getFeatureCard(id);
-      if (!card) {
-        return res.status(404).json({ message: 'Feature card not found' });
-      }
-      res.json({ card });
-    } catch (error) {
-      console.error(`Error fetching feature card ${req.params.id}:`, error);
-      res.status(500).json({ message: 'Failed to fetch feature card' });
-    }
-  });
+      const { title, description, icon, imageUrl } = req.body;
 
-  app.post('/api/admin/feature-cards', requireAdmin, async (req, res) => {
-    try {
-      const { title, description, imageUrl } = req.body;
-
-      if (!title || !description || !imageUrl) {
-        return res.status(400).json({ message: 'All fields are required' });
+      if (!title || !description || !icon || !imageUrl) {
+        return res.status(400).json({ message: "All fields are required" });
       }
 
-      const newCard = await storage.addFeatureCard({ title, description, imageUrl });
+      const newCard = await storage.addFeatureCard({
+        title,
+        description,
+        icon,
+        imageUrl,
+      });
       res.status(201).json({ success: true, card: newCard });
     } catch (error) {
       console.error("Error adding feature card:", error);
-      res.status(500).json({ message: 'Failed to add feature card' });
+      res.status(500).json({ message: "Failed to add feature card" });
     }
   });
 
-  app.put('/api/admin/feature-cards/:id', requireAdmin, async (req, res) => {
+  app.put("/api/admin/feature-cards/:id", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, description, imageUrl } = req.body;
-
-      if (!title || !description || !imageUrl) {
-        return res.status(400).json({ message: 'All fields are required' });
-      }
-
-      const updatedCard = await storage.updateFeatureCard(id, { title, description, imageUrl });
-      if (!updatedCard) {
-        return res.status(404).json({ message: 'Feature card not found' });
-      }
-
-      res.json({ success: true, card: updatedCard });
-    } catch (error) {
-      console.error(`Error updating feature card ${req.params.id}:`, error);
-      res.status(500).json({ message: 'Failed to update feature card' });
-    }
-  });
-
-  app.delete('/api/admin/feature-cards/:id', requireAdmin, async (req, res) => {
-    try {
-      const { id } = req.params;
-      const success = await storage.deleteFeatureCard(id);
-      
-      if (!success) {
-        return res.status(404).json({ message: 'Feature card not found' });
-      }
-
-      res.json({ success: true });
-    } catch (error) {
-      console.error(`Error deleting feature card ${req.params.id}:`, error);
-      res.status(500).json({ message: 'Failed to delete feature card' });
-    }
-  });
-
-  app.put('/api/admin/feature-cards/:id', requireAdmin, async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { title, description, imageUrl } = req.body;
+      const { title, description, icon, imageUrl } = req.body;
 
       // Validate required fields
-      if (!title || !description || !imageUrl) {
-        return res.status(400).json({ message: 'All fields are required' });
+      if (!title || !description || !icon || !imageUrl) {
+        return res.status(400).json({ message: "All fields are required" });
       }
 
       // Update feature card implementation
-      await storage.updateFeatureCard(id, { title, description, imageUrl });
+      await storage.updateFeatureCard(id, {
+        title,
+        description,
+        icon,
+        imageUrl,
+      });
       res.json({ success: true });
     } catch (error) {
       console.error(`Error updating feature card ${req.params.id}:`, error);
-      res.status(500).json({ message: 'Failed to update feature card' });
+      res.status(500).json({ message: "Failed to update feature card" });
     }
   });
 
-  app.delete('/api/admin/feature-cards/:id', requireAdmin, async (req, res) => {
+  app.delete("/api/admin/feature-cards/:id", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
       await storage.deleteFeatureCard(id);
       res.json({ success: true });
     } catch (error) {
       console.error(`Error deleting feature card ${req.params.id}:`, error);
-      res.status(500).json({ message: 'Failed to delete feature card' });
+      res.status(500).json({ message: "Failed to delete feature card" });
     }
   });
 
-  app.put('/api/admin/feature-cards/:id/reorder', requireAdmin, async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { direction } = req.body;
+  app.put(
+    "/api/admin/feature-cards/:id/reorder",
+    requireAdmin,
+    async (req, res) => {
+      try {
+        const { id } = req.params;
+        const { direction } = req.body;
 
-      if (!direction || !['up', 'down'].includes(direction)) {
-        return res.status(400).json({ message: 'Valid direction (up/down) is required' });
+        if (!direction || !["up", "down"].includes(direction)) {
+          return res
+            .status(400)
+            .json({ message: "Valid direction (up/down) is required" });
+        }
+
+        await storage.reorderFeatureCard(id, direction);
+        res.json({ success: true });
+      } catch (error) {
+        console.error(`Error reordering feature card ${req.params.id}:`, error);
+        res.status(500).json({ message: "Failed to reorder feature card" });
       }
-
-      await storage.reorderFeatureCard(id, direction);
-      res.json({ success: true });
-    } catch (error) {
-      console.error(`Error reordering feature card ${req.params.id}:`, error);
-      res.status(500).json({ message: 'Failed to reorder feature card' });
-    }
-  });
+    },
+  );
 
   // Admin routes for carousel images
   async function requireAdmin(req: Request, res: Response, next: NextFunction) {
-      // Placeholder for admin check
-      // In real implementation, check user role from session/token
-      next();
+    // Placeholder for admin check
+    // In real implementation, check user role from session/token
+    next();
   }
-  app.get('/api/admin/carousel-images', requireAdmin, async (req, res) => {
+  app.get("/api/admin/carousel-images", requireAdmin, async (req, res) => {
     try {
       const images = await storage.getCarouselImages();
       res.json({ images });
     } catch (error) {
       console.error("Error fetching carousel images for admin:", error);
-      res.status(500).json({ message: 'Failed to fetch carousel images' });
+      res.status(500).json({ message: "Failed to fetch carousel images" });
     }
   });
 
-  app.post('/api/admin/carousel-images', requireAdmin, async (req, res) => {
+  app.post("/api/admin/carousel-images", requireAdmin, async (req, res) => {
     try {
       const { imageUrl, alt } = req.body;
 
       if (!imageUrl) {
-        return res.status(400).json({ message: 'Image URL is required' });
+        return res.status(400).json({ message: "Image URL is required" });
       }
 
       const newImage = await storage.addCarouselImage({ imageUrl, alt });
       res.status(201).json({ success: true, image: newImage });
     } catch (error) {
       console.error("Error adding carousel image:", error);
-      res.status(500).json({ message: 'Failed to add carousel image' });
+      res.status(500).json({ message: "Failed to add carousel image" });
     }
   });
 
-  app.delete('/api/admin/carousel-images/:id', requireAdmin, async (req, res) => {
-    try {
-      const { id } = req.params;
-      await storage.deleteCarouselImage(id);
-      res.json({ success: true });
-    } catch (error) {
-      console.error(`Error deleting carousel image ${req.params.id}:`, error);
-      res.status(500).json({ message: 'Failed to delete carousel image' });
-    }
-  });
-
-  app.put('/api/admin/carousel-images/:id/reorder', requireAdmin, async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { direction } = req.body;
-
-      if (!direction || !['up', 'down'].includes(direction)) {
-        return res.status(400).json({ message: 'Valid direction (up/down) is required' });
+  app.delete(
+    "/api/admin/carousel-images/:id",
+    requireAdmin,
+    async (req, res) => {
+      try {
+        const { id } = req.params;
+        await storage.deleteCarouselImage(id);
+        res.json({ success: true });
+      } catch (error) {
+        console.error(`Error deleting carousel image ${req.params.id}:`, error);
+        res.status(500).json({ message: "Failed to delete carousel image" });
       }
+    },
+  );
 
-      await storage.reorderCarouselImage(id, direction);
-      res.json({ success: true });
-    } catch (error) {
-      console.error(`Error reordering carousel image ${req.params.id}:`, error);
-      res.status(500).json({ message: 'Failed to reorder carousel image' });
-    }
-  });
+  app.put(
+    "/api/admin/carousel-images/:id/reorder",
+    requireAdmin,
+    async (req, res) => {
+      try {
+        const { id } = req.params;
+        const { direction } = req.body;
+
+        if (!direction || !["up", "down"].includes(direction)) {
+          return res
+            .status(400)
+            .json({ message: "Valid direction (up/down) is required" });
+        }
+
+        await storage.reorderCarouselImage(id, direction);
+        res.json({ success: true });
+      } catch (error) {
+        console.error(
+          `Error reordering carousel image ${req.params.id}:`,
+          error,
+        );
+        res.status(500).json({ message: "Failed to reorder carousel image" });
+      }
+    },
+  );
 
   const httpServer = createServer(app);
   return httpServer;
 }
-```This commit removes the icon field from the feature card schema and updates the corresponding routes.
