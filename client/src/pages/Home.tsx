@@ -199,9 +199,9 @@ export default function Home() {
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold mb-4 text-gray-900">Why Choose Us</h2>
+            <h2 className="text-3xl font-bold mb-4 text-gray-900">De Ce Să Ne Alegeți</h2>
             <p className="text-gray-600">
-              We're committed to delivering exceptional garden services with expertise and care.
+              Suntem dedicați să oferim servicii excepționale pentru grădină cu expertiză și grijă.ith expertise and care.
             </p>
           </div>
 

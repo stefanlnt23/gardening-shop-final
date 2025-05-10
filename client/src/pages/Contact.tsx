@@ -30,13 +30,13 @@ export default function Contact() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
-  
+
   // Fetch services for the dropdown
   const { data: servicesData, isLoading: isLoadingServices } = useQuery<{ services: Service[] }>({
     queryKey: ['/api/services'],
     refetchOnWindowFocus: false,
   });
-  
+
   const services = servicesData?.services || [];
 
   // Form setup
@@ -54,10 +54,10 @@ export default function Contact() {
   // Handle form submission
   function onSubmit(data: ContactFormValues) {
     setIsSubmitting(true);
-    
+
     // Convert serviceId to number if present
     const serviceId = data.serviceId ? parseInt(data.serviceId, 10) : null;
-    
+
     apiRequest("POST", "/api/contact", {
         ...data,
         serviceId,
@@ -105,11 +105,11 @@ export default function Contact() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              
+
               {/* Contact Form */}
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Trimite un Mesaj</h2>
-                
+
                 {formSubmitted ? (
                   <Card>
                     <CardContent className="p-8 text-center">
@@ -214,7 +214,7 @@ export default function Contact() {
                                 <FormLabel>Mesaj</FormLabel>
                                 <FormControl>
                                   <Textarea 
-                                    placeholder="Tell us about your project or inquiry..." 
+                                    placeholder="Spune-ne despre proiectul sau întrebarea ta..." 
                                     className="min-h-32" 
                                     {...field} 
                                   />
@@ -241,11 +241,11 @@ export default function Contact() {
                   </Card>
                 )}
               </div>
-              
+
               {/* Contact Information */}
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Informații de Contact</h2>
-                
+
                 <div className="space-y-8">
                   <Card>
                     <CardContent className="p-6">
@@ -266,7 +266,7 @@ export default function Contact() {
                       </div>
                     </CardContent>
                   </Card>
-                  
+
                   <Card>
                     <CardContent className="p-6">
                       <div className="flex items-start">
@@ -287,7 +287,7 @@ export default function Contact() {
                       </div>
                     </CardContent>
                   </Card>
-                  
+
                   <Card>
                     <CardContent className="p-6">
                       <div className="flex items-start">
@@ -311,7 +311,7 @@ export default function Contact() {
                       </div>
                     </CardContent>
                   </Card>
-                  
+
                   <Card>
                     <CardContent className="p-6">
                       <div className="flex items-start">
@@ -340,7 +340,7 @@ export default function Contact() {
                       </div>
                     </CardContent>
                   </Card>
-                  
+
                   <div className="mt-6 space-y-4">
                     <h3 className="text-lg font-semibold">Connect With Us</h3>
                     <div className="flex space-x-4">
