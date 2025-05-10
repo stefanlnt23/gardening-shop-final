@@ -365,121 +365,25 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* Map Section (Placeholder) */}
+      {/* Map Section */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-lg overflow-hidden shadow-lg h-96 bg-gray-200 flex items-center justify-center">
-            <div className="text-gray-500 text-center">
-              <i className="fas fa-map-marked-alt text-6xl mb-4"></i>
-              <p className="text-lg">Map would be displayed here</p>
-            </div>
+          <div className="rounded-lg overflow-hidden shadow-lg h-96">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d86548.59146097608!2d27.524152207715388!3d47.156575624825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40cafb7cf639ddbb%3A0x7ccb80da5426f53c!2sIasi%2C%20Romania!5e0!3m2!1sen!2sus!4v1695735029358!5m2!1sen!2sus" 
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Iasi, Romania Map"
+            ></iframe>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white pt-16 pb-8">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            <div>
-              <div className="flex items-center space-x-2 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-300 rounded-md flex items-center justify-center">
-                  <i className="fas fa-leaf text-white text-lg"></i>
-                </div>
-                <span className="text-xl font-bold text-white">
-                  Green Garden
-                </span>
-              </div>
-              <p className="text-gray-400 mb-6">
-                Transforming outdoor spaces into beautiful, sustainable gardens since 2010.
-              </p>
-              <div className="flex space-x-4">
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <i className="fab fa-facebook-f"></i>
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <i className="fab fa-twitter"></i>
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <i className="fab fa-instagram"></i>
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <i className="fab fa-pinterest-p"></i>
-                </a>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link href="/" className="text-gray-400 hover:text-white transition-colors">
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blog" className="text-gray-400 hover:text-white transition-colors">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-6">Services</h3>
-              <ul className="space-y-3">
-                <li>
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                    Garden Maintenance
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                    Landscaping
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                    Planting & Pruning
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                    Irrigation Systems
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-6">Contact Us</h3>
-              <ul className="space-y-3 text-gray-400">
-                <li className="flex items-start">
-                  <i className="fas fa-map-marker-alt mt-1 mr-3 text-green-400"></i>
-                  <span>123 Garden Street, Greenville, 12345</span>
-                </li>
-                <li className="flex items-start">
-                  <i className="fas fa-phone-alt mt-1 mr-3 text-green-400"></i>
-                  <span>(123) 456-7890</span>
-                </li>
-                <li className="flex items-start">
-                  <i className="fas fa-envelope mt-1 mr-3 text-green-400"></i>
-                  <span>info@greengarden.com</span>
-                </li>
-                <li className="flex items-start">
-                  <i className="fas fa-clock mt-1 mr-3 text-green-400"></i>
-                  <span>Mon-Fri: 8am - 6pm<br />Sat: 9am - 4pm</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
-            <p>&copy; {new Date().getFullYear()} Green Garden Services. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      {/* Footer is included in MainLayout */}
     </MainLayout>
   );
 }
