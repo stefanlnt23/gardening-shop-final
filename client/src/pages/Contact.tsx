@@ -91,10 +91,10 @@ export default function Contact() {
       <section className="bg-gradient-to-br from-green-50 to-green-100 py-12 md:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Contactează-ne</h1>
             <p className="text-lg text-gray-700">
-              Have questions about our services or want to schedule a consultation? 
-              Get in touch with our team today.
+              Ai întrebări despre serviciile noastre sau dorești să programezi o consultație? 
+              Ia legătura cu echipa noastră astăzi.
             </p>
           </div>
         </div>
@@ -108,7 +108,7 @@ export default function Contact() {
               
               {/* Contact Form */}
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Send a Message</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Trimite un Mesaj</h2>
                 
                 {formSubmitted ? (
                   <Card>
@@ -139,7 +139,7 @@ export default function Contact() {
                               name="name"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Name</FormLabel>
+                                  <FormLabel>Nume</FormLabel>
                                   <FormControl>
                                     <Input placeholder="Your name" {...field} />
                                   </FormControl>
@@ -167,7 +167,7 @@ export default function Contact() {
                               name="phone"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Phone (Optional)</FormLabel>
+                                  <FormLabel>Telefon (Opțional)</FormLabel>
                                   <FormControl>
                                     <Input placeholder="(123) 456-7890" {...field} />
                                   </FormControl>
@@ -180,7 +180,7 @@ export default function Contact() {
                               name="serviceId"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Service (Optional)</FormLabel>
+                                  <FormLabel>Serviciu (Opțional)</FormLabel>
                                   <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingServices}>
                                     <FormControl>
                                       <SelectTrigger>
@@ -211,7 +211,7 @@ export default function Contact() {
                             name="message"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Message</FormLabel>
+                                <FormLabel>Mesaj</FormLabel>
                                 <FormControl>
                                   <Textarea 
                                     placeholder="Tell us about your project or inquiry..." 
@@ -231,9 +231,9 @@ export default function Contact() {
                             {isSubmitting ? (
                               <>
                                 <i className="fas fa-spinner fa-spin mr-2"></i>
-                                Sending...
+                                Se trimite...
                               </>
-                            ) : "Send Message"}
+                            ) : "Trimite Mesaj"}
                           </Button>
                         </form>
                       </Form>
@@ -244,7 +244,7 @@ export default function Contact() {
               
               {/* Contact Information */}
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Contact Information</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Informații de Contact</h2>
                 
                 <div className="space-y-8">
                   <Card>
@@ -256,7 +256,7 @@ export default function Contact() {
                           </span>
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold mb-2">Our Location</h3>
+                          <h3 className="text-lg font-semibold mb-2">Locația Noastră</h3>
                           <p className="text-gray-600">
                             123 Garden Street<br />
                             Greenville, 12345<br />
@@ -276,12 +276,12 @@ export default function Contact() {
                           </span>
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold mb-2">Phone Numbers</h3>
+                          <h3 className="text-lg font-semibold mb-2">Numere de Telefon</h3>
                           <p className="text-gray-600 mb-2">
-                            <span className="font-medium">Main Office:</span> (123) 456-7890
+                            <span className="font-medium">Birou Principal:</span> (123) 456-7890
                           </p>
                           <p className="text-gray-600">
-                            <span className="font-medium">Customer Support:</span> (123) 456-7891
+                            <span className="font-medium">Suport Clienți:</span> (123) 456-7891
                           </p>
                         </div>
                       </div>
@@ -297,15 +297,15 @@ export default function Contact() {
                           </span>
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold mb-2">Email Addresses</h3>
+                          <h3 className="text-lg font-semibold mb-2">Adrese de Email</h3>
                           <p className="text-gray-600 mb-2">
-                            <span className="font-medium">General Inquiries:</span> info@greengarden.com
+                            <span className="font-medium">Informații Generale:</span> info@greengarden.com
                           </p>
                           <p className="text-gray-600 mb-2">
-                            <span className="font-medium">Customer Support:</span> support@greengarden.com
+                            <span className="font-medium">Suport Clienți:</span> support@greengarden.com
                           </p>
                           <p className="text-gray-600">
-                            <span className="font-medium">Job Opportunities:</span> careers@greengarden.com
+                            <span className="font-medium">Oportunități de Angajare:</span> careers@greengarden.com
                           </p>
                         </div>
                       </div>
@@ -321,19 +321,19 @@ export default function Contact() {
                           </span>
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold mb-2">Business Hours</h3>
+                          <h3 className="text-lg font-semibold mb-2">Program de Lucru</h3>
                           <div className="text-gray-600 space-y-1">
                             <p className="flex justify-between">
-                              <span>Monday - Friday:</span>
-                              <span>8:00 AM - 6:00 PM</span>
+                              <span>Luni - Vineri:</span>
+                              <span>8:00 - 18:00</span>
                             </p>
                             <p className="flex justify-between">
-                              <span>Saturday:</span>
-                              <span>9:00 AM - 4:00 PM</span>
+                              <span>Sâmbătă:</span>
+                              <span>9:00 - 16:00</span>
                             </p>
                             <p className="flex justify-between">
-                              <span>Sunday:</span>
-                              <span>Closed</span>
+                              <span>Duminică:</span>
+                              <span>Închis</span>
                             </p>
                           </div>
                         </div>

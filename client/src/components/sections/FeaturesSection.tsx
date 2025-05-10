@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -28,24 +27,24 @@ export default function FeaturesSection() {
   const features: FeatureCard[] = featureCardsData?.cards || [];
   const [autoPlay, setAutoPlay] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
-  
+
   // Auto-rotate carousel
   useEffect(() => {
     if (!autoPlay || features.length <= 4) return;
-    
+
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % features.length);
-      
+
       // Force carousel to scroll to the next slide
       if (features.length > 0) {
         const api = document.querySelector('.embla__viewport')?.__emblaApi__;
         if (api) api.scrollTo((currentSlide + 1) % features.length);
       }
     }, 5000);
-    
+
     return () => clearInterval(interval);
   }, [autoPlay, features.length, currentSlide]);
-  
+
   // Pause autoplay on hover
   const handleMouseEnter = () => setAutoPlay(false);
   const handleMouseLeave = () => setAutoPlay(true);
@@ -53,10 +52,10 @@ export default function FeaturesSection() {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Choose Us</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            We're committed to delivering exceptional garden services with expertise and care.
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-3xl font-bold mb-4 text-gray-900">De Ce Să Ne Alegeți</h2>
+          <p className="text-gray-600">
+            Suntem dedicați să oferim servicii excepționale pentru grădină cu expertiză și grijă.
           </p>
         </div>
 
@@ -128,7 +127,7 @@ export default function FeaturesSection() {
                 <div className="absolute -right-4 top-1/2 -translate-y-1/2 z-10">
                   <CarouselNext className="bg-white border border-green-200 hover:bg-green-50" />
                 </div>
-                
+
                 <div className="flex justify-center mt-6 space-x-2">
                   {features.map((_, index) => (
                     <button

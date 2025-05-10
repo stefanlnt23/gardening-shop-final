@@ -40,10 +40,10 @@ export default function About() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h1 className="text-4xl font-bold text-gray-900 mb-6">
-              About Green Garden Services
+              Despre Serviciile Green Garden
             </h1>
             <p className="text-xl text-gray-600">
-              Transforming outdoor spaces into beautiful, sustainable gardens since 2005.
+              Transformăm spații exterioare în grădini frumoase și sustenabile din 2005.
             </p>
           </div>
         </div>
@@ -54,20 +54,20 @@ export default function About() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Povestea Noastră</h2>
               <div className="prose prose-green max-w-none">
                 <p>
-                  Green Garden Services was founded in 2005 with a simple mission: to create beautiful, 
-                  sustainable gardens that bring joy and enhance the environment.
+                  Green Garden Services a fost fondată în 2005 cu o misiune simplă: să creeze grădini frumoase și 
+                  sustenabile care aduc bucurie și îmbunătățesc mediul înconjurător.
                 </p>
                 <p>
-                  What started as a small one-person operation has grown into a team of dedicated professionals
-                  who share a passion for plants, design, and ecological gardening practices.
+                  Ceea ce a început ca o mică operațiune cu o singură persoană a crescut într-o echipă de profesioniști dedicați
+                  care împărtășesc o pasiune pentru plante, design și practici ecologice de grădinărit.
                 </p>
                 <p>
-                  Today, we serve both residential and commercial clients throughout the region, providing 
-                  comprehensive garden design, installation, and maintenance services that prioritize 
-                  sustainability and biodiversity.
+                  Astăzi, deservim atât clienți rezidențiali, cât și comerciali din întreaga regiune, oferind 
+                  servicii complete de design, instalare și întreținere a grădinilor care prioritizează 
+                  sustenabilitatea și biodiversitatea.
                 </p>
               </div>
             </div>
@@ -86,9 +86,9 @@ export default function About() {
       <section className="py-16 bg-green-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Values</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Valorile Noastre</h2>
             <p className="text-lg text-gray-600">
-              At Green Garden Services, we're guided by a set of core values that inform everything we do.
+              La Green Garden Services, suntem ghidați de un set de valori fundamentale care stau la baza a tot ceea ce facem.
             </p>
           </div>
 
@@ -136,9 +136,9 @@ export default function About() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Meet Our Team</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Cunoaște Echipa Noastră</h2>
             <p className="text-lg text-gray-600">
-              Our dedicated team of garden professionals brings expertise, creativity, and passion to every project.
+              Echipa noastră dedicată de profesioniști în grădinărit aduce expertiză, creativitate și pasiune în fiecare proiect.
             </p>
           </div>
 

@@ -103,37 +103,37 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="md:w-1/2 mb-10 md:mb-0 md:pr-8">
               <span className="inline-block px-4 py-1 rounded-full bg-green-100 text-green-600 text-sm font-medium mb-6">
-                Professional Garden Services
+                Servicii Profesionale de Grădinărit
               </span>
               <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight text-gray-900">
-                Transform Your Outdoor Space Into a <span className="text-green-600 relative">
-                  Paradise
+                Transformă Spațiul Tău Exterior Într-un <span className="text-green-600 relative">
+                  Paradis
                   <span className="absolute bottom-0 left-0 w-full h-2 bg-green-200 -z-10"></span>
                 </span>
               </h1>
               <p className="text-lg mb-8 text-gray-700 max-w-lg">
-                Professional gardening services to make your garden beautiful, sustainable, and thriving all year round. Our expert team brings your garden dreams to life.
+                Servicii profesionale de grădinărit pentru a face grădina ta frumoasă, sustenabilă și înfloritoare pe tot parcursul anului. Echipa noastră de experți îți transformă visele despre grădină în realitate.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link href="/contact">
                   <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all">
-                    Get a Free Quote
+                    Obține o Ofertă Gratuită
                   </Button>
                 </Link>
                 <Link href="/blog">
                   <Button variant="outline" className="border-green-600 text-green-600 hover:bg-green-50 px-8 py-3 rounded-full">
-                    Learn More
+                    Află Mai Multe
                   </Button>
                 </Link>
               </div>
               <div className="mt-8 flex items-center text-gray-600">
                 <span className="flex items-center mr-6">
                   <i className="fas fa-check-circle text-green-500 mr-2"></i>
-                  Experienced Team
+                  Echipă cu Experiență
                 </span>
                 <span className="flex items-center">
                   <i className="fas fa-check-circle text-green-500 mr-2"></i>
-                  Quality Guarantee
+                  Garanție de Calitate
                 </span>
               </div>
             </div>
@@ -152,14 +152,14 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="inline-block px-4 py-1 rounded-full bg-green-100 text-green-600 text-sm font-medium mb-4">
-              Expert Services
+              Servicii de Experți
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
-              Our Services
+              Serviciile Noastre
             </h2>
             <div className="w-24 h-1 bg-green-500 mx-auto mb-6"></div>
             <p className="text-gray-600 text-lg">
-              We provide comprehensive gardening and landscaping services to keep your outdoor space beautiful and healthy throughout all seasons.
+              Oferim servicii complete de grădinărit și amenajare peisagistică pentru a menține spațiul tău exterior frumos și sănătos în toate anotimpurile.
             </p>
           </div>
 
@@ -182,13 +182,13 @@ export default function Home() {
       <section className="py-20 bg-green-700 text-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-6">Ready to Transform Your Garden?</h2>
+            <h2 className="text-3xl font-bold mb-6">Ești Gata să Îți Transformi Grădina?</h2>
             <p className="text-lg mb-8 text-green-100">
-              Schedule a consultation with our expert gardeners today and get a personalized plan for your outdoor space.
+              Programează o consultație cu grădinarii noștri experți astăzi și obține un plan personalizat pentru spațiul tău exterior.
             </p>
             <Link href="/contact">
               <Button className="bg-white text-green-700 hover:bg-green-100 px-8 py-3 text-lg">
-                Contact Us Now
+                Contactează-ne Acum
               </Button>
             </Link>
           </div>
@@ -235,9 +235,9 @@ export default function Home() {
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold mb-4 text-gray-900">What Our Clients Say</h2>
+            <h2 className="text-3xl font-bold mb-4 text-gray-900">Ce Spun Clienții Noștri</h2>
             <p className="text-gray-600">
-              Hear from our satisfied customers about their experiences with our services.
+              Află de la clienții noștri mulțumiți despre experiențele lor cu serviciile noastre.
             </p>
           </div>
 
@@ -416,11 +416,11 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
+              <h3 className="text-lg font-semibold mb-6">Link-uri Rapide</h3>
               <ul className="space-y-3">
                 <li>
                   <Link href="/" className="text-gray-400 hover:text-white transition-colors">
-                    Home
+                    Acasă
                   </Link>
                 </li>
                 <li>
@@ -436,36 +436,36 @@ export default function Home() {
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-6">Services</h3>
+              <h3 className="text-lg font-semibold mb-6">Servicii</h3>
               <ul className="space-y-3">
                 <li>
                   <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                    Garden Maintenance
+                    Întreținere Grădini
                   </a>
                 </li>
                 <li>
                   <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                    Landscaping
+                    Amenajare Peisagistică
                   </a>
                 </li>
                 <li>
                   <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                    Planting & Pruning
+                    Plantare & Tundere
                   </a>
                 </li>
                 <li>
                   <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                    Irrigation Systems
+                    Sisteme de Irigație
                   </a>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-6">Contact Us</h3>
+              <h3 className="text-lg font-semibold mb-6">Contactează-ne</h3>
               <ul className="space-y-3 text-gray-400">
                 <li className="flex items-start">
                   <i className="fas fa-map-marker-alt mt-1 mr-3 text-green-400"></i>
-                  <span>123 Garden Street, Greenville, 12345</span>
+                  <span>Strada Grădinii 123, Greenville, 12345</span>
                 </li>
                 <li className="flex items-start">
                   <i className="fas fa-phone-alt mt-1 mr-3 text-green-400"></i>
@@ -477,7 +477,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-start">
                   <i className="fas fa-clock mt-1 mr-3 text-green-400"></i>
-                  <span>Mon-Fri: 8am - 6pm<br />Sat: 9am - 4pm</span>
+                  <span>Luni-Vineri: 8am - 6pm<br />Sâmbătă: 9am - 4pm</span>
                 </li>
               </ul>
             </div>

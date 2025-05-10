@@ -31,9 +31,9 @@ return (
       <section className="bg-gradient-to-br from-green-50 to-green-100 py-12 md:py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Green Garden Blog</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Blogul Green Garden</h1>
             <p className="text-lg text-gray-700 mb-8">
-              Learn about gardening, landscaping, and sustainable outdoor practices.
+              Află despre grădinărit, amenajare peisagistică și practici sustenabile pentru exterior.
             </p>
             <div className="relative max-w-xl mx-auto">
               <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
@@ -220,19 +220,19 @@ return (
       <section className="py-16 bg-green-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Want Expert Gardening Advice?</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Dorești Sfaturi Expert pentru Grădinărit?</h2>
             <p className="text-lg text-gray-700 mb-8">
-              Get personalized gardening tips and landscaping solutions for your outdoor space. Our team of experienced professionals is ready to help.
+              Obține sfaturi personalizate pentru grădinărit și soluții de amenajare peisagistică pentru spațiul tău exterior. Echipa noastră de profesioniști cu experiență este gata să te ajute.
             </p>
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Link href="/contact">
                 <Button className="bg-green-600 hover:bg-green-700 text-lg px-8">
-                  Contact Us Today
+                  Contactează-ne Astăzi
                 </Button>
               </Link>
               <Link href="/">
                 <Button variant="outline" className="border-green-600 text-green-600 hover:bg-green-50 text-lg px-8">
-                  Explore Services
+                  Explorează Serviciile
                 </Button>
               </Link>
             </div>

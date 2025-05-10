@@ -60,9 +60,9 @@ export default function Portfolio() {
       <div className="bg-green-50 py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Portfolio</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Portofoliul Nostru</h1>
             <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              Browse through our completed projects and see how we've transformed outdoor spaces for our valued clients.
+              Răsfoiește proiectele noastre finalizate și vezi cum am transformat spațiile exterioare pentru clienții noștri valoroși.
             </p>
           </div>
           
@@ -74,7 +74,7 @@ export default function Portfolio() {
                 className={selectedService === null ? "bg-green-600 hover:bg-green-700" : ""}
                 onClick={() => setSelectedService(null)}
               >
-                All Projects
+                Toate Proiectele
               </Button>
               
               {services.map((service: any) => (
@@ -187,22 +187,22 @@ export default function Portfolio() {
           
           {/* CTA Section */}
           <div className="mt-16 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready to transform your space?</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Ești gata să îți transformi spațiul?</h2>
             <p className="text-lg text-gray-700 mb-6 max-w-2xl mx-auto">
-              Contact us today to discuss your project or book an appointment for a consultation.
+              Contactează-ne astăzi pentru a discuta despre proiectul tău sau programează o programare pentru o consultație.
             </p>
             <div className="flex justify-center gap-4">
               <Button 
                 className="bg-green-600 hover:bg-green-700"
                 onClick={() => setLocation("/appointment")}
               >
-                Book an Appointment
+                Programează o Întâlnire
               </Button>
               <Button 
                 variant="outline" 
                 onClick={() => setLocation("/contact")}
               >
-                Contact Us
+                Contactează-ne
               </Button>
             </div>
           </div>

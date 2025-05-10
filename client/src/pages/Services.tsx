@@ -18,10 +18,10 @@ export default function Services() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h1 className="text-4xl font-bold text-gray-900 mb-6">
-              Our Gardening Services
+              Serviciile Noastre de Grădinărit
             </h1>
             <p className="text-xl text-gray-600">
-              We offer a wide range of professional gardening and landscaping services to enhance your outdoor space.
+              Oferim o gamă largă de servicii profesionale de grădinărit și amenajare peisagistică pentru a îmbunătăți spațiul tău exterior.
             </p>
           </div>
 
