@@ -46,7 +46,7 @@ export default function FeatureCards() {
   const cards: FeatureCard[] = featureCardsData?.cards || [];
 
   const addCardMutation = useMutation({
-    mutationFn: async (newCard: { title: string; description: string; icon: string; imageUrl: string }) => {
+    mutationFn: async (newCard: { title: string; description: string; imageUrl: string }) => {
       const response = await fetch('/api/admin/feature-cards', {
         method: 'POST',
         headers: {

@@ -963,16 +963,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/feature-cards", requireAdmin, async (req, res) => {
     try {
-      const { title, description, icon, imageUrl } = req.body;
+      const { title, description, imageUrl } = req.body;
 
-      if (!title || !description || !icon || !imageUrl) {
+      if (!title || !description || !imageUrl) {
         return res.status(400).json({ message: "All fields are required" });
       }
 
       const newCard = await storage.addFeatureCard({
         title,
         description,
-        icon,
         imageUrl,
       });
       res.status(201).json({ success: true, card: newCard });
@@ -985,10 +984,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/feature-cards/:id", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, description, icon, imageUrl } = req.body;
+      const { title, description, imageUrl } = req.body;
 
       // Validate required fields
-      if (!title || !description || !icon || !imageUrl) {
+      if (!title || !description || !imageUrl) {
         return res.status(400).json({ message: "All fields are required" });
       }
 
@@ -996,7 +995,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.updateFeatureCard(id, {
         title,
         description,
-        icon,
         imageUrl,
       });
       res.json({ success: true });
