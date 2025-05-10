@@ -30,11 +30,13 @@ export default function FeatureCards() {
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newImageUrl, setNewImageUrl] = useState("");
+  const [newIcon, setNewIcon] = useState(""); // Adding this to prevent errors
   
   const [editMode, setEditMode] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editImageUrl, setEditImageUrl] = useState("");
+  const [editIcon, setEditIcon] = useState(""); // Adding this to prevent errors
 
   const { data: featureCardsData, isLoading } = useQuery({
     queryKey: ['/api/admin/feature-cards'],
@@ -62,7 +64,6 @@ export default function FeatureCards() {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/feature-cards'] });
       setNewTitle("");
       setNewDescription("");
-      setNewIcon("fa-check");
       setNewImageUrl("");
       toast({
         title: "Success",
@@ -165,7 +166,7 @@ export default function FeatureCards() {
   });
 
   const handleAddCard = () => {
-    if (!newTitle || !newDescription || !newIcon || !newImageUrl) {
+    if (!newTitle || !newDescription || !newImageUrl) {
       toast({
         title: "Error",
         description: "All fields are required",
@@ -204,7 +205,7 @@ export default function FeatureCards() {
   };
 
   const saveEdit = (id: string) => {
-    if (!editTitle || !editDescription || !editIcon || !editImageUrl) {
+    if (!editTitle || !editDescription || !editImageUrl) {
       toast({
         title: "Error",
         description: "All fields are required",
@@ -223,18 +224,7 @@ export default function FeatureCards() {
     });
   };
 
-  const commonIcons = [
-    { value: "fa-check", label: "Check" },
-    { value: "fa-leaf", label: "Leaf" },
-    { value: "fa-calendar-check", label: "Calendar Check" },
-    { value: "fa-award", label: "Award" },
-    { value: "fa-thumbs-up", label: "Thumbs Up" },
-    { value: "fa-shield-alt", label: "Shield" },
-    { value: "fa-heart", label: "Heart" },
-    { value: "fa-gem", label: "Gem" },
-    { value: "fa-star", label: "Star" },
-    { value: "fa-tools", label: "Tools" },
-  ];
+  // Icon selection removed as it's no longer needed
 
   return (
     <AdminLayout>
