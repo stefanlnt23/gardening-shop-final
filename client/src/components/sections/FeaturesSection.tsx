@@ -3,6 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 interface FeatureCard {
   id: string;
@@ -19,40 +26,25 @@ export default function FeaturesSection() {
   });
 
   const features: FeatureCard[] = featureCardsData?.cards || [];
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
-  
-  // For desktop, show 3 cards at a time
-  const cardsPerPage = {
-    mobile: 1,
-    tablet: 2,
-    desktop: 3
-  };
+  const [currentSlide, setCurrentSlide] = useState(0);
   
   // Auto-rotate carousel
   useEffect(() => {
-    if (autoPlay && features.length > cardsPerPage.desktop) {
-      const interval = setInterval(() => {
-        nextSlide();
-      }, 5000);
+    if (!autoPlay || features.length <= 4) return;
+    
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % features.length);
       
-      return () => clearInterval(interval);
-    }
-  }, [autoPlay, features.length, currentIndex]);
-  
-  // Pagination controls
-  const nextSlide = () => {
-    setCurrentIndex((prev) => 
-      (prev + 1) % (features.length - cardsPerPage.desktop + 1)
-    );
-  };
-  
-  const prevSlide = () => {
-    setCurrentIndex((prev) => 
-      (prev - 1 + (features.length - cardsPerPage.desktop + 1)) % 
-      (features.length - cardsPerPage.desktop + 1)
-    );
-  };
+      // Force carousel to scroll to the next slide
+      if (features.length > 0) {
+        const api = document.querySelector('.embla__viewport')?.__emblaApi__;
+        if (api) api.scrollTo((currentSlide + 1) % features.length);
+      }
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [autoPlay, features.length, currentSlide]);
   
   // Pause autoplay on hover
   const handleMouseEnter = () => setAutoPlay(false);
@@ -74,73 +66,85 @@ export default function FeaturesSection() {
             onMouseEnter={handleMouseEnter} 
             onMouseLeave={handleMouseLeave}
           >
-            <div className="overflow-hidden">
-              <div 
-                className="flex transition-transform duration-500 ease-in-out"
-                style={{ 
-                  transform: `translateX(-${currentIndex * (100 / cardsPerPage.desktop)}%)`,
-                  width: `${(features.length / cardsPerPage.desktop) * 100}%`
-                }}
-              >
+            {features.length <= 4 ? (
+              // Regular grid for 4 or fewer items
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {features.map((feature) => (
-                  <div 
-                    key={feature.id} 
-                    className="px-4"
-                    style={{ width: `${100 / features.length}%` }}
-                  >
-                    <div className="bg-gray-50 rounded-xl p-8 border border-gray-100 hover:shadow-md transition-shadow h-full">
-                      {feature.imageUrl && (
-                        <div className="mb-4 h-48 overflow-hidden rounded-lg">
-                          <img 
-                            src={feature.imageUrl} 
-                            alt={feature.title} 
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                      <p className="text-gray-600">
-                        {feature.description}
-                      </p>
-                    </div>
+                  <div key={feature.id} className="bg-gray-50 rounded-xl p-6 border border-gray-100 hover:shadow-md transition-shadow h-full">
+                    {feature.imageUrl && (
+                      <div className="mb-4 h-48 overflow-hidden rounded-lg">
+                        <img 
+                          src={feature.imageUrl} 
+                          alt={feature.title} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                    <p className="text-gray-600">
+                      {feature.description}
+                    </p>
                   </div>
                 ))}
               </div>
-            </div>
-            
-            {features.length > cardsPerPage.desktop && (
-              <>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="absolute top-1/2 -left-4 transform -translate-y-1/2 bg-white rounded-full shadow-md hover:bg-gray-100"
-                  onClick={prevSlide}
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="absolute top-1/2 -right-4 transform -translate-y-1/2 bg-white rounded-full shadow-md hover:bg-gray-100"
-                  onClick={nextSlide}
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </Button>
+            ) : (
+              // Carousel for more than 4 items
+              <Carousel
+                className="w-full"
+                setApi={(api) => {
+                  if (api) {
+                    api.on('select', () => setCurrentSlide(api.selectedScrollSnap()));
+                  }
+                }}
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+              >
+                <CarouselContent>
+                  {features.map((feature) => (
+                    <CarouselItem key={feature.id} className="md:basis-1/2 lg:basis-1/4">
+                      <div className="bg-gray-50 rounded-xl p-6 border border-gray-100 hover:shadow-md transition-shadow h-full">
+                        {feature.imageUrl && (
+                          <div className="mb-4 h-48 overflow-hidden rounded-lg">
+                            <img 
+                              src={feature.imageUrl} 
+                              alt={feature.title} 
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                        <p className="text-gray-600">
+                          {feature.description}
+                        </p>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <div className="absolute -left-4 top-1/2 -translate-y-1/2 z-10">
+                  <CarouselPrevious className="bg-white border border-green-200 hover:bg-green-50" />
+                </div>
+                <div className="absolute -right-4 top-1/2 -translate-y-1/2 z-10">
+                  <CarouselNext className="bg-white border border-green-200 hover:bg-green-50" />
+                </div>
                 
-                {/* Dots Indicator */}
                 <div className="flex justify-center mt-6 space-x-2">
-                  {Array.from({ length: features.length - cardsPerPage.desktop + 1 }).map((_, index) => (
+                  {features.map((_, index) => (
                     <button
                       key={index}
                       className={`h-2 w-2 rounded-full transition-colors ${
-                        currentIndex === index ? 'bg-green-600' : 'bg-gray-300'
+                        currentSlide === index ? 'bg-green-600' : 'bg-gray-300'
                       }`}
-                      onClick={() => setCurrentIndex(index)}
+                      onClick={() => {
+                        const api = document.querySelector('.embla__viewport')?.__emblaApi__;
+                        if (api) api.scrollTo(index);
+                      }}
                       aria-label={`Go to slide ${index + 1}`}
                     />
                   ))}
                 </div>
-              </>
+              </Carousel>
             )}
           </div>
         )}
