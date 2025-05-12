@@ -9,6 +9,7 @@ app.use(express.json());
 
 // Connect to MongoDB
 const DATABASE_URL = process.env.DATABASE_URL || 'mongodb+srv://stefanlenta:MABCkbbCfNeUOo1M@cluster0.3ibgvtn.mongodb.net/garden_services_db';
+console.log('MongoDB connection will use:', process.env.DATABASE_URL ? 'Environment variable' : 'Fallback URL');
 
 // User schema
 const userSchema = new mongoose.Schema({
@@ -138,11 +139,15 @@ const connectToDatabase = async () => {
   if (isConnected) return;
   
   try {
-    await mongoose.connect(DATABASE_URL);
+    await mongoose.connect(DATABASE_URL, {
+      serverSelectionTimeoutMS: 5000,
+      maxPoolSize: 10
+    });
     isConnected = true;
-    console.log('Connected to MongoDB');
+    console.log('Connected to MongoDB successfully');
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
+    console.error('Connection string format:', DATABASE_URL ? 'URL is defined' : 'URL is undefined');
     throw error;
   }
 };
@@ -269,9 +274,21 @@ app.get('/api/testimonials', async (req, res) => {
   }
 });
 
+// Debug route to check if API is working
+app.get('/api/status', (req, res) => {
+  res.json({ status: 'API is running', mongodb: isConnected ? 'connected' : 'disconnected' });
+});
+
 // Handle all other API routes
 app.all('/api/*', (req, res) => {
+  console.log(`404 Not Found: ${req.method} ${req.originalUrl}`);
   res.status(404).json({ message: 'API endpoint not found' });
+});
+
+// Add a catch-all error handler
+app.use((err, req, res, next) => {
+  console.error('Global error handler caught:', err);
+  res.status(500).json({ message: 'Internal server error', error: err.message });
 });
 
 module.exports = app;
