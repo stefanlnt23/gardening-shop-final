@@ -1,0 +1,92 @@
+index-CRrKl9OJ.js:49 
+            
+            
+           GET https://gardening-shop-finalv1.vercel.app/api/admin/inquiries 404 (Not Found)
+(anonymous) @ index-CRrKl9OJ.js:49
+i @ index-CRrKl9OJ.js:49
+w @ index-CRrKl9OJ.js:49
+start @ index-CRrKl9OJ.js:49
+fetch @ index-CRrKl9OJ.js:49
+qo @ index-CRrKl9OJ.js:49
+onSubscribe @ index-CRrKl9OJ.js:49
+subscribe @ index-CRrKl9OJ.js:49
+(anonymous) @ index-CRrKl9OJ.js:49
+qy @ index-CRrKl9OJ.js:39
+xu @ index-CRrKl9OJ.js:41
+zi @ index-CRrKl9OJ.js:41
+Wg @ index-CRrKl9OJ.js:41
+Ns @ index-CRrKl9OJ.js:39
+p_ @ index-CRrKl9OJ.js:41
+Ts @ index-CRrKl9OJ.js:41
+E0 @ index-CRrKl9OJ.js:41
+N @ index-CRrKl9OJ.js:26
+M @ index-CRrKl9OJ.js:26
+index-CRrKl9OJ.js:49 
+            
+            
+           GET https://gardening-shop-finalv1.vercel.app/api/services 404 (Not Found)
+(anonymous) @ index-CRrKl9OJ.js:49
+i @ index-CRrKl9OJ.js:49
+w @ index-CRrKl9OJ.js:49
+start @ index-CRrKl9OJ.js:49
+fetch @ index-CRrKl9OJ.js:49
+qo @ index-CRrKl9OJ.js:49
+onSubscribe @ index-CRrKl9OJ.js:49
+subscribe @ index-CRrKl9OJ.js:49
+(anonymous) @ index-CRrKl9OJ.js:49
+qy @ index-CRrKl9OJ.js:39
+xu @ index-CRrKl9OJ.js:41
+zi @ index-CRrKl9OJ.js:41
+Wg @ index-CRrKl9OJ.js:41
+Ns @ index-CRrKl9OJ.js:39
+p_ @ index-CRrKl9OJ.js:41
+Ts @ index-CRrKl9OJ.js:41
+E0 @ index-CRrKl9OJ.js:41
+N @ index-CRrKl9OJ.js:26
+M @ index-CRrKl9OJ.js:26
+index-CRrKl9OJ.js:49 
+            
+            
+           GET https://gardening-shop-finalv1.vercel.app/api/admin/appointments 404 (Not Found)
+(anonymous) @ index-CRrKl9OJ.js:49
+i @ index-CRrKl9OJ.js:49
+w @ index-CRrKl9OJ.js:49
+start @ index-CRrKl9OJ.js:49
+fetch @ index-CRrKl9OJ.js:49
+qo @ index-CRrKl9OJ.js:49
+onSubscribe @ index-CRrKl9OJ.js:49
+subscribe @ index-CRrKl9OJ.js:49
+(anonymous) @ index-CRrKl9OJ.js:49
+qy @ index-CRrKl9OJ.js:39
+xu @ index-CRrKl9OJ.js:41
+zi @ index-CRrKl9OJ.js:41
+Wg @ index-CRrKl9OJ.js:41
+Ns @ index-CRrKl9OJ.js:39
+p_ @ index-CRrKl9OJ.js:41
+Ts @ index-CRrKl9OJ.js:41
+E0 @ index-CRrKl9OJ.js:41
+N @ index-CRrKl9OJ.js:26
+M @ index-CRrKl9OJ.js:26
+index-CRrKl9OJ.js:49 
+            
+            
+           GET https://gardening-shop-finalv1.vercel.app/api/admin/services 404 (Not Found)
+(anonymous) @ index-CRrKl9OJ.js:49
+i @ index-CRrKl9OJ.js:49
+w @ index-CRrKl9OJ.js:49
+start @ index-CRrKl9OJ.js:49
+fetch @ index-CRrKl9OJ.js:49
+qo @ index-CRrKl9OJ.js:49
+onSubscribe @ index-CRrKl9OJ.js:49
+subscribe @ index-CRrKl9OJ.js:49
+(anonymous) @ index-CRrKl9OJ.js:49
+qy @ index-CRrKl9OJ.js:39
+xu @ index-CRrKl9OJ.js:41
+zi @ index-CRrKl9OJ.js:41
+Wg @ index-CRrKl9OJ.js:41
+Ns @ index-CRrKl9OJ.js:39
+p_ @ index-CRrKl9OJ.js:41
+Ts @ index-CRrKl9OJ.js:41
+E0 @ index-CRrKl9OJ.js:41
+N @ index-CRrKl9OJ.js:26
+M @ index-CRrKl9OJ.js:26
