@@ -2,7 +2,15 @@
 // Vercel Serverless Function to handle API requests
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const app = express();
+
+// Enable CORS for all routes
+app.use(cors({
+  origin: ['https://gardening-shop-finalv1.vercel.app', process.env.FRONTEND_URL || '*'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
+}));
 
 // Enable JSON parsing
 app.use(express.json());
