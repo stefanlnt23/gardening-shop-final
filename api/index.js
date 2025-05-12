@@ -293,10 +293,30 @@ app.all('/api/*', (req, res) => {
   res.status(404).json({ message: 'API endpoint not found' });
 });
 
+// Add better logging for debugging on Vercel
+app.all('*', (req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
+  next();
+});
+
+// Add a catch-all route to handle undefined API routes
+app.all('/api/*', (req, res) => {
+  console.log(`404 Not Found: ${req.method} ${req.originalUrl}`);
+  res.status(404).json({ 
+    message: 'API endpoint not found',
+    path: req.originalUrl,
+    method: req.method
+  });
+});
+
 // Add a catch-all error handler
 app.use((err, req, res, next) => {
   console.error('Global error handler caught:', err);
-  res.status(500).json({ message: 'Internal server error', error: err.message });
+  res.status(500).json({ 
+    message: 'Internal server error', 
+    error: err.message,
+    stack: process.env.NODE_ENV === 'production' ? undefined : err.stack
+  });
 });
 
 module.exports = app;
